@@ -139,7 +139,7 @@ export default function LoginPage() {
         icon="🔒"
       />
       <div style={{ textAlign: "right", marginBottom: 24 }}>
-        <Link href="/auth/forgot-password" style={{ fontSize: 13, color: T.G }}>
+        <Link href="/forgot-password" style={{ fontSize: 13, color: T.G }}>
           Forgot password?
         </Link>
       </div>
@@ -168,7 +168,7 @@ export default function LoginPage() {
         }}
       >
         No account?{" "}
-        <Link href="/auth/register" style={{ color: T.G, fontWeight: 600 }}>
+        <Link href="/register" style={{ color: T.G, fontWeight: 600 }}>
           Create one free
         </Link>
       </p>
