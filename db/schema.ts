@@ -201,6 +201,10 @@ export const categories = pgTable(
     createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
   },
   (table) => ({
+    idUserUnique: uniqueIndex("categories_id_user_id_unique").on(
+      table.id,
+      table.userId,
+    ),
     uniqueUserCategoryName: unique().on(table.userId, table.name),
   }),
 );
@@ -277,7 +281,7 @@ export const budgets = pgTable(
     }).notNull(),
     // e.g. 60000.00 for Food budget
 
-    month: date("month", { mode: "string" }).notNull(),
+    month: date("month").notNull(),
     // stored as "YYYY-MM" e.g. "2026-03"
     // makes it easy to query all budgets for a specific month
 
