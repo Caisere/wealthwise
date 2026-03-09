@@ -1,13 +1,14 @@
 "use client";
+
 import { useState } from "react";
 import Link from "next/link";
 import { T } from "@/app/lib/theme";
 import AuthPanel from "@/app/components/layout/auth-panel";
-
+import { Field } from "@/app/components/form/field";
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [sent, setSent] = useState<boolean>(false);
 
   return (
     <AuthPanel
@@ -19,66 +20,22 @@ export default function ForgotPasswordPage() {
       }
     >
       {!sent ? (
-        <>
-          <div style={{ marginBottom: 20 }}>
-            <label
-              style={{
-                fontSize: 13,
-                color: T.mu,
-                display: "block",
-                marginBottom: 6,
-                fontWeight: 500,
-              }}
-            >
-              Email address
-            </label>
-            <div style={{ position: "relative" }}>
-              <span
-                style={{
-                  position: "absolute",
-                  left: 14,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  fontSize: 15,
-                }}
-              >
-                ✉
-              </span>
-              <input
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onFocus={(e) => (e.currentTarget.style.borderColor = T.bdA)}
-                onBlur={(e) => (e.currentTarget.style.borderColor = T.bdr)}
-                style={{
-                  width: "100%",
-                  padding: "12px 14px 12px 42px",
-                  background: T.inp,
-                  border: `1px solid ${T.bdr}`,
-                  borderRadius: 12,
-                  color: T.tx,
-                  fontSize: 14,
-                  transition: "border-color .2s",
-                }}
-              />
-            </div>
-          </div>
+        <form>
+          <Field
+            label="Email address"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            icon="✉"
+          />
           <button
             onClick={() => email && setSent(true)}
+            className={`w-full p-3 rounded-lg text-sm border-0 mb-5 font-bold ${email ? "pointer" : "not-allowed"}`}
             style={{
-              width: "100%",
-              padding: "12px",
               background: email
                 ? `linear-gradient(135deg,${T.GM},${T.GD})`
                 : T.inp,
-              border: "none",
-              borderRadius: 12,
-              color: email ? "#fff" : T.mu,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: email ? "pointer" : "not-allowed",
-              marginBottom: 20,
             }}
           >
             Send reset link
@@ -88,16 +45,14 @@ export default function ForgotPasswordPage() {
               ← Back to sign in
             </Link>
           </p>
-        </>
+        </form>
       ) : (
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 64, marginBottom: 20 }}>📬</div>
+        <div className="text-center">
+          <div className="text-6xl mb-5">📬</div>
           <p
+            className="mb-5 text-sm leading-1.5"
             style={{
-              fontSize: 14,
               color: T.mu,
-              lineHeight: 1.7,
-              marginBottom: 28,
             }}
           >
             Didn&apos;t get it? Check your spam or{" "}
@@ -111,15 +66,10 @@ export default function ForgotPasswordPage() {
           </p>
           <button
             onClick={() => setSent(false)}
+            className="bg-transparent w-full p-3 rounded-lg text-sm border mb-5 cursor-pointer"
             style={{
-              width: "100%",
-              padding: "12px",
-              background: "transparent",
               border: `1px solid ${T.bdr}`,
-              borderRadius: 12,
               color: T.mu,
-              fontSize: 14,
-              marginBottom: 12,
             }}
           >
             ← Try again
