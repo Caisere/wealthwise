@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { ReactNode } from "react";
 import { T } from "@/app/lib/theme";
+import { AppLogo } from "./app-logo";
 
 export default function AuthPanel({
   children,
@@ -12,91 +12,44 @@ export default function AuthPanel({
   sub: string;
 }) {
   return (
-    <div style={{ minHeight: "100vh", background: T.bg, display: "flex" }}>
+    <div
+      className="min-h-screen flex flex-col justify-center sm:flex-row "
+      style={{ background: T.bg }}
+    >
       {/* Glow */}
       <div
+        className="fixed w-[500px] h-[500px] rounded-full pointer-events-none z-0 top-0 left-[30%] transform -translate-y-1/2 -translate-x-1/2"
         style={{
-          position: "fixed",
-          width: 500,
-          height: 500,
-          borderRadius: "50%",
-          pointerEvents: "none",
-          zIndex: 0,
-          top: 0,
-          left: "30%",
           background:
             "radial-gradient(circle,rgba(74,222,128,0.08),transparent)",
-          transform: "translate(-50%,-50%)",
         }}
       />
 
+      <div className="flex sm:hidden mx-auto flex-1">
+        <AppLogo />
+      </div>
+
       {/* Left panel */}
       <div
+        className="w-5/12 hidden sm:flex flex-col justify-between p-12 relative z-10"
         style={{
-          width: "42%",
           background: "linear-gradient(160deg,#0a1a12,#060a12)",
           borderRight: `1px solid ${T.bdr}`,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          padding: 48,
-          position: "relative",
-          zIndex: 1,
         }}
       >
-        <Link
-          href="/"
-          style={{ display: "flex", alignItems: "center", gap: 10 }}
-        >
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              background: `linear-gradient(135deg,${T.GM},${T.GD})`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 18,
-              fontWeight: 800,
-              color: "#fff",
-              fontFamily: T.FD,
-            }}
-          >
-            ₩
-          </div>
-          <span
-            style={{
-              fontFamily: T.FD,
-              fontWeight: 800,
-              fontSize: 18,
-              color: T.tx,
-            }}
-          >
-            WealthWise
-          </span>
-        </Link>
+        <AppLogo />
         <div>
-          <p
+          <p className="text-sm tracking-wide uppercase mb-4 font-semibold"
             style={{
-              fontSize: 13,
               color: T.G,
-              letterSpacing: "1.5px",
-              textTransform: "uppercase",
-              marginBottom: 16,
             }}
           >
             Personal Finance OS
           </p>
-          <h2
+          <h2 className="text-3xl sm:text-4xl font-extrabold mb-5 tracking-wide leading-tight"
             style={{
               fontFamily: T.FD,
-              fontSize: 36,
-              fontWeight: 800,
-              lineHeight: 1.2,
-              letterSpacing: "-1px",
               color: T.tx,
-              marginBottom: 20,
             }}
           >
             Know where every
@@ -108,14 +61,15 @@ export default function AuthPanel({
             one clean dashboard.
           </p>
         </div>
-        <div style={{ display: "flex", gap: 32 }}>
+        <div className="flex gap-8 w-[80%] justify-center" >
           {[
-            ["12k+", "Users"],
-            ["₦2B+", "Tracked"],
-            ["99.9%", "Uptime"],
-          ].map(([n, l]) => (
-            <div key={l}>
+            { count: "12k+", label: "Users" },
+            { count: "₦2B+", label: "Tracked" },
+            { count: "99.9%", label: "Uptime" },
+          ].map((el) => (
+            <div key={el.label}>
               <div
+                className="text-lg sm:text-2xl"
                 style={{
                   fontFamily: T.FD,
                   fontSize: 22,
@@ -123,28 +77,19 @@ export default function AuthPanel({
                   color: T.G,
                 }}
               >
-                {n}
+                {el.count}
               </div>
-              <div style={{ fontSize: 12, color: T.di }}>{l}</div>
+              <div style={{ fontSize: 12, color: T.di }}>{el.label}</div>
             </div>
           ))}
         </div>
       </div>
 
       {/* Right form */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 40,
-          position: "relative",
-          zIndex: 1,
-        }}
-      >
+      <div className="flex flex-1 items-center justify-center px-10 sm:p-10 relative z-10">
         <div className="anim-fadeup" style={{ width: "100%", maxWidth: 420 }}>
           <h1
+            className="text-center sm:text-start"
             style={{
               fontFamily: T.FD,
               fontSize: 28,
@@ -156,7 +101,12 @@ export default function AuthPanel({
           >
             {title}
           </h1>
-          <p style={{ fontSize: 14, color: T.mu, marginBottom: 32 }}>{sub}</p>
+          <p
+            className="text-center sm:text-start"
+            style={{ fontSize: 14, color: T.mu, marginBottom: 32 }}
+          >
+            {sub}
+          </p>
           {children}
         </div>
       </div>

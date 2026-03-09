@@ -84,7 +84,7 @@ export default function ForgotPasswordPage() {
             Send reset link
           </button>
           <p style={{ textAlign: "center", fontSize: 14, color: T.mu }}>
-            <Link href="/auth/login" style={{ color: T.G }}>
+            <Link href="/login" style={{ color: T.G }}>
               ← Back to sign in
             </Link>
           </p>

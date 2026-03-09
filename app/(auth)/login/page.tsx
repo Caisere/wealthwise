@@ -1,75 +1,14 @@
 "use client";
+
+
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { T } from "@/app/lib/theme";
 import AuthPanel from "@/app/components/layout/auth-panel";
+import { Field } from "@/app/components/form/field";
+import { SignInWithGoogleBtn } from "@/app/components/form/signin-with-google-btn";
 
-
-function Field({
-  label,
-  type = "text",
-  placeholder,
-  value,
-  onChange,
-  icon,
-}: {
-  label: string;
-  type?: string;
-  placeholder: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  icon?: string;
-}) {
-  return (
-    <div style={{ marginBottom: 16 }}>
-      <label
-        style={{
-          fontSize: 13,
-          color: T.mu,
-          display: "block",
-          marginBottom: 6,
-          fontWeight: 500,
-        }}
-      >
-        {label}
-      </label>
-      <div style={{ position: "relative" }}>
-        {icon && (
-          <span
-            style={{
-              position: "absolute",
-              left: 14,
-              top: "50%",
-              transform: "translateY(-50%)",
-              fontSize: 15,
-            }}
-          >
-            {icon}
-          </span>
-        )}
-        <input
-          type={type}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          onFocus={(e) => (e.currentTarget.style.borderColor = T.bdA)}
-          onBlur={(e) => (e.currentTarget.style.borderColor = T.bdr)}
-          style={{
-            width: "100%",
-            padding: icon ? "12px 14px 12px 42px" : "12px 14px",
-            background: T.inp,
-            border: `1px solid ${T.bdr}`,
-            borderRadius: 12,
-            color: T.tx,
-            fontSize: 14,
-            transition: "border-color .2s",
-          }}
-        />
-      </div>
-    </div>
-  );
-}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -77,7 +16,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handle = () => {
+  const handleLogin = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -87,37 +26,8 @@ export default function LoginPage() {
 
   return (
     <AuthPanel title="Welcome back" sub="Sign in to your WealthWise account">
-      <button
-        onClick={() => router.push("/dashboard")}
-        onMouseEnter={(e) => (e.currentTarget.style.borderColor = T.bdA)}
-        onMouseLeave={(e) => (e.currentTarget.style.borderColor = T.bdr)}
-        style={{
-          width: "100%",
-          padding: "12px",
-          background: T.inp,
-          border: `1px solid ${T.bdr}`,
-          borderRadius: 12,
-          color: T.tx,
-          fontSize: 14,
-          marginBottom: 24,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 10,
-          fontWeight: 500,
-        }}
-      >
-        <span style={{ fontSize: 17, fontWeight: 700 }}>G</span> Continue with
-        Google
-      </button>
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          marginBottom: 24,
-        }}
-      >
+      <SignInWithGoogleBtn />
+      <div className="flex items-center gap-3 mb-6">
         <div style={{ flex: 1, height: 1, background: T.bdr }} />
         <span style={{ fontSize: 12, color: T.di }}>or with email</span>
         <div style={{ flex: 1, height: 1, background: T.bdr }} />
@@ -138,13 +48,13 @@ export default function LoginPage() {
         onChange={(e) => setPassword(e.target.value)}
         icon="🔒"
       />
-      <div style={{ textAlign: "right", marginBottom: 24 }}>
+      <div className="text-right mb-6">
         <Link href="/forgot-password" style={{ fontSize: 13, color: T.G }}>
           Forgot password?
         </Link>
       </div>
       <button
-        onClick={handle}
+        onClick={handleLogin}
         style={{
           width: "100%",
           padding: "12px",
@@ -159,14 +69,7 @@ export default function LoginPage() {
       >
         {loading ? "Signing in..." : "Sign in →"}
       </button>
-      <p
-        style={{
-          textAlign: "center",
-          fontSize: 14,
-          color: T.mu,
-          marginTop: 24,
-        }}
-      >
+      <p className="mt-6 text-center text-sm text-gray-500">
         No account?{" "}
         <Link href="/register" style={{ color: T.G, fontWeight: 600 }}>
           Create one free
