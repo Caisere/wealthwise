@@ -1,4 +1,3 @@
-
 import { relations } from "drizzle-orm";
 import {
   numeric,
@@ -9,7 +8,10 @@ import {
   boolean,
   integer,
   varchar,
-  primaryKey
+  primaryKey,
+  uniqueIndex,
+  date,
+  unique,
 } from "drizzle-orm/pg-core";
 
 export const roleEnum = pgEnum("role", ["FREE", "PREMIUM"]);
@@ -40,11 +42,12 @@ export const subscriptionPlanEnum = pgEnum("subscription_plan", [
   "YEARLY",
 ]);
 
-
 const timeStamp = {
   createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-  updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdateFn(() => new Date())
-}
+  updatedAt: timestamp("updated_at", { mode: "date" }).$onUpdateFn(
+    () => new Date(),
+  ),
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // OAUTH ACCOUNTS
@@ -77,11 +80,10 @@ export const oauthAccounts = pgTable(
     id_token: text("id_token"),
 
     session_state: text("session_state"),
-
   },
   (table) => ({
     pk: primaryKey({ columns: [table.provider, table.providerAccountId] }),
-  })
+  }),
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -103,7 +105,6 @@ export const sessions = pgTable("sessions", {
   expires: timestamp("expires", { mode: "date" }).notNull(),
 });
 
-
 // ─────────────────────────────────────────────────────────────────────────────
 // VERIFICATION TOKENS
 // Used for email sign-in (magic links) and email verification flows.
@@ -118,12 +119,11 @@ export const verificationTokens = pgTable(
     token: text("token").notNull().unique(),
 
     expires: timestamp("expires", { mode: "date" }).notNull(),
-
   },
   (table) => ({
     // composite primary key: one active token per email at a time
     pk: primaryKey({ columns: [table.identifier, table.token] }),
-  })
+  }),
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -133,7 +133,7 @@ export const usersTable = pgTable("users", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  name: text("name").notNull(),
+  name: text("name"),
   email: text("email").notNull().unique(),
   password: text("password"),
   image: text("image"),
@@ -180,24 +180,29 @@ export const accounts = pgTable("accounts", {
 // CATEGORIES
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const categories = pgTable("categories", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+export const categories = pgTable(
+  "categories",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
 
-  userId: text("user_id")
-    .notNull()
-    .references(() => usersTable.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
 
-  name: text("name").notNull(), // e.g. "Food & Groceries"
+    name: text("name").notNull(), // e.g. "Food & Groceries"
 
-  isDefault: boolean("is_default").default(false).notNull(),
-  // true = seeded by the system on signup (Food, Rent, etc.)
-  // false = user-created custom category
+    isDefault: boolean("is_default").default(false).notNull(),
+    // true = seeded by the system on signup (Food, Rent, etc.)
+    // false = user-created custom category
 
-  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
-});
-
+    createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  },
+  (table) => ({
+    uniqueUserCategoryName: unique().on(table.userId, table.name),
+  }),
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TRANSACTIONS
@@ -230,7 +235,7 @@ export const transactions = pgTable("transactions", {
   // always stored as a positive number
   // the `type` field tells you direction (income vs expense)
 
-  description: varchar("description", {length: 256}).notNull(),
+  description: varchar("description", { length: 256 }).notNull(),
   // e.g. "Grocery — Shoprite"
 
   date: timestamp("date", { mode: "date" }).notNull(),
@@ -249,33 +254,45 @@ export const transactions = pgTable("transactions", {
 // BUDGETS
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const budgets = pgTable("budgets", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+export const budgets = pgTable(
+  "budgets",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
 
-  userId: text("user_id")
-    .notNull()
-    .references(() => usersTable.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => usersTable.id, { onDelete: "cascade" }),
 
-  categoryId: text("category_id")
-    .notNull()
-    .references(() => categories.id, { onDelete: "cascade" }),
-  // one budget per category per month
+    categoryId: text("category_id")
+      .notNull()
+      .references(() => categories.id, { onDelete: "set null" }),
+    // one budget per category per month
 
-  monthlyLimit: numeric("monthly_limit", { precision: 15, scale: 2 }).notNull(),
-  // e.g. 60000.00 for Food budget
+    monthlyLimit: numeric("monthly_limit", {
+      precision: 15,
+      scale: 2,
+    }).notNull(),
+    // e.g. 60000.00 for Food budget
 
-  month: text("month").notNull(),
-  // stored as "YYYY-MM" e.g. "2026-03"
-  // makes it easy to query all budgets for a specific month
+    month: date("month", { mode: "string" }).notNull(),
+    // stored as "YYYY-MM" e.g. "2026-03"
+    // makes it easy to query all budgets for a specific month
 
-  alertAt: integer("alert_at").default(80).notNull(),
-  // percentage at which to fire a budget alert
-  // default 80 means: alert when 80% of limit is spent
+    alertAt: integer("alert_at").default(80).notNull(),
+    // percentage at which to fire a budget alert
+    // default 80 means: alert when 80% of limit is spent
 
-  ...timeStamp,
-});
+    ...timeStamp,
+  },
+  (table) => ({
+    // one budget per category per month per user — enforced at DB level
+    userCategoryMonthUnique: uniqueIndex(
+      "budgets_user_category_month_unique",
+    ).on(table.userId, table.categoryId, table.month),
+  }),
+);
 
 export const subscriptions = pgTable("subscriptions", {
   id: text("id")
@@ -325,22 +342,23 @@ export const subscriptions = pgTable("subscriptions", {
 
 export const oauthAccountsRelations = relations(oauthAccounts, ({ one }) => ({
   user: one(usersTable, {
-    fields:     [oauthAccounts.userId],
+    fields: [oauthAccounts.userId],
     references: [usersTable.id],
   }),
 }));
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(usersTable, {
-    fields:     [sessions.userId],
+    fields: [sessions.userId],
     references: [usersTable.id],
   }),
 }));
 // VerificationToken has no user relation — it only holds an email string,
 // because the user may not exist yet when the token is created (signup flow)
 
-
 export const usersRelations = relations(usersTable, ({ many, one }) => ({
+  oauthAccounts: many(oauthAccounts),
+  sessions: many(sessions),
   accounts: many(accounts),
   transactions: many(transactions),
   categories: many(categories),
