@@ -12,6 +12,7 @@ import {
   uniqueIndex,
   date,
   unique,
+  foreignKey,
 } from "drizzle-orm/pg-core";
 
 export const roleEnum = pgEnum("role", ["FREE", "PREMIUM"]);
@@ -265,9 +266,9 @@ export const budgets = pgTable(
       .notNull()
       .references(() => usersTable.id, { onDelete: "cascade" }),
 
-    categoryId: text("category_id")
-      .notNull()
-      .references(() => categories.id, { onDelete: "set null" }),
+    categoryId: text("category_id").references(() => categories.id, {
+      onDelete: "set null",
+    }),
     // one budget per category per month
 
     monthlyLimit: numeric("monthly_limit", {
@@ -291,6 +292,13 @@ export const budgets = pgTable(
     userCategoryMonthUnique: uniqueIndex(
       "budgets_user_category_month_unique",
     ).on(table.userId, table.categoryId, table.month),
+
+    // (categoryId, userId) -> categories(id, user_id), ON DELETE CASCADE
+    categoryOwnerFk: foreignKey({
+      columns: [table.categoryId, table.userId],
+      foreignColumns: [categories.id, categories.userId],
+      // onDelete: "cascade",
+    }),
   }),
 );
 
