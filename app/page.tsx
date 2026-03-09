@@ -1,59 +1,14 @@
 import Link from "next/link";
+import { features, pricing, steps } from "./lib/data";
+import { Navbar } from "./components/layout/navbar";
 
-const features = [
-  {
-    icon: "📊",
-    title: "Smart Dashboard",
-    desc: "See your entire financial picture at a glance — net worth, cash flow, and budget health in one clean view.",
-  },
-  {
-    icon: "🏷️",
-    title: "Category Budgets",
-    desc: "Set monthly limits per category. Get real-time alerts before you overspend on Food, Transport, or Entertainment.",
-  },
-  {
-    icon: "⚡",
-    title: "Real-Time Alerts",
-    desc: "Instant notifications when you're approaching your budget limit. Know before it's too late.",
-  },
-  {
-    icon: "🏦",
-    title: "Multi-Account",
-    desc: "Track across GTBank, Opay, Cash, and credit cards. One place for all your money.",
-  },
-  {
-    icon: "📈",
-    title: "Deep Analytics",
-    desc: "Monthly comparisons, spending trends, and savings rate charts that actually tell you something.",
-  },
-  {
-    icon: "🔒",
-    title: "Bank-Grade Security",
-    desc: "Your data is encrypted, your sessions are secure, and we never touch your actual bank account.",
-  },
-];
-
-const steps = [
-  {
-    n: "01",
-    title: "Create your account",
-    desc: "Sign up free in under 30 seconds. No credit card needed.",
-  },
-  {
-    n: "02",
-    title: "Add accounts & budgets",
-    desc: "Tell WealthWise your bank accounts, cash, and monthly budget limits per category.",
-  },
-  {
-    n: "03",
-    title: "Log transactions as you go",
-    desc: "Spent money? Log it in seconds. The app does the math and keeps your budgets updated.",
-  },
-];
 
 export default function LandingPage() {
   return (
-    <div className="bg-bg min-h-screen text-text font-body overflow-x-hidden">
+    <div className="bg-bg min-h-screen text-text font-body overflow-x-hidden relative">
+      {/* NAV */}
+      <Navbar />
+
       {/* Ambient glows */}
       <div
         className="fixed top-0 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full pointer-events-none z-0"
@@ -69,42 +24,6 @@ export default function LandingPage() {
             "radial-gradient(circle, rgba(56,189,248,0.05) 0%, transparent 70%)",
         }}
       />
-
-      {/* NAV */}
-      <nav className="sticky top-0 z-50 flex items-center justify-between px-16 py-5 border-b border-base bg-[rgba(6,10,18,0.9)] backdrop-blur-xl">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl gradient-brand flex items-center justify-center text-lg font-black text-white font-display">
-            ₩
-          </div>
-          <span className="font-display font-extrabold text-lg text-text">
-            WealthWise
-          </span>
-        </div>
-        <div className="hidden md:flex gap-8 text-[14px] text-muted">
-          {["Features", "How it works", "Pricing"].map((l) => (
-            <span
-              key={l}
-              className="cursor-pointer hover:text-brand transition-colors"
-            >
-              {l}
-            </span>
-          ))}
-        </div>
-        <div className="flex gap-3">
-          <Link
-            href="/login"
-            className="px-4 py-2 text-[13px] font-semibold rounded-xl bg-transparent text-muted border border-base hover:bg-input transition-all no-underline"
-          >
-            Sign in
-          </Link>
-          <Link
-            href="/register"
-            className="px-4 py-2 text-[13px] font-semibold rounded-xl gradient-brand text-white shadow-brand hover:opacity-90 transition-opacity no-underline"
-          >
-            Get started →
-          </Link>
-        </div>
-      </nav>
 
       {/* HERO */}
       <section className="text-center px-5 pt-24 pb-20 max-w-3xl mx-auto relative z-[1]">
@@ -139,16 +58,10 @@ export default function LandingPage() {
         </p>
         <div className="animate-fade-up-3 flex gap-3.5 justify-center flex-wrap">
           <Link
-            href="/auth/register"
+            href="/register"
             className="px-8 py-3.5 text-[15px] font-semibold rounded-xl gradient-brand text-white shadow-brand hover:opacity-90 transition-opacity no-underline"
           >
             Start for free — no card needed
-          </Link>
-          <Link
-            href="/dashboard"
-            className="px-8 py-3.5 text-[15px] font-semibold rounded-xl bg-transparent text-muted border border-base hover:bg-input transition-all no-underline"
-          >
-            View demo dashboard →
           </Link>
         </div>
         <p className="animate-fade-up-4 text-[12px] text-dim mt-5">
@@ -272,43 +185,7 @@ export default function LandingPage() {
           </h2>
         </div>
         <div className="grid grid-cols-2 gap-5">
-          {[
-            {
-              name: "Free",
-              price: "₦0",
-              period: "/forever",
-              color: "#94a3b8",
-              badge: false,
-              features: [
-                "Up to 20 transactions/month",
-                "3 budget categories",
-                "Basic dashboard",
-                "2 accounts",
-              ],
-              cta: "Get started free",
-              href: "/auth/register",
-              primary: false,
-            },
-            {
-              name: "Premium",
-              price: "₦2,500",
-              period: "/month",
-              color: "#4ade80",
-              badge: true,
-              features: [
-                "Unlimited transactions",
-                "Unlimited categories",
-                "Full analytics & charts",
-                "Unlimited accounts",
-                "Real-time budget alerts",
-                "CSV & PDF export",
-                "AI spending insights",
-              ],
-              cta: "Start 7-day free trial",
-              href: "/auth/register",
-              primary: true,
-            },
-          ].map(
+          {pricing.map(
             ({
               name,
               price,
@@ -381,16 +258,16 @@ export default function LandingPage() {
           </div>
           <span className="font-display font-bold text-text">WealthWise</span>
         </div>
-        <p className="text-[13px] text-dim">
-          © 2026 WealthWise. Built for financial clarity.
+        <p className="text-[13px] text-dim" suppressHydrationWarning>
+          © {new Date().getFullYear()} WealthWise. Built for financial clarity.
         </p>
         <div className="flex gap-6 text-[13px] text-dim">
-          {["Privacy", "Terms", "Contact"].map((l) => (
+          {["Privacy", "Terms", "Contact"].map((el) => (
             <span
-              key={l}
+              key={el}
               className="cursor-pointer hover:text-muted transition-colors"
             >
-              {l}
+              {el}
             </span>
           ))}
         </div>

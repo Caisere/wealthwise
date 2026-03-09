@@ -168,7 +168,7 @@ export function IncomeExpenseBarChart() {
         />
         <Tooltip
           contentStyle={tipStyle}
-          formatter={(v: number) => `₦${v.toLocaleString()}`}
+          // formatter={(v: number) => `₦${v.toLocaleString()}`}
         />
         <Bar
           dataKey="income"
@@ -207,7 +207,7 @@ export function SavingsRateChart() {
         />
         <Tooltip
           contentStyle={tipStyle}
-          formatter={(v: number) => [`${v}%`, "Savings Rate"]}
+          // formatter={(v: number) => [`${v}%`, "Savings Rate"]}
         />
         <Line
           type="monotone"

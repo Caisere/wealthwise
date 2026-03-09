@@ -1,4 +1,5 @@
 import { T } from "@/app/lib/theme";
+import { Dispatch, SetStateAction } from "react";
 
 export function Field({
   label,
@@ -7,11 +8,15 @@ export function Field({
   value,
   onChange,
   icon,
+  showPassword,
+  setShowPassword,
 }: {
   label: string;
   type?: string;
   placeholder: string;
   value: string;
+  showPassword?: boolean;
+  setShowPassword?: Dispatch<SetStateAction<boolean>>;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   icon?: string;
 }) {
@@ -42,24 +47,34 @@ export function Field({
             {icon}
           </span>
         )}
-        <input
-          type={type}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          onFocus={(e) => (e.currentTarget.style.borderColor = T.bdA)}
-          onBlur={(e) => (e.currentTarget.style.borderColor = T.bdr)}
-          style={{
-            width: "100%",
-            padding: icon ? "12px 14px 12px 42px" : "12px 14px",
-            background: T.inp,
-            border: `1px solid ${T.bdr}`,
-            borderRadius: 12,
-            color: T.tx,
-            fontSize: 14,
-            transition: "border-color .2s",
-          }}
-        />
+        <div className="relative">
+          <input
+            type={type}
+            placeholder={placeholder}
+            value={value}
+            onChange={onChange}
+            onFocus={(e) => (e.currentTarget.style.borderColor = T.bdA)}
+            onBlur={(e) => (e.currentTarget.style.borderColor = T.bdr)}
+            style={{
+              width: "100%",
+              padding: icon ? "12px 14px 12px 42px" : "12px 14px",
+              background: T.inp,
+              border: `1px solid ${T.bdr}`,
+              borderRadius: 12,
+              color: T.tx,
+              fontSize: 14,
+              transition: "border-color .2s",
+            }}
+          />
+          {showPassword !== undefined && setShowPassword !== undefined && (
+            <div
+              className="absolute top-2.5 right-2.5 text-lg"
+              onClick={() => setShowPassword?.(!showPassword)}
+            >
+              {showPassword ? "👀" : "🙈"}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

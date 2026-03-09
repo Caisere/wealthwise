@@ -13,6 +13,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const set =
     (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -65,7 +66,9 @@ export default function RegisterPage() {
       />
       <Field
         label="Password"
-        type="password"
+        type={showPassword ? "text" : "password"}
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
         placeholder="Min. 8 characters"
         value={form.password}
         onChange={set("password")}

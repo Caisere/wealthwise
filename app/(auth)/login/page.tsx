@@ -12,9 +12,10 @@ import { SignInWithGoogleBtn } from "@/app/components/form/signin-with-google-bt
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleLogin = () => {
     setLoading(true);
@@ -42,11 +43,13 @@ export default function LoginPage() {
       />
       <Field
         label="Password"
-        type="password"
+        type={showPassword ? "text" : "password"}
         placeholder="••••••••"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         icon="🔒"
+        showPassword={showPassword}
+        setShowPassword={setShowPassword}
       />
       <div className="text-right mb-6">
         <Link href="/forgot-password" style={{ fontSize: 13, color: T.G }}>

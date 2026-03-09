@@ -1,6 +1,5 @@
 import { Account, Budget, NavItem, Transaction } from "../types";
 
-
 export const fmt = (n: number) => "₦" + Math.abs(n).toLocaleString("en-NG");
 
 export const NAV_ITEMS: NavItem[] = [
@@ -243,4 +242,93 @@ export const ACCOUNT_OPTIONS = [
   { value: "opay", label: "📱 Opay Wallet" },
   { value: "cash", label: "💵 Cash" },
   { value: "piggyvest", label: "🐷 PiggyVest" },
+];
+
+export const features = [
+  {
+    icon: "📊",
+    title: "Smart Dashboard",
+    desc: "See your entire financial picture at a glance — net worth, cash flow, and budget health in one clean view.",
+  },
+  {
+    icon: "🏷️",
+    title: "Category Budgets",
+    desc: "Set monthly limits per category. Get real-time alerts before you overspend on Food, Transport, or Entertainment.",
+  },
+  {
+    icon: "⚡",
+    title: "Real-Time Alerts",
+    desc: "Instant notifications when you're approaching your budget limit. Know before it's too late.",
+  },
+  {
+    icon: "🏦",
+    title: "Multi-Account",
+    desc: "Track across GTBank, Opay, Cash, and credit cards. One place for all your money.",
+  },
+  {
+    icon: "📈",
+    title: "Deep Analytics",
+    desc: "Monthly comparisons, spending trends, and savings rate charts that actually tell you something.",
+  },
+  {
+    icon: "🔒",
+    title: "Bank-Grade Security",
+    desc: "Your data is encrypted, your sessions are secure, and we never touch your actual bank account.",
+  },
+];
+
+export const steps = [
+  {
+    n: "01",
+    title: "Create your account",
+    desc: "Sign up free in under 30 seconds. No credit card needed.",
+  },
+  {
+    n: "02",
+    title: "Add accounts & budgets",
+    desc: "Tell WealthWise your bank accounts, cash, and monthly budget limits per category.",
+  },
+  {
+    n: "03",
+    title: "Log transactions as you go",
+    desc: "Spent money? Log it in seconds. The app does the math and keeps your budgets updated.",
+  },
+];
+
+export const pricing = [
+  {
+    name: "Free",
+    price: "₦0",
+    period: "/forever",
+    color: "#94a3b8",
+    badge: false,
+    features: [
+      "Up to 20 transactions/month",
+      "3 budget categories",
+      "Basic dashboard",
+      "2 accounts",
+    ],
+    cta: "Get started free",
+    href: "/auth/register",
+    primary: false,
+  },
+  {
+    name: "Premium",
+    price: "₦2,500",
+    period: "/month",
+    color: "#4ade80",
+    badge: true,
+    features: [
+      "Unlimited transactions",
+      "Unlimited categories",
+      "Full analytics & charts",
+      "Unlimited accounts",
+      "Real-time budget alerts",
+      "CSV & PDF export",
+      "AI spending insights",
+    ],
+    cta: "Start 7-day free trial",
+    href: "/auth/register",
+    primary: true,
+  },
 ];
