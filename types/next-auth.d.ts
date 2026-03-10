@@ -12,37 +12,26 @@ declare module "next-auth" {
       email: string;
       image: string | null;
       stripeCustomerId: string | null;
-    } & DefaultSession["user"];
-    // ↑ & means merge — you're adding id and role
-    // on top of the existing name, email, image
+    } & DefaultSession["user"]; // adding id and role on top of the existing name, email, image
   }
 
   interface User extends DefaultUser {
-      role: "FREE" | "PREMIUM";
-      id: string;
-      role: "FREE" | "PREMIUM";
-      name: string | null;
-      email: string;
-      image: string | null;
-      stripeCustomerId: string | null;
-    // ↑ extend the User object returned from authorize()
-    // so TypeScript knows role exists when you return it
+    // extend the User object returned from authorize() so TypeScript knows role exists when you return it
+    id: string;
+    role: "FREE" | "PREMIUM";
+    name: string | null;
+    email: string;
+    image: string | null;
+    stripeCustomerId: string | null;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT extends DefaultJWT {
+    // extend the JWT token so token.id and token.role don't throw TS errors inside the jwt() callback
     id: string;
     role: "FREE" | "PREMIUM";
     stripeCustomerId: string | null;
     picture: string | null;
-    // ↑ extend the JWT token
-    // so token.id and token.role don't throw TS errors
-    // inside the jwt() callback
   }
 }
-// ```
-
-// **Why you need all three — `Session`, `User`, and `JWT`:**
-// ```
-// authorize () => returns User  →  jwt() puts it in token  →  session() puts it in session

@@ -1,5 +1,4 @@
 import { db } from "@/db";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { AuthOptions } from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
@@ -20,12 +19,6 @@ const credentialsSchema = z.object({
 });
 
 export const authOptions: AuthOptions = {
-  // adapter: DrizzleAdapter(db, {
-  //   usersTable: usersTable,
-  //   accountsTable: Accounts,
-  //   sessionsTable: sessions,
-  //   verificationTokensTable: verificationTokens,
-  // }),
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -44,7 +37,6 @@ export const authOptions: AuthOptions = {
 
           if (!userInputValidation.success) {
             throw new Error(userInputValidation.error.message);
-            return null;
           }
 
           const { email, password } = userInputValidation.data;
@@ -54,13 +46,13 @@ export const authOptions: AuthOptions = {
             .from(usersTable)
             .where(eq(usersTable.email, email));
 
-          if (!user) {
+          if (!user || !user.password) {
             throw new Error("Invalid email or password");
           }
 
           const isValidPassword = await comparePassword(
             password,
-            user.password!,
+            user.password,
           );
 
           if (!isValidPassword) {
@@ -113,14 +105,15 @@ export const authOptions: AuthOptions = {
             where: eq(usersTable.email, token.email!),
           });
 
-          console.log(dbUser)
+          if (dbUser) {
+            token.id = dbUser!.id;
+            token.role = dbUser!.role;
+            token.email = dbUser!.email;
+            token.name = dbUser!.name;
+            token.picture = dbUser!.image;
+            token.stripeCustomerId = dbUser!.stripeCustomerId;
+          }
 
-          token.id = dbUser!.id;
-          token.role = dbUser!.role;
-          token.email = dbUser!.email;
-          token.name = dbUser!.name;
-          token.picture = dbUser!.image;
-          token.stripeCustomerId = dbUser!.stripeCustomerId;
         } else {
           token.id = user?.id;
           token.role = user?.role;
@@ -134,7 +127,6 @@ export const authOptions: AuthOptions = {
     },
 
     async session({ session, token }) {
-
       if (token) {
         session.user.id = token.id;
         session.user.role = token.role;
