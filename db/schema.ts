@@ -55,8 +55,8 @@ const timeStamp = {
 // Created for OAuth logins
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const oauthAccounts = pgTable(
-  "oauth_accounts",
+export const Accounts = pgTable(
+  "accounts",
   {
     userId: text("user_id")
       .notNull()
@@ -93,11 +93,7 @@ export const oauthAccounts = pgTable(
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const sessions = pgTable("sessions", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-
-  sessionToken: text("session_token").notNull().unique(),
+  sessionToken: text("session_token").primaryKey(),
 
   userId: text("user_id")
     .notNull()
@@ -145,10 +141,10 @@ export const usersTable = pgTable("users", {
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ACCOUNTS
+// ACCOUNT
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const accounts = pgTable("accounts", {
+export const userAccounts = pgTable("user_accounts", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -224,7 +220,7 @@ export const transactions = pgTable("transactions", {
 
   accountId: text("account_id")
     .notNull()
-    .references(() => accounts.id, { onDelete: "cascade" }),
+    .references(() => userAccounts.id, { onDelete: "cascade" }),
   // which account was debited/credited
 
   categoryId: text("category_id").references(() => categories.id, {
@@ -298,11 +294,11 @@ export const budgets = pgTable(
     ).on(table.userId, table.categoryId, table.month),
 
     // (categoryId, userId) -> categories(id, user_id), ON DELETE CASCADE
-    categoryOwnerFk: foreignKey({
-      columns: [table.categoryId, table.userId],
-      foreignColumns: [categories.id, categories.userId],
-      // onDelete: "cascade",
-    }),
+    // categoryOwnerFk: foreignKey({
+    //   columns: [table.categoryId, table.userId],
+    //   foreignColumns: [categories.id, categories.userId],
+    //   // onDelete: "cascade",
+    // }),
   }),
 );
 
@@ -352,9 +348,9 @@ export const subscriptions = pgTable("subscriptions", {
 
 //Relations
 
-export const oauthAccountsRelations = relations(oauthAccounts, ({ one }) => ({
+export const accountsRelations = relations(Accounts, ({ one }) => ({
   user: one(usersTable, {
-    fields: [oauthAccounts.userId],
+    fields: [Accounts.userId],
     references: [usersTable.id],
   }),
 }));
@@ -369,9 +365,9 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 // because the user may not exist yet when the token is created (signup flow)
 
 export const usersRelations = relations(usersTable, ({ many, one }) => ({
-  oauthAccounts: many(oauthAccounts),
+  oauthAccounts: many(Accounts),
   sessions: many(sessions),
-  accounts: many(accounts),
+  accounts: many(userAccounts),
   transactions: many(transactions),
   categories: many(categories),
   budgets: many(budgets),
@@ -381,9 +377,9 @@ export const usersRelations = relations(usersTable, ({ many, one }) => ({
   }),
 }));
 
-export const accountsRelations = relations(accounts, ({ one, many }) => ({
+export const userAccountsRelations = relations(userAccounts, ({ one, many }) => ({
   user: one(usersTable, {
-    fields: [accounts.userId],
+    fields: [userAccounts.userId],
     references: [usersTable.id],
   }),
   transactions: many(transactions),
@@ -403,9 +399,9 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
     fields: [transactions.userId],
     references: [usersTable.id],
   }),
-  account: one(accounts, {
+  account: one(userAccounts, {
     fields: [transactions.accountId],
-    references: [accounts.id],
+    references: [userAccounts.id],
   }),
   category: one(categories, {
     fields: [transactions.categoryId],
@@ -435,8 +431,8 @@ export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
 export type User = typeof usersTable.$inferSelect;
 export type NewUser = typeof usersTable.$inferInsert;
 
-export type Account = typeof accounts.$inferSelect;
-export type NewAccount = typeof accounts.$inferInsert;
+export type Account = typeof userAccounts.$inferSelect;
+export type NewAccount = typeof userAccounts.$inferInsert;
 
 export type Category = typeof categories.$inferSelect;
 export type NewCategory = typeof categories.$inferInsert;
