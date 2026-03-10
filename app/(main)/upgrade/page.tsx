@@ -1,4 +1,6 @@
+import { authOptions } from "@/app/lib/auth";
 import { T } from "@/app/lib/theme";
+import { getServerSession } from "next-auth";
 
 
 const FREE_FEATURES = [
@@ -38,7 +40,9 @@ const FAQ = [
   ],
 ];
 
-export default function UpgradePage() {
+export default async function UpgradePage() {
+  const session = await getServerSession(authOptions)
+  // console.log(session?.user)
   return (
     <div style={{ padding: 32, maxWidth: 820, margin: "0 auto" }}>
       <div style={{ textAlign: "center", marginBottom: 48 }}>
