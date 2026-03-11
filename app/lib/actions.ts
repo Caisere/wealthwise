@@ -1,50 +1,56 @@
-'use server'
+"use server";
 
 import { db } from "@/db";
 import { RegisterFormData, RegisterSchema } from "../types";
 import { usersTable } from "@/db/schema";
 import { hashPassword } from "./helper";
-import { eq } from "drizzle-orm";
 
+
+
+function isDbError(error: unknown): error is { code: string } {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    typeof (error as { code: unknown }).code === "string"
+  );
+}
 
 
 export async function createUser(userInput: RegisterSchema) {
   try {
-
-    const parsedData = RegisterFormData.safeParse(userInput)
+    const parsedData = RegisterFormData.safeParse(userInput);
 
     if (!parsedData.success) {
       return {
         success: false,
-        message: 'Invalid user input'
-      }
+        message: "Invalid user input",
+      };
     }
 
-    const {name, email, password} = parsedData.data
-    
-    const existingUser = await db.select().from(usersTable).where(eq(usersTable.email, email))
+    const { name, email, password } = parsedData.data;
 
-    if (existingUser.length > 0) {
-      return {
-        success: false,
-        message: 'Email already in use'
-      }
-    }
-
-    const hashedPassword = await hashPassword(password)
+    const hashedPassword = await hashPassword(password);
 
     await db.insert(usersTable).values({
-      name, email, password: hashedPassword
-    })
+      name,
+      email,
+      password: hashedPassword,
+    });
 
     return {
       success: true,
-      message: 'User created successfully'
+      message: "User created successfully",
+    };
+  } catch (error) {
+    if (isDbError(error) && error.code === "23505") {
+      // 23505 is Postgres's unique violation error code
+      // it means the email already exists
+      return { success: false, message: "Email already in use" };
     }
-  } catch {
     return {
       success: false,
-      message: 'Server Error'
-    }
+      message: "Server Error",
+    };
   }
 }
