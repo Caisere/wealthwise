@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { T } from "@/app/lib/theme";
 import { AppLogo } from "./app-logo";
+import { SignInWithGoogleBtn } from "../form/signin-with-google-btn";
 
 export default function AuthPanel({
   children,
@@ -39,14 +40,16 @@ export default function AuthPanel({
       >
         <AppLogo />
         <div>
-          <p className="text-sm tracking-wide uppercase mb-4 font-semibold"
+          <p
+            className="text-sm tracking-wide uppercase mb-4 font-semibold"
             style={{
               color: T.G,
             }}
           >
             Personal Finance OS
           </p>
-          <h2 className="text-3xl sm:text-4xl font-extrabold mb-5 tracking-wide leading-tight"
+          <h2
+            className="text-3xl sm:text-4xl font-extrabold mb-5 tracking-wide leading-tight"
             style={{
               fontFamily: T.FD,
               color: T.tx,
@@ -61,7 +64,7 @@ export default function AuthPanel({
             one clean dashboard.
           </p>
         </div>
-        <div className="flex gap-8 w-[80%] justify-center" >
+        <div className="flex gap-8 w-[80%] justify-center">
           {[
             { count: "12k+", label: "Users" },
             { count: "₦2B+", label: "Tracked" },
@@ -107,6 +110,12 @@ export default function AuthPanel({
           >
             {sub}
           </p>
+          <SignInWithGoogleBtn />
+          <div className="flex items-center gap-3 mb-6">
+            <div style={{ flex: 1, height: 1, background: T.bdr }} />
+            <span style={{ fontSize: 12, color: T.di }}>or with email</span>
+            <div style={{ flex: 1, height: 1, background: T.bdr }} />
+          </div>
           {children}
         </div>
       </div>
