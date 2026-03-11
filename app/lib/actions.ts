@@ -24,7 +24,7 @@ export async function createUser(userInput: RegisterSchema) {
     
     const existingUser = await db.select().from(usersTable).where(eq(usersTable.email, email))
 
-    if (existingUser) {
+    if (existingUser.length > 0) {
       return {
         success: false,
         message: 'Email already in use'
