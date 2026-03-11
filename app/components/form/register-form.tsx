@@ -21,7 +21,7 @@ export function RegisterForm() {
     (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) =>
       setForm((p) => ({ ...p, [k]: e.target.value }));
 
-  const handleRegister = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleRegister = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError('')
@@ -51,7 +51,6 @@ export function RegisterForm() {
         throw error;
       } else {
         setError('An unknown error occurred');
-        throw new Error(String(error));
       }
     }finally {
       setLoading(false)
@@ -69,7 +68,7 @@ export function RegisterForm() {
   const strengthLabel = ["", "Weak", "", "Fair", "", "Strong"][strength] ?? "";
   const strengthColor = strength >= 5 ? T.G : strength >= 3 ? T.A : T.R;
   return (
-    <form action="">
+    <form onSubmit={handleRegister}>
       {error && <p>{error}</p>}
       <Field
         label="Full name"
@@ -104,7 +103,7 @@ export function RegisterForm() {
         />
       )}
       <button
-        onClick={handleRegister}
+        type="submit"
         style={{
           width: "100%",
           padding: "12px",

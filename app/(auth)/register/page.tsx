@@ -19,19 +19,17 @@ export default function RegisterPage() {
         }}
       >
         By signing up, you agree to our{" "}
-        <span
-          className="hover:underline"
-          style={{ color: T.G, cursor: "pointer" }}
+        <Link href="/terms" className="hover:underline cursor-pointer" style={{ color: T.G }}
         >
           Terms
-        </span>{" "}
+        </Link>{" "}
         and{" "}
-        <span
-          className="hover:underline"
-          style={{ color: T.G, cursor: "pointer" }}
+        <Link href="/privacy"
+          className="hover:underline cursor-pointer" 
+          style={{ color: T.G }}
         >
           Privacy Policy
-        </span>
+        </Link>
       </p>
       <p style={{ textAlign: "center", fontSize: 14, color: T.mu }}>
         Already have an account?{" "}

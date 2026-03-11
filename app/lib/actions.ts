@@ -1,18 +1,33 @@
 'use server'
 
 import { db } from "@/db";
-import { RegisterSchema } from "../types";
+import { RegisterFormData, RegisterSchema } from "../types";
 import { usersTable } from "@/db/schema";
 import { hashPassword } from "./helper";
+import { eq } from "drizzle-orm";
 
 
 
-export async function createUser({name, email, password}: RegisterSchema) {
+export async function createUser(userInput: RegisterSchema) {
   try {
-    if (!name || !email || !password) {
+
+    const parsedData = RegisterFormData.safeParse(userInput)
+
+    if (!parsedData.success) {
       return {
         success: false,
         message: 'Invalid user input'
+      }
+    }
+
+    const {name, email, password} = parsedData.data
+    
+    const existingUser = await db.select().from(usersTable).where(eq(usersTable.email, email))
+
+    if (existingUser) {
+      return {
+        success: false,
+        message: 'Email already in use'
       }
     }
 
@@ -26,8 +41,7 @@ export async function createUser({name, email, password}: RegisterSchema) {
       success: true,
       message: 'User created successfully'
     }
-  } catch (error) {
-    console.log('Error:', error)
+  } catch {
     return {
       success: false,
       message: 'Server Error'

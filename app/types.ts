@@ -1,13 +1,14 @@
-import z from "zod";
+import z, { email } from "zod";
 
 export const RegisterFormData = z.object({
-  name: z.string().min(1, 'name must be at least 1 character'),
+  name: z.string().trim().min(1, 'name must be at least 1 character'),
   email: z
     .string()
+    .trim()
     .regex(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       "Invalid email address",
-    ),
+    ).transform((email) => email.toLowerCase()),
   password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
@@ -15,10 +16,11 @@ export const RegisterFormData = z.object({
 export const CredentialsSchema = z.object({
   email: z
     .string()
+    .trim()
     .regex(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       "Invalid email address",
-    ),
+    ).transform((email) => email.toLowerCase()),
   password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 

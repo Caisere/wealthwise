@@ -42,7 +42,7 @@ const FAQ = [
 
 export default async function UpgradePage() {
   const session = await getServerSession(authOptions)
-  console.log(session?.user)
+  // console.log(session?.user)
   return (
     <div style={{ padding: 32, maxWidth: 820, margin: "0 auto" }}>
       <div style={{ textAlign: "center", marginBottom: 48 }}>

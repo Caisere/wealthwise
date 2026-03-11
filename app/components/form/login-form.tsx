@@ -47,8 +47,11 @@ export function LoginForm() {
       }
 
       router.push("/dashboard");
-    } catch (error) {
-      router.push("/login");
+    } catch {
+      setError("root", {
+        type: "server",
+        message: "Failed to sign in. Please try again.",
+      });
     }
   };
 
