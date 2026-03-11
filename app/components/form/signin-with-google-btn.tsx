@@ -1,10 +1,9 @@
+'use client'
+
 import { T } from "@/app/lib/theme";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 
 export function SignInWithGoogleBtn() {
-  // const router = useRouter();
-
   return (
     <button
       onClick={() => signIn('google', { callbackUrl: "/dashboard" })}

@@ -1,3 +1,31 @@
+import z from "zod";
+
+export const RegisterFormData = z.object({
+  name: z.string().min(1, 'name must be at least 1 character'),
+  email: z
+    .string()
+    .regex(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      "Invalid email address",
+    ),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+
+export const CredentialsSchema = z.object({
+  email: z
+    .string()
+    .regex(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      "Invalid email address",
+    ),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+export type LoginSchema = z.infer<typeof CredentialsSchema>;
+
+export type RegisterSchema = z.infer<typeof RegisterFormData>
+
 export type TransactionType = "income" | "expense";
 
 export type AccountType = "Bank" | "E-Money" | "Cash" | "Savings" | "Credit";

@@ -1,25 +1,28 @@
 import { T } from "@/app/lib/theme";
-import { Dispatch, SetStateAction } from "react";
+import type {
+  Dispatch,
+  InputHTMLAttributes,
+  SetStateAction,
+  FocusEvent,
+} from "react";
+
+type FieldProps = {
+  label: string;
+  icon?: string;
+  showPassword?: boolean;
+  setShowPassword?: Dispatch<SetStateAction<boolean>>;
+} & Omit<InputHTMLAttributes<HTMLInputElement>, "style">;
 
 export function Field({
   label,
-  type = "text",
-  placeholder,
-  value,
-  onChange,
   icon,
   showPassword,
   setShowPassword,
-}: {
-  label: string;
-  type?: string;
-  placeholder: string;
-  value: string;
-  showPassword?: boolean;
-  setShowPassword?: Dispatch<SetStateAction<boolean>>;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  icon?: string;
-}) {
+  onFocus,
+  onBlur,
+  type = "text",
+  ...inputProps
+}: FieldProps) {
   return (
     <div style={{ marginBottom: 16 }}>
       <label
@@ -50,11 +53,15 @@ export function Field({
         <div className="relative">
           <input
             type={type}
-            placeholder={placeholder}
-            value={value}
-            onChange={onChange}
-            onFocus={(e) => (e.currentTarget.style.borderColor = T.bdA)}
-            onBlur={(e) => (e.currentTarget.style.borderColor = T.bdr)}
+            {...inputProps}
+            onFocus={(e: FocusEvent<HTMLInputElement>) => {
+              onFocus?.(e);
+              e.currentTarget.style.borderColor = T.bdA;
+            }}
+            onBlur={(e: FocusEvent<HTMLInputElement>) => {
+              onBlur?.(e);
+              e.currentTarget.style.borderColor = T.bdr;
+            }}
             style={{
               width: "100%",
               padding: icon ? "12px 14px 12px 42px" : "12px 14px",

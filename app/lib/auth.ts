@@ -2,21 +2,11 @@ import { db } from "@/db";
 import { AuthOptions } from "next-auth";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
-import { z } from "zod";
-
 import { usersTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { comparePassword } from "./helper";
+import { CredentialsSchema } from "../types";
 
-const credentialsSchema = z.object({
-  email: z
-    .string()
-    .regex(
-      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-      "Invalid email address",
-    ),
-  password: z.string().min(8),
-});
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -33,7 +23,7 @@ export const authOptions: AuthOptions = {
       authorize: async (credentials, req) => {
         try {
           //validate user input first before db call
-          const userInputValidation = credentialsSchema.safeParse(credentials);
+          const userInputValidation = CredentialsSchema.safeParse(credentials);
 
           if (!userInputValidation.success) {
             throw new Error(userInputValidation.error.message);
