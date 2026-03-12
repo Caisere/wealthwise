@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getUserSession } from "./app/lib/getUserSession";
+import { getToken } from "next-auth/jwt";
 
 const PUBLIC_ROUTES = [
   "/login",
@@ -20,18 +20,28 @@ const PROTECTED_ROUTES = [
 ];
 
 export async function proxy(req: NextRequest) {
-  const session = await getUserSession();
-  const token =
-    req.cookies.get("next-auth.session-token")?.value ||
-    req.cookies.get("__Secure-next-auth.session-token")?.value;
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const pathname = req.nextUrl.pathname;
 
-  if (!session && PROTECTED_ROUTES.includes(pathname)) {
+  // unauthenticated user trying to access protected route
+  if (
+    !token &&
+    PROTECTED_ROUTES.some((route) => pathname.startsWith(route))
+  ) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  if (token && session && PUBLIC_ROUTES.includes(pathname)) {
+  // authenticated user trying to access public route
+  if (token && PUBLIC_ROUTES.includes(pathname)) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  // unauthenticated API call
+  if (
+    !token &&
+    pathname.startsWith("/api/")
+  ) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   return NextResponse.next();
@@ -39,18 +49,6 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/login",
-    "/register",
-    "/terms",
-    "/privacy",
-    "/",
-    "/forgot-password",
-    "/dashboard",
-    "/accounts",
-    "/transactions",
-    "/settings",
-    "/analytics",
-    "/budgets",
-    "/upgrade",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
