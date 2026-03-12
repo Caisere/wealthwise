@@ -1,4 +1,4 @@
-import z, { email } from "zod";
+import z from "zod";
 
 export const RegisterFormData = z.object({
   name: z.string().trim().min(1, 'name must be at least 1 character'),

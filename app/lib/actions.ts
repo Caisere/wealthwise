@@ -44,8 +44,6 @@ export async function createUser(userInput: RegisterSchema) {
     };
   } catch (error) {
     if (isDbError(error) && error.code === "23505") {
-      // 23505 is Postgres's unique violation error code
-      // it means the email already exists
       return { success: false, message: "Email already in use" };
     }
     return {
