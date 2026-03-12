@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import { T } from "@/app/lib/theme";
 import { AppLogo } from "./app-logo";
 import { SignInWithGoogleBtn } from "../form/signin-with-google-btn";
 
@@ -13,10 +12,7 @@ export default function AuthPanel({
   sub: string;
 }) {
   return (
-    <div
-      className="min-h-screen flex flex-col justify-center sm:flex-row "
-      style={{ background: T.bg }}
-    >
+    <div className="min-h-screen flex flex-col justify-center sm:flex-row bg-bg">
       {/* Glow */}
       <div
         className="fixed w-[500px] h-[500px] rounded-full pointer-events-none z-0 top-0 left-[30%] transform -translate-y-1/2 -translate-x-1/2"
@@ -32,34 +28,22 @@ export default function AuthPanel({
 
       {/* Left panel */}
       <div
-        className="w-5/12 hidden sm:flex flex-col justify-between p-12 relative z-10"
+        className="w-5/12 hidden sm:flex flex-col justify-between p-12 relative z-10 border-r border-border"
         style={{
           background: "linear-gradient(160deg,#0a1a12,#060a12)",
-          borderRight: `1px solid ${T.bdr}`,
         }}
       >
         <AppLogo />
         <div>
-          <p
-            className="text-sm tracking-wide uppercase mb-4 font-semibold"
-            style={{
-              color: T.G,
-            }}
-          >
+          <p className="text-sm tracking-wide uppercase mb-4 font-semibold text-brand">
             Personal Finance OS
           </p>
-          <h2
-            className="text-3xl sm:text-4xl font-extrabold mb-5 tracking-wide leading-tight"
-            style={{
-              fontFamily: T.FD,
-              color: T.tx,
-            }}
-          >
+          <h2 className="text-3xl sm:text-4xl font-extrabold mb-5 tracking-wide leading-tight font-display text-text">
             Know where every
             <br />
             naira goes.
           </h2>
-          <p style={{ fontSize: 15, color: T.mu, lineHeight: 1.8 }}>
+          <p className="text-[15px] text-muted leading-[1.8]">
             Track budgets, log transactions, and get real-time alerts — all in
             one clean dashboard.
           </p>
@@ -71,18 +55,10 @@ export default function AuthPanel({
             { count: "99.9%", label: "Uptime" },
           ].map((el) => (
             <div key={el.label}>
-              <div
-                className="text-lg sm:text-2xl"
-                style={{
-                  fontFamily: T.FD,
-                  fontSize: 22,
-                  fontWeight: 800,
-                  color: T.G,
-                }}
-              >
+              <div className="font-display text-[22px] font-extrabold text-brand">
                 {el.count}
               </div>
-              <div style={{ fontSize: 12, color: T.di }}>{el.label}</div>
+              <div className="text-xs text-dim">{el.label}</div>
             </div>
           ))}
         </div>
@@ -90,31 +66,18 @@ export default function AuthPanel({
 
       {/* Right form */}
       <div className="flex flex-1 items-center justify-center px-10 sm:p-10 relative z-10">
-        <div className="anim-fadeup" style={{ width: "100%", maxWidth: 420 }}>
-          <h1
-            className="text-center sm:text-start"
-            style={{
-              fontFamily: T.FD,
-              fontSize: 28,
-              fontWeight: 800,
-              color: T.tx,
-              marginBottom: 8,
-              letterSpacing: "-0.5px",
-            }}
-          >
+        <div className="anim-fadeup w-full max-w-[420px]">
+          <h1 className="text-center sm:text-start font-display text-[28px] font-extrabold text-text mb-2 tracking-[-0.5px]">
             {title}
           </h1>
-          <p
-            className="text-center sm:text-start"
-            style={{ fontSize: 14, color: T.mu, marginBottom: 32 }}
-          >
+          <p className="text-center sm:text-start text-sm text-muted mb-8">
             {sub}
           </p>
           <SignInWithGoogleBtn />
           <div className="flex items-center gap-3 mb-6">
-            <div style={{ flex: 1, height: 1, background: T.bdr }} />
-            <span style={{ fontSize: 12, color: T.di }}>or with email</span>
-            <div style={{ flex: 1, height: 1, background: T.bdr }} />
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-xs text-dim">or with email</span>
+            <div className="flex-1 h-px bg-border" />
           </div>
           {children}
         </div>

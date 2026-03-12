@@ -12,6 +12,18 @@ export const RegisterFormData = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
+export const UpdateProfileSchema = z.object({
+  name: z.string().trim().min(1, "name must be at least 1 character"),
+  email: z
+    .string()
+    .trim()
+    .regex(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      "Invalid email address",
+    )
+    .transform((email) => email.toLowerCase()),
+});
+
 
 export const CredentialsSchema = z.object({
   email: z

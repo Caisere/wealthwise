@@ -1,4 +1,3 @@
-import { T } from "@/app/lib/theme";
 import type {
   Dispatch,
   InputHTMLAttributes,
@@ -24,28 +23,14 @@ export function Field({
   ...inputProps
 }: FieldProps) {
   return (
-    <div style={{ marginBottom: 16 }}>
-      <label
-        style={{
-          fontSize: 13,
-          color: T.mu,
-          display: "block",
-          marginBottom: 6,
-          fontWeight: 500,
-        }}
-      >
+    <div className="mb-4">
+      <label className="mb-1.5 block text-[13px] font-medium text-muted">
         {label}
       </label>
-      <div style={{ position: "relative" }}>
+      <div className="relative">
         {icon && (
           <span
-            style={{
-              position: "absolute",
-              left: 14,
-              top: "50%",
-              transform: "translateY(-50%)",
-              fontSize: 15,
-            }}
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[15px]"
           >
             {icon}
           </span>
@@ -56,22 +41,11 @@ export function Field({
             {...inputProps}
             onFocus={(e: FocusEvent<HTMLInputElement>) => {
               onFocus?.(e);
-              e.currentTarget.style.borderColor = T.bdA;
             }}
             onBlur={(e: FocusEvent<HTMLInputElement>) => {
               onBlur?.(e);
-              e.currentTarget.style.borderColor = T.bdr;
             }}
-            style={{
-              width: "100%",
-              padding: icon ? "12px 14px 12px 42px" : "12px 14px",
-              background: T.inp,
-              border: `1px solid ${T.bdr}`,
-              borderRadius: 12,
-              color: T.tx,
-              fontSize: 14,
-              transition: "border-color .2s",
-            }}
+            className={`input-base ${icon ? "pl-10" : ""}`}
           />
           {showPassword !== undefined && setShowPassword !== undefined && (
             <div

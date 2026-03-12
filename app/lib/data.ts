@@ -332,3 +332,14 @@ export const pricing = [
     primary: true,
   },
 ];
+
+export const NAV = [
+  { icon: "⊞", label: "Dashboard", href: "/dashboard" },
+  { icon: "⇄", label: "Transactions", href: "/transactions" },
+  { icon: "◎", label: "Budgets", href: "/budgets" },
+  { icon: "◈", label: "Accounts", href: "/accounts" },
+  { icon: "↗", label: "Analytics", href: "/analytics" },
+  { icon: "⋆", label: "Upgrade", href: "/upgrade", accent: true },
+  { icon: "⚙", label: "Settings", href: "/settings" },
+];
+

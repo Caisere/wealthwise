@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import {Syne} from "next/font/google";
+import { Syne, Geist } from "next/font/google";
+import { SessionProviderComponent } from "./components/layout/session-provider-component";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: "WealthWise — Personal Finance OS",
@@ -12,7 +16,7 @@ export const syne = Syne({
   subsets: ["latin"],
   // weight: ["400", "500", "700", "800"],
   variable: "--font-syne",
-})
+});
 
 export default function RootLayout({
   children,
@@ -20,8 +24,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={`bg-bg text-text font-body antialiased ${syne.className}`}>{children}</body>
+    <html lang="en" className={cn("font-sans", geist.variable)}>
+      <body
+        className={`bg-bg text-text font-body antialiased ${syne.className}`}
+      >
+        <SessionProviderComponent>{children}</SessionProviderComponent>
+      </body>
     </html>
   );
 }
