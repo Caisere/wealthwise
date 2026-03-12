@@ -26,7 +26,9 @@ export async function proxy(req: NextRequest) {
   // unauthenticated user trying to access protected route
   if (
     !token &&
-    PROTECTED_ROUTES.some((route) => pathname.startsWith(route))
+    PROTECTED_ROUTES.some(
+      (route) => route === pathname || pathname.startsWith(`${route}/`),
+    )
   ) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
@@ -39,7 +41,8 @@ export async function proxy(req: NextRequest) {
   // unauthenticated API call
   if (
     !token &&
-    pathname.startsWith("/api/")
+    pathname.startsWith("/api/") &&
+    !pathname.startsWith("/api/auth")
   ) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -48,7 +51,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
