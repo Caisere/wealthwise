@@ -1,7 +1,11 @@
 "use client";
 import { T } from "@/app/lib/theme";
-import { ReactNode, CSSProperties } from "react";
-
+import {
+  ReactNode,
+  forwardRef,
+  InputHTMLAttributes,
+  ButtonHTMLAttributes,
+} from "react";
 
 /* ── Badge ── */
 export function Badge({
@@ -13,17 +17,11 @@ export function Badge({
 }) {
   return (
     <span
+      className="inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.08em] whitespace-nowrap"
       style={{
-        fontSize: 10,
-        fontWeight: 700,
-        padding: "2px 8px",
-        borderRadius: 20,
-        letterSpacing: "0.8px",
         background: `${color}18`,
         color,
-        border: `1px solid ${color}30`,
-        textTransform: "uppercase",
-        whiteSpace: "nowrap",
+        borderColor: `${color}30`,
       }}
     >
       {children}
@@ -35,10 +33,10 @@ export function Badge({
 type BtnVariant = "primary" | "outline" | "ghost" | "danger";
 type BtnSize = "sm" | "md" | "lg";
 
-const BTN_SIZE: Record<BtnSize, CSSProperties> = {
-  sm: { padding: "7px 16px", fontSize: 13 },
-  md: { padding: "11px 22px", fontSize: 14 },
-  lg: { padding: "14px 30px", fontSize: 15 },
+type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+  variant?: BtnVariant;
+  size?: BtnSize;
+  full?: boolean;
 };
 
 export function Button({
@@ -48,54 +46,38 @@ export function Button({
   size = "md",
   full = false,
   disabled = false,
-  style: sx = {},
-}: {
-  children: ReactNode;
-  onClick?: () => void;
-  variant?: BtnVariant;
-  size?: BtnSize;
-  full?: boolean;
-  disabled?: boolean;
-  style?: CSSProperties;
-}) {
-  const variants: Record<BtnVariant, CSSProperties> = {
-    primary: {
-      background: `linear-gradient(135deg,${T.GM},${T.GD})`,
-      color: "#fff",
-      border: "none",
-      boxShadow: `0 4px 20px ${T.G}30`,
-    },
-    outline: {
-      background: "transparent",
-      color: T.G,
-      border: `1px solid ${T.G}40`,
-    },
-    ghost: {
-      background: "transparent",
-      color: T.mu,
-      border: `1px solid ${T.bdr}`,
-    },
-    danger: {
-      background: `${T.R}12`,
-      color: T.R,
-      border: `1px solid ${T.R}30`,
-    },
+  className = "",
+  ...rest
+}: ButtonProps) {
+  const base =
+    "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-bg";
+
+  const sizeClasses: Record<BtnSize, string> = {
+    sm: "px-4 py-2 text-[13px]",
+    md: "px-5 py-[11px] text-[14px]",
+    lg: "px-7 py-[14px] text-[15px]",
   };
+
+  const variantClasses: Record<BtnVariant, string> = {
+    primary:
+      "gradient-brand text-white shadow-brand border border-transparent",
+    outline:
+      "bg-transparent text-brand border border-brand/40 hover:border-brand/60",
+    ghost:
+      "bg-transparent text-muted border border-base hover:border-accent hover:text-text",
+    danger:
+      "bg-danger/7 text-danger border border-danger/30 hover:border-danger/60",
+  };
+
   return (
     <button
+      type="button"
       onClick={onClick}
       disabled={disabled}
-      style={{
-        ...BTN_SIZE[size],
-        ...variants[variant],
-        borderRadius: 12,
-        fontWeight: 600,
-        transition: "all .2s",
-        width: full ? "100%" : "auto",
-        opacity: disabled ? 0.5 : 1,
-        cursor: disabled ? "not-allowed" : "pointer",
-        ...sx,
-      }}
+      className={`${base} ${sizeClasses[size]} ${variantClasses[variant]} ${
+        full ? "w-full" : "w-auto"
+      } ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
+      {...rest}
     >
       {children}
     </button>
@@ -103,73 +85,49 @@ export function Button({
 }
 
 /* ── Input ── */
-export function Input({
-  label,
-  type = "text",
-  placeholder,
-  value,
-  onChange,
-  icon,
-}: {
+type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   label?: string;
-  type?: string;
-  placeholder?: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   icon?: string;
-}) {
-  return (
-    <div style={{ marginBottom: 16 }}>
-      {label && (
-        <label
-          style={{
-            fontSize: 13,
-            color: T.mu,
-            display: "block",
-            marginBottom: 6,
-            fontWeight: 500,
-          }}
-        >
-          {label}
-        </label>
-      )}
-      <div style={{ position: "relative" }}>
-        {icon && (
-          <span
-            style={{
-              position: "absolute",
-              left: 14,
-              top: "50%",
-              transform: "translateY(-50%)",
-              fontSize: 15,
-              zIndex: 1,
-            }}
-          >
-            {icon}
-          </span>
+};
+
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+  (
+    { label, type = "text", placeholder, value, onChange, icon, disabled, className = "", ...props },
+    ref
+  ) => {
+    const hasIcon = Boolean(icon);
+    return (
+      <div className="mb-4">
+        {label && (
+          <label className="mb-1.5 block text-[13px] font-medium text-muted">
+            {label}
+          </label>
         )}
-        <input
-          type={type}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          onFocus={(e) => (e.currentTarget.style.borderColor = T.bdA)}
-          onBlur={(e) => (e.currentTarget.style.borderColor = T.bdr)}
-          style={{
-            width: "100%",
-            padding: icon ? "12px 14px 12px 42px" : "12px 14px",
-            background: T.inp,
-            border: `1px solid ${T.bdr}`,
-            borderRadius: 12,
-            color: T.tx,
-            fontSize: 14,
-            transition: "border-color .2s",
-          }}
-        />
+        <div className="relative">
+          {icon && (
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[15px] z-10">
+              {icon}
+            </span>
+          )}
+          <input
+            ref={ref}
+            type={type}
+            disabled={disabled}
+            placeholder={placeholder}
+            value={value}
+            onChange={onChange}
+            className={`input-base ${hasIcon ? "pl-10" : ""} ${
+              disabled ? "cursor-not-allowed opacity-70" : "cursor-text"
+            } ${className}`}
+            {...props}
+          />
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
+);
+
+Input.displayName = "Input";
 
 /* ── Select ── */
 export function Select({
@@ -177,47 +135,28 @@ export function Select({
   value,
   onChange,
   options,
+  className = "",
 }: {
   label?: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   options: { value: string; label: string }[];
+  className?: string;
 }) {
   return (
-    <div style={{ marginBottom: 16 }}>
+    <div className="mb-4">
       {label && (
-        <label
-          style={{
-            fontSize: 13,
-            color: T.mu,
-            display: "block",
-            marginBottom: 6,
-            fontWeight: 500,
-          }}
-        >
+        <label className="mb-1.5 block text-[13px] font-medium text-muted">
           {label}
         </label>
       )}
       <select
         value={value}
         onChange={onChange}
-        style={{
-          width: "100%",
-          padding: "12px 14px",
-          background: T.inp,
-          border: `1px solid ${T.bdr}`,
-          borderRadius: 12,
-          color: T.tx,
-          fontSize: 14,
-          appearance: "none",
-        }}
+        className={`select-base ${className}`}
       >
         {options.map((o) => (
-          <option
-            key={o.value}
-            value={o.value}
-            style={{ background: "#0a111e" }}
-          >
+          <option key={o.value} value={o.value} className="bg-card">
             {o.label}
           </option>
         ))}
@@ -238,63 +177,20 @@ export function Modal({
 }) {
   return (
     <div
-      className="anim-fadein"
+      className="animate-fade-in fixed inset-0 z-1000 flex items-center justify-center bg-black/70 backdrop-blur-md"
       onClick={onClose}
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 1000,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "rgba(0,0,0,0.7)",
-        backdropFilter: "blur(8px)",
-      }}
     >
       <div
-        className="anim-fadeup"
+        className="animate-fade-up relative w-[90%] max-w-[480px] max-h-[90vh] overflow-y-auto rounded-2xl bg-card border border-base p-7"
         onClick={(e) => e.stopPropagation()}
-        style={{
-          background: "#0a111e",
-          border: `1px solid ${T.bdr}`,
-          borderRadius: 20,
-          padding: 28,
-          width: "90%",
-          maxWidth: 480,
-          maxHeight: "90vh",
-          overflowY: "auto",
-          position: "relative",
-        }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 24,
-          }}
-        >
-          <h3
-            style={{
-              fontFamily: T.FD,
-              fontSize: 18,
-              fontWeight: 700,
-              color: T.tx,
-            }}
-          >
+        <div className="mb-6 flex items-center justify-between">
+          <h3 className="font-display text-[18px] font-bold text-text">
             {title}
           </h3>
           <button
             onClick={onClose}
-            style={{
-              background: T.inp,
-              border: `1px solid ${T.bdr}`,
-              color: T.mu,
-              width: 32,
-              height: 32,
-              borderRadius: 8,
-              fontSize: 16,
-            }}
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-base bg-input text-muted text-[16px]"
           >
             ✕
           </button>

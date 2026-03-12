@@ -7,48 +7,16 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#060a12" }}>
+    <div className="flex min-h-screen bg-bg">
       {/* Ambient glows */}
       <div
-        style={{
-          position: "fixed",
-          top: "10%",
-          left: "25%",
-          width: 500,
-          height: 500,
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle,rgba(74,222,128,0.05),transparent)",
-          pointerEvents: "none",
-          zIndex: 0,
-          transform: "translate(-50%,-50%)",
-        }}
+        className="fixed top-[10%] left-[25%] h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none z-0 bg-[radial-gradient(circle,rgba(74,222,128,0.05),transparent)]"
       />
       <div
-        style={{
-          position: "fixed",
-          bottom: "-10%",
-          right: "5%",
-          width: 400,
-          height: 400,
-          borderRadius: "50%",
-          background:
-            "radial-gradient(circle,rgba(56,189,248,0.04),transparent)",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
+        className="fixed -bottom-[10%] right-[5%] h-[400px] w-[400px] rounded-full pointer-events-none z-0 bg-[radial-gradient(circle,rgba(56,189,248,0.04),transparent)]"
       />
       <Sidebar />
-      <main
-        style={{
-          flex: 1,
-          overflow: "auto",
-          minHeight: "100vh",
-          position: "relative",
-          zIndex: 1,
-          color: "#f1f5f9",
-        }}
-      >
+      <main className="relative z-10 flex-1 min-h-screen overflow-auto text-text">
         {children}
       </main>
     </div>
