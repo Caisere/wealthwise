@@ -34,6 +34,7 @@
   /* Shadows */
   --shadow-brand: 0 4px 20px rgba(74, 222, 128, 0.3);
   --shadow-glow: 0 0 50px rgba(74, 222, 128, 0.12);
+
 }
 
 @layer base {
