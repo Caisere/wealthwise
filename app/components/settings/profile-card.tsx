@@ -1,13 +1,14 @@
 "use client";
 
 import { Button, Input, Select } from "../ui";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { nameAbbr } from "@/app/lib/nameAbbr";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { updateUser } from "@/app/lib/actions";
 
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export function ProfileCard() {
   const session = useSession();
@@ -15,10 +16,13 @@ export function ProfileCard() {
   const [edit, setEdit] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
-  const [name, setName] = useState<string>(session.data?.user?.name as string);
-  const [email, setEmail] = useState<string>(
-    session.data?.user?.email as string,
-  );
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    setName(session.data?.user?.name ?? "");
+    setEmail(session.data?.user?.email ?? "");
+  }, [session.data?.user?.name, session.data?.user?.email]);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -42,15 +46,26 @@ export function ProfileCard() {
         return;
       }
 
-      const response = await updateUser(name, email)
+      if (!emailRegex.test(email.trim())) {
+        toast.error("Please enter a valid email address.");
+        return;
+      }
 
-      toast.success(response.message || 'Profile updated successfully');
+      const response = await updateUser(name, email);
+
+      if (response.success) {
+        toast.success(response.message || "Profile updated successfully.");
+      } else {
+        toast.error(response.message || "Update failed.");
+        return; // don't close edit mode on failure
+      }
     } catch (error) {
       console.log("Error updating profile:", error);
-      toast.error("An error occurred while updating your profile. Please try again.");
-    }finally {
+      toast.error(
+        "An error occurred while updating your profile. Please try again.",
+      );
+    } finally {
       setIsUpdating(false);
-      setEdit(false);
     }
   }
 

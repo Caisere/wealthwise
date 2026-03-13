@@ -13,7 +13,7 @@ const [collapsed, setCollapsed] = useState(false);
 
   return (
     <aside
-      className="shrink-0 transition-[width] duration-300 ease-in-out bg-[rgba(6,10,18,0.98)] border-r border-border flex flex-col py-6 sticky top-0 h-screen z-[100]"
+      className="shrink-0 transition-[width] duration-300 ease-in-out bg-[rgba(6,10,18,0.98)] border-r border-border flex flex-col py-6 sticky top-0 h-screen z-100"
       style={{ width: w }}
     >
       {/* Logo */}

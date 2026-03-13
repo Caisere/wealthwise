@@ -1,7 +1,11 @@
 "use server";
 
 import { db } from "@/db";
-import { RegisterFormData, RegisterSchema } from "../types";
+import {
+  RegisterFormData,
+  RegisterSchema,
+  UpdateProfileSchema,
+} from "../types";
 import { usersTable } from "@/db/schema";
 import { hashPassword } from "./helper";
 import { getUserSession } from "./getUserSession";
@@ -38,9 +42,6 @@ export async function createUser(userInput: RegisterSchema) {
       password: hashedPassword,
     });
 
-    revalidatePath('/settings')
-    revalidatePath('/dashboard')
-
     return {
       success: true,
       message: "User created successfully",
@@ -61,40 +62,47 @@ export async function updateUser(name: string, email: string) {
     const session = await getUserSession();
 
     if (!session) {
-      return { 
-        success: false, 
-        message: "Unauthorized" 
+      return {
+        success: false,
+        message: "Unauthorized",
       };
     }
 
-    if (!name || !email) {
-      return { 
-        success: false, 
-        message: "Name and email are required" 
+    const parsedData = UpdateProfileSchema.safeParse({ name, email });
+
+    if (!parsedData.success) {
+      return {
+        success: false,
+        message: "Invalid input",
       };
     }
+
+    const { name: updatedName, email: updatedEmail } = parsedData.data;
 
     const userId = session.id;
 
     await db
       .update(usersTable)
-      .set({ name, email })
+      .set({ name: updatedName, email: updatedEmail })
       .where(eq(usersTable.id, userId));
 
-    return { 
-      success: true, 
-      message: "Profile updated successfully" 
+    revalidatePath("/settings");
+    revalidatePath("/dashboard");
+
+    return {
+      success: true,
+      message: "Profile updated successfully",
     };
   } catch (error) {
     if (isDbError(error) && error.code === "23505") {
-      return { 
-        success: false, 
-        message: "Email already in use" 
+      return {
+        success: false,
+        message: "Email already in use",
       };
     }
-    return { 
-      success: false, 
-      message: "Server Error" 
+    return {
+      success: false,
+      message: "Server Error",
     };
   }
 }
