@@ -10,7 +10,7 @@ export default function SettingsPage() {
       <h1 className="mb-8 font-display text-[26px] font-extrabold tracking-[-0.8px] text-text">
         Settings
       </h1>
-
+    {/* profile card */}
       <ProfileCard />
 
       {/* Notifications */}
