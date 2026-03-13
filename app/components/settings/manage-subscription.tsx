@@ -2,7 +2,7 @@ import { Button } from "../ui";
 
 export function ManageSubscription() {
   return (
-    <div className="mb-4 rounded-[18px] border border-base bg-card p-6">
+    <div className="mb-4 rounded-[18px] border border-base p-6">
       <h3 className="mb-4 font-display text-[16px] font-bold text-text">
         Subscription
       </h3>

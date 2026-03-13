@@ -1,20 +1,28 @@
 "use client";
 
 import { Button, Input, Select } from "../ui";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { nameAbbr } from "@/app/lib/nameAbbr";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { updateUser } from "@/app/lib/actions";
 
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export function ProfileCard() {
   const session = useSession();
+  const router = useRouter();
   const [edit, setEdit] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
-  const [name, setName] = useState<string>(session.data?.user?.name as string);
-  const [email, setEmail] = useState<string>(
-    session.data?.user?.email as string,
-  );
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    setName(session.data?.user?.name ?? "");
+    setEmail(session.data?.user?.email ?? "");
+  }, [session.data?.user?.name, session.data?.user?.email]);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -27,19 +35,44 @@ export function ProfileCard() {
 
     setIsUpdating(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      if (!session.data) {
+        toast.error("User session not found. Please log in again.");
+        router.push("/login");
+        return;
+      }
+
+      if (!name.trim() || !email.trim()) {
+        toast.error("Name and email cannot be empty.");
+        return;
+      }
+
+      if (!emailRegex.test(email.trim())) {
+        toast.error("Please enter a valid email address.");
+        return;
+      }
+
+      const response = await updateUser(name, email);
+
+      if (response.success) {
+        toast.success(response.message || "Profile updated successfully.");
+      } else {
+        toast.error(response.message || "Update failed.");
+        return; // don't close edit mode on failure
+      }
     } catch (error) {
       console.log("Error updating profile:", error);
-    }finally {
+      toast.error(
+        "An error occurred while updating your profile. Please try again.",
+      );
+    } finally {
       setIsUpdating(false);
-      setEdit(false);
     }
   }
 
   return (
-    <section>
+    <section className="">
       {/* Profile */}
-      <div className="mb-4 rounded-[18px] border border-base bg-card p-6">
+      <div className="mb-4 rounded-[18px] border p-6">
         <h3 className="mb-5 text-[16px] font-bold text-text font-display">
           Profile
         </h3>

@@ -3,6 +3,7 @@ import "./globals.css";
 import { Syne, Geist } from "next/font/google";
 import { SessionProviderComponent } from "./components/layout/session-provider-component";
 import { cn } from "@/lib/utils";
+import { Toaster } from "sonner";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -29,6 +30,7 @@ export default function RootLayout({
         className={`bg-bg text-text font-body antialiased ${syne.className}`}
       >
         <SessionProviderComponent>{children}</SessionProviderComponent>
+        <Toaster />
       </body>
     </html>
   );
