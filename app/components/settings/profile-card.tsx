@@ -4,10 +4,14 @@ import { Button, Input, Select } from "../ui";
 import { useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { nameAbbr } from "@/app/lib/nameAbbr";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { updateUser } from "@/app/lib/actions";
 
 
 export function ProfileCard() {
   const session = useSession();
+  const router = useRouter();
   const [edit, setEdit] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
@@ -27,9 +31,23 @@ export function ProfileCard() {
 
     setIsUpdating(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      if (!session.data) {
+        toast.error("User session not found. Please log in again.");
+        router.push("/login");
+        return;
+      }
+
+      if (!name.trim() || !email.trim()) {
+        toast.error("Name and email cannot be empty.");
+        return;
+      }
+
+      const response = await updateUser(name, email)
+
+      toast.success(response.message || 'Profile updated successfully');
     } catch (error) {
       console.log("Error updating profile:", error);
+      toast.error("An error occurred while updating your profile. Please try again.");
     }finally {
       setIsUpdating(false);
       setEdit(false);
@@ -37,9 +55,9 @@ export function ProfileCard() {
   }
 
   return (
-    <section>
+    <section className="">
       {/* Profile */}
-      <div className="mb-4 rounded-[18px] border border-base bg-card p-6">
+      <div className="mb-4 rounded-[18px] border p-6">
         <h3 className="mb-5 text-[16px] font-bold text-text font-display">
           Profile
         </h3>

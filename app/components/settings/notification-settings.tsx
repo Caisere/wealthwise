@@ -10,7 +10,7 @@ export function NotificationSettings() {
   });
 
   return (
-    <div className="mb-4 rounded-[18px] border border-base bg-card p-6">
+    <div className="mb-4 rounded-[18px] border border-base p-6">
       <h3 className="mb-5 font-display text-[16px] font-bold text-text">
         Notifications
       </h3>
