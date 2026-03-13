@@ -60,7 +60,7 @@ function Toggle({ on, toggle }: { on: boolean; toggle: () => void }) {
     <button
       type="button"
       onClick={toggle}
-      className={`relative h-6 w-11 flex-shrink-0 rounded-full transition-colors duration-200 ${
+      className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ${
         on ? "bg-brand" : "bg-border"
       }`}
     >

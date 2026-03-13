@@ -87,7 +87,7 @@ export const authOptions: AuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger, session }) {
       if (user) {
         if (account?.provider === "google") {
           // fetch fresh from DB to get role,
@@ -113,6 +113,25 @@ export const authOptions: AuthOptions = {
           token.stripeCustomerId = user?.stripeCustomerId;
         }
       }
+
+      if (trigger === "update" && session) {
+        // when session update is triggered, make sure to update the token with the latest user information
+          const dbUser = await db.query.usersTable.findFirst({
+            where: eq(usersTable.id, token.id),
+          });
+
+          console.log("dbUser in jwt callback update trigger:", dbUser);
+
+          if (dbUser) {
+            token.id = dbUser!.id;
+            token.role = dbUser!.role;
+            token.email = dbUser!.email;
+            token.name = dbUser!.name;
+            token.picture = dbUser!.image;
+            token.stripeCustomerId = dbUser!.stripeCustomerId;
+          }
+      }
+
       return token;
     },
 

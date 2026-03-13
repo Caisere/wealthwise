@@ -11,7 +11,8 @@ import { updateUser } from "@/app/lib/actions";
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export function ProfileCard() {
-  const session = useSession();
+  const {data: session, update} = useSession();
+  console.log("Session data in ProfileCard:", session);
   const router = useRouter();
   const [edit, setEdit] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
@@ -20,13 +21,13 @@ export function ProfileCard() {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    setName(session.data?.user?.name ?? "");
-    setEmail(session.data?.user?.email ?? "");
-  }, [session.data?.user?.name, session.data?.user?.email]);
+    setName(session?.user?.name ?? "");
+    setEmail(session?.user?.email ?? "");
+  }, [session?.user?.name, session?.user?.email]);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const names = session.data?.user?.name as string;
+  const names = session?.user?.name as string;
 
   const abbr = nameAbbr(names ?? "");
 
@@ -35,7 +36,7 @@ export function ProfileCard() {
 
     setIsUpdating(true);
     try {
-      if (!session.data) {
+      if (!session) {
         toast.error("User session not found. Please log in again.");
         router.push("/login");
         return;
@@ -54,6 +55,7 @@ export function ProfileCard() {
       const response = await updateUser(name, email);
 
       if (response.success) {
+        await update({refreshUser: true}); // Refresh session data
         toast.success(response.message || "Profile updated successfully.");
       } else {
         toast.error(response.message || "Update failed.");
@@ -82,9 +84,9 @@ export function ProfileCard() {
           </div>
           <div>
             <p className="mb-0.5 text-[15px] font-semibold text-text">
-              {session.data?.user?.name}
+              {session?.user?.name}
             </p>
-            <p className="text-[13px] text-muted">{session.data?.user.email}</p>
+            <p className="text-[13px] text-muted">{session?.user.email}</p>
           </div>
           <div className="ml-auto flex gap-2">
             <button
