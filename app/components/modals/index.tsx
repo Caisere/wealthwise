@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { Button, Input, Modal, Select } from "../ui";
-import { T } from "@/app/lib/theme";
 
 
 /* ── Add Transaction ── */
@@ -22,36 +21,19 @@ export function AddTransactionModal({ onClose }: { onClose: () => void }) {
   return (
     <Modal title="Add Transaction" onClose={onClose}>
       {/* Type toggle */}
-      <div
-        style={{
-          display: "flex",
-          gap: 8,
-          marginBottom: 20,
-          background: T.inp,
-          borderRadius: 12,
-          padding: 4,
-        }}
-      >
+      <div className="mb-5 flex gap-2 rounded-xl bg-input p-1">
         {(["expense", "income"] as const).map((t) => (
           <button
             key={t}
+            type="button"
             onClick={() => setType(t)}
-            style={{
-              flex: 1,
-              padding: "9px",
-              borderRadius: 10,
-              border: "none",
-              fontSize: 13,
-              fontWeight: 600,
-              textTransform: "capitalize",
-              background:
-                type === t
-                  ? t === "expense"
-                    ? `${T.R}20`
-                    : `${T.G}20`
-                  : "transparent",
-              color: type === t ? (t === "expense" ? T.R : T.G) : T.mu,
-            }}
+            className={`flex-1 rounded-[10px] px-3 py-2 text-[13px] font-semibold capitalize transition-colors ${
+              type === t
+                ? t === "expense"
+                  ? "bg-danger/15 text-danger"
+                  : "bg-brand/15 text-brand"
+                : "bg-transparent text-muted"
+            }`}
           >
             {t === "expense" ? "📤 Expense" : "📥 Income"}
           </button>
@@ -102,7 +84,7 @@ export function AddTransactionModal({ onClose }: { onClose: () => void }) {
         value={form.date}
         onChange={set("date")}
       />
-      <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
+      <div className="mt-2 flex gap-2">
         <Button variant="ghost" onClick={onClose} full>
           Cancel
         </Button>
@@ -156,25 +138,15 @@ export function AddBudgetModal({ onClose }: { onClose: () => void }) {
         onChange={set("month")}
       />
       {form.limit && (
-        <div
-          style={{
-            background: `${T.G}10`,
-            border: `1px solid ${T.bdA}`,
-            borderRadius: 12,
-            padding: "12px 16px",
-            marginBottom: 16,
-            fontSize: 13,
-            color: T.mu,
-          }}
-        >
+        <div className="mb-4 rounded-xl border border-accent bg-brand/5 px-4 py-3 text-[13px] text-muted">
           You&apos;ll be alerted when spending reaches{" "}
-          <span style={{ color: T.A, fontWeight: 600 }}>
+          <span className="font-semibold text-warn">
             ₦{(Number(form.limit) * 0.8).toLocaleString()}
           </span>{" "}
           (80% of ₦{Number(form.limit).toLocaleString()})
         </div>
       )}
-      <div style={{ display: "flex", gap: 10 }}>
+      <div className="flex gap-2">
         <Button variant="ghost" onClick={onClose} full>
           Cancel
         </Button>
@@ -222,13 +194,11 @@ export function AddAccountModal({ onClose }: { onClose: () => void }) {
         onChange={set("balance")}
         icon="₦"
       />
-      <p
-        style={{ fontSize: 12, color: T.di, lineHeight: 1.7, marginBottom: 16 }}
-      >
+      <p className="mb-4 text-[12px] leading-relaxed text-dim">
         This is your starting balance. Future transactions logged to this
         account will adjust it automatically.
       </p>
-      <div style={{ display: "flex", gap: 10 }}>
+      <div className="flex gap-2">
         <Button variant="ghost" onClick={onClose} full>
           Cancel
         </Button>
