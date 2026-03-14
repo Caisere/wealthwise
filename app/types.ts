@@ -1,15 +1,16 @@
 import z from "zod";
 
 export const RegisterFormData = z.object({
-  name: z.string().trim().min(1, 'name must be at least 1 character'),
+  name: z.string().trim().min(1, "name must be at least 1 character"),
   email: z
     .string()
     .trim()
     .regex(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       "Invalid email address",
-    ).transform((email) => email.toLowerCase()),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+    )
+    .transform((email) => email.toLowerCase()),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 export const UpdateProfileSchema = z.object({
@@ -24,7 +25,6 @@ export const UpdateProfileSchema = z.object({
     .transform((email) => email.toLowerCase()),
 });
 
-
 export const CredentialsSchema = z.object({
   email: z
     .string()
@@ -32,13 +32,22 @@ export const CredentialsSchema = z.object({
     .regex(
       /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
       "Invalid email address",
-    ).transform((email) => email.toLowerCase()),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+    )
+    .transform((email) => email.toLowerCase()),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
+
+export const UpdatePasswordSchema = z.object({
+  currentPassword: z.string().min(8, "Password must be at least 8 characters"),
+  newPassword: z.string().min(8, "New Password must be at least 8 characters"),
+  confirmNewPassword: z.string().min(8, "Confirm Password must be at least 8 characters"),
+});
+
+export type UpdatePasswordType = z.infer<typeof UpdatePasswordSchema>;
 
 export type LoginSchema = z.infer<typeof CredentialsSchema>;
 
-export type RegisterSchema = z.infer<typeof RegisterFormData>
+export type RegisterSchema = z.infer<typeof RegisterFormData>;
 
 export type TransactionType = "income" | "expense";
 

@@ -4,6 +4,7 @@ import { db } from "@/db";
 import {
   RegisterFormData,
   RegisterSchema,
+  UpdatePasswordType,
   UpdateProfileSchema,
 } from "../types";
 import { usersTable } from "@/db/schema";
@@ -112,6 +113,11 @@ export type DeleteUserReturnType = {
   message: string;
 };
 
+export type UpdatePasswordReturnType = {
+  success: boolean;
+  message: string;
+};
+
 export async function deleteUser(
   prevState: DeleteUserReturnType | null,
   formData: FormData,
@@ -172,6 +178,85 @@ export async function deleteUser(
       message: "Account deleted successfully",
     };
   } catch {
+    return {
+      success: false,
+      message: "Server Error",
+    };
+  }
+}
+
+type userUpdatePasswordParams = Omit<UpdatePasswordType, "confirmNewPassword">;
+
+export async function userUpdatePassword({
+  currentPassword,
+  newPassword,
+}: userUpdatePasswordParams): Promise<UpdatePasswordReturnType> {
+  try {
+    const session = await getUserSession();
+
+    if (!session) {
+      return {
+        success: false,
+        message: "Unauthorized",
+      };
+    }
+
+    if (
+      typeof currentPassword !== "string" ||
+      typeof newPassword !== "string" ||
+      currentPassword.length < 8 ||
+      newPassword.length < 8
+    ) {
+      return {
+        success: false,
+        message: "Invalid password input",
+      };
+    }
+
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, session.id));
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
+    if (!user.password) {
+      return {
+        success: false,
+        message: "Account password not configured",
+      };
+    }
+
+    const confirmPassword = await comparePassword(
+      currentPassword,
+      user.password,
+    );
+
+    if (!confirmPassword) {
+      return {
+        success: false,
+        message: "Incorrect current password",
+      };
+    }
+
+    const hashedNewPassword = await hashPassword(newPassword);
+
+    await db
+      .update(usersTable)
+      .set({ password: hashedNewPassword })
+      .where(eq(usersTable.id, session.id));
+
+    return {
+      success: true,
+      message: "Password updated successfully",
+    };
+  } catch (error) {
+    console.error("Error updating password:", error);
     return {
       success: false,
       message: "Server Error",
