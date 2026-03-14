@@ -12,7 +12,6 @@ const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export function ProfileCard() {
   const {data: session, update} = useSession();
-  console.log("Session data in ProfileCard:", session);
   const router = useRouter();
   const [edit, setEdit] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
