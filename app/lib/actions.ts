@@ -187,9 +187,10 @@ export async function deleteUser(
 
 type userUpdatePasswordParams = Omit<UpdatePasswordType, "confirmNewPassword">;
 
-export async function userUpdatePassword(
-  {currentPassword, newPassword}: userUpdatePasswordParams
-): Promise<UpdatePasswordReturnType> {
+export async function userUpdatePassword({
+  currentPassword,
+  newPassword,
+}: userUpdatePasswordParams): Promise<UpdatePasswordReturnType> {
   try {
     const session = await getUserSession();
 
@@ -199,7 +200,19 @@ export async function userUpdatePassword(
         message: "Unauthorized",
       };
     }
-    
+
+    if (
+      typeof currentPassword !== "string" ||
+      typeof newPassword !== "string" ||
+      currentPassword.length < 8 ||
+      newPassword.length < 8
+    ) {
+      return {
+        success: false,
+        message: "Invalid password input",
+      };
+    }
+
     const [user] = await db
       .select()
       .from(usersTable)
@@ -212,14 +225,17 @@ export async function userUpdatePassword(
       };
     }
 
-    if(!user.password) {
+    if (!user.password) {
       return {
         success: false,
         message: "Account password not configured",
       };
     }
 
-    const confirmPassword = await comparePassword(currentPassword, user.password);
+    const confirmPassword = await comparePassword(
+      currentPassword,
+      user.password,
+    );
 
     if (!confirmPassword) {
       return {
@@ -239,7 +255,6 @@ export async function userUpdatePassword(
       success: true,
       message: "Password updated successfully",
     };
-
   } catch (error) {
     console.error("Error updating password:", error);
     return {
