@@ -309,7 +309,7 @@ export const pricing = [
       "2 accounts",
     ],
     cta: "Get started free",
-    href: "/auth/register",
+    href: "/register",
     primary: false,
   },
   {
@@ -328,7 +328,7 @@ export const pricing = [
       "AI spending insights",
     ],
     cta: "Start 7-day free trial",
-    href: "/auth/register",
+    href: "/register",
     primary: true,
   },
 ];
