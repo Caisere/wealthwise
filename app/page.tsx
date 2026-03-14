@@ -71,7 +71,7 @@ export default function LandingPage() {
 
       {/* PREVIEW */}
       <div className="max-w-4xl mx-auto px-5 mb-24 animate-float relative z-[1]">
-        <div className="bg-card border border-base rounded-2xl p-6 shadow-glow">
+        <div className="bg-transparent border border-base rounded-2xl p-6 shadow-glow">
           <div className="grid grid-cols-4 gap-3 mb-5">
             {[
               ["Net Worth", "₦1,284,500", "+12.4%", true],
@@ -127,7 +127,7 @@ export default function LandingPage() {
           {features.map(({ icon, title, desc }) => (
             <div
               key={title}
-              className="landing-card bg-card border border-base rounded-2xl p-7 transition-all duration-300"
+              className="landing-card bg-transparent border border-base rounded-2xl p-7 transition-all duration-300"
             >
               <div className="text-3xl mb-4">{icon}</div>
               <h3 className="font-display text-[17px] font-bold mb-2.5 text-text">
@@ -199,7 +199,7 @@ export default function LandingPage() {
             }) => (
               <div
                 key={name}
-                className={`bg-card rounded-2xl p-8 relative ${badge ? "border border-accent shadow-glow" : "border border-base"}`}
+                className={`bg-transparent rounded-2xl p-8 relative ${badge ? "border border-accent shadow-glow" : "border border-base"}`}
               >
                 {badge && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
