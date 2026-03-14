@@ -12,7 +12,6 @@ import { getUserSession } from "./getUserSession";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-
 function isDbError(error: unknown): error is { code: string } {
   return (
     typeof error === "object" &&
@@ -109,14 +108,16 @@ export async function updateUser(name: string, email: string) {
 }
 
 export type DeleteUserReturnType = {
-  success: boolean,
-  message: string
-}
+  success: boolean;
+  message: string;
+};
 
-export async function deleteUser(prevState: DeleteUserReturnType | null, formData: FormData):Promise<DeleteUserReturnType> {
+export async function deleteUser(
+  prevState: DeleteUserReturnType | null,
+  formData: FormData,
+): Promise<DeleteUserReturnType> {
   try {
     const session = await getUserSession();
-    console.log("Session:", formData, session);
 
     if (!session) {
       return {
@@ -127,7 +128,17 @@ export async function deleteUser(prevState: DeleteUserReturnType | null, formDat
 
     const userPassword = formData.get("password") as string;
 
-    const [user] = await db.select().from(usersTable).where(eq(usersTable.id, session.id))
+    if (typeof userPassword !== "string" || !userPassword) {
+      return {
+        success: false,
+        message: "Password is required",
+      };
+    }
+
+    const [user] = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.id, session.id));
 
     if (!user) {
       return {
@@ -136,9 +147,16 @@ export async function deleteUser(prevState: DeleteUserReturnType | null, formDat
       };
     }
 
-    const confirmPassword = await comparePassword(userPassword, user.password as string);
+    if (!user.password) {
+      return {
+        success: false,
+        message: "Account password not configured",
+      };
+    }
 
-    if(!confirmPassword) {
+    const confirmPassword = await comparePassword(userPassword, user.password);
+
+    if (!confirmPassword) {
       return {
         success: false,
         message: "Incorrect password",
@@ -153,7 +171,7 @@ export async function deleteUser(prevState: DeleteUserReturnType | null, formDat
       success: true,
       message: "Account deleted successfully",
     };
-  } catch (error) {
+  } catch {
     return {
       success: false,
       message: "Server Error",

@@ -45,7 +45,7 @@ export function Deactivate() {
         </DialogTrigger>
         <DialogContent className="sm:max-w-sm bg-black border-2 border-border-accent">
           <DialogHeader>
-            <DialogTitle></DialogTitle>
+            <DialogTitle>Delete Account</DialogTitle>
             <DialogDescription>
               Are you sure you want to delete your account? This action cannot
               be undone. Please enter your password to confirm.
