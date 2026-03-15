@@ -182,6 +182,7 @@ export default async function AccountsPage() {
                   </div>
                 </div>
                 <button
+                type="button"
                   style={{
                     background: T.inp,
                     border: `1px solid ${T.bdr}`,

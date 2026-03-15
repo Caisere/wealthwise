@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import { T } from "./theme";
+import { AccountType } from "../types";
 
 export async function hashPassword(password: string) {
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -13,7 +14,7 @@ export async function comparePassword(
   return await bcrypt.compare(password, hashedPassword);
 }
 
-export const generateAccountIcon = (type: string) => {
+export const generateAccountIcon = (type: AccountType) => {
   switch (type) {
     case "BANK":
       return "🏦";
@@ -30,7 +31,7 @@ export const generateAccountIcon = (type: string) => {
   }
 };
 
-export const generateAccountColor = (type: string) => {
+export const generateAccountColor = (type: AccountType) => {
   switch (type) {
     case "BANK":
       return T.G;

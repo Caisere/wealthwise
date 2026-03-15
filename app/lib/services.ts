@@ -46,20 +46,3 @@ export async function getUserAccountData(): Promise<UserAccountData> {
     };
   }
 }
-
-// // get the accounts  for the user
-// const accounts = await db
-//   .select()
-//   .from(userAccounts)
-//   .where(eq(userAccounts.userId, userId));
-
-// // get the total balance across all accounts for the user
-// const totalResult = await db
-//   .select({
-//     total: sum(userAccounts.balance),
-//   })
-//   .from(userAccounts)
-//   .where(eq(userAccounts.userId, userId));
-
-// // handle case where totalResult is empty or total is null
-// const totalBalance = Number(totalResult[0]?.total ?? 0);
