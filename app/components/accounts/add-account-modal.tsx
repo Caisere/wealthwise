@@ -5,6 +5,9 @@ import { Button, Input, Modal, Select } from "../ui";
 import { toast } from "sonner";
 import { type AccountType } from "@/app/types";
 import { addAccounts } from "@/app/lib/actions";
+import {nanoid} from "nanoid";
+
+const requestId = `tnx_${nanoid(10)}`;
 
 export function AddAccountModal({ onClose }: { onClose: () => void }) {
   const [loading, setLoading] = useState(false);
@@ -33,7 +36,7 @@ export function AddAccountModal({ onClose }: { onClose: () => void }) {
         return;
       }
 
-      const response = await addAccounts({ name, type, balance });
+      const response = await addAccounts({ name, type, balance, requestId });
 
       if (response.success) {
         toast.success("Account added successfully!");

@@ -13,6 +13,7 @@ import { comparePassword, hashPassword } from "./helper";
 import { getUserSession } from "./getUserSession";
 import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { success } from "zod";
 
 function isDbError(error: unknown): error is { code: string } {
   return (
@@ -269,10 +270,12 @@ export async function addAccounts({
   name,
   type,
   balance,
+  requestId,
 }: {
   name: string;
   type: AccountType;
   balance: string;
+  requestId: string;
 }) {
   try {
     const session = await getUserSession();
@@ -318,6 +321,7 @@ export async function addAccounts({
       userId: session.id,
       name: normalizedName,
       type,
+      requestId: requestId,
       balance: parsedBalance.toFixed(2),
     };
 
@@ -329,13 +333,23 @@ export async function addAccounts({
         set: {
           balance: sql`${userAccounts.balance} + ${newAccount.balance}`,
         },
-      })
+      });
 
     return {
       success: true,
       message: "Account added successfully",
     };
   } catch (error) {
+    const [existing] = await db
+      .select()
+      .from(userAccounts)
+      .where(eq(userAccounts.requestId, requestId));
+
+    if (existing) return {
+      success: true,
+      message: "Transaction successful",
+    };
+  
     console.error("Failed to add account:", error);
     return {
       success: false,
