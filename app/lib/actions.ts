@@ -8,12 +8,11 @@ import {
   UpdatePasswordType,
   UpdateProfileSchema,
 } from "../types";
-import { accountTypeEnum, userAccounts, usersTable } from "@/db/schema";
+import { userAccounts, usersTable } from "@/db/schema";
 import { comparePassword, hashPassword } from "./helper";
 import { getUserSession } from "./getUserSession";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { success } from "zod";
 
 function isDbError(error: unknown): error is { code: string } {
   return (
@@ -340,16 +339,34 @@ export async function addAccounts({
       message: "Account added successfully",
     };
   } catch (error) {
-    const [existing] = await db
-      .select()
-      .from(userAccounts)
-      .where(eq(userAccounts.requestId, requestId));
+    if (isDbError(error) && error.code === "23505") {
+      const session = await getUserSession();
 
-    if (existing) return {
-      success: true,
-      message: "Transaction successful",
-    };
-  
+        if (!session) {
+          return {
+            success: false,
+            message: "Unauthorized",
+          };
+        }
+
+      const [existing] = await db
+        .select()
+        .from(userAccounts)
+        .where(
+          and(
+            eq(userAccounts.requestId, requestId),
+            eq(userAccounts.userId, session.id),
+          ),
+        );
+
+      if (existing) {
+        return {
+          success: true,
+          message: "Transaction successful",
+        };
+      }
+    }
+
     console.error("Failed to add account:", error);
     return {
       success: false,

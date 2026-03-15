@@ -83,7 +83,7 @@ CREATE TABLE "user_accounts" (
 	"type" "account_type" NOT NULL,
 	"balance" numeric(15, 2) DEFAULT '0' NOT NULL,
 	"currency" text DEFAULT 'NGN' NOT NULL,
-	"request_id" text DEFAULT 'tnx_5AxTndPyEq' NOT NULL,
+	"request_id" text NOT NULL,
 	"is_archived" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp,
