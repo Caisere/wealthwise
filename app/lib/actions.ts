@@ -8,10 +8,10 @@ import {
   UpdatePasswordType,
   UpdateProfileSchema,
 } from "../types";
-import { accountTypeEnum, userAccounts, usersTable } from "@/db/schema";
+import { userAccounts, usersTable } from "@/db/schema";
 import { comparePassword, hashPassword } from "./helper";
 import { getUserSession } from "./getUserSession";
-import { eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 function isDbError(error: unknown): error is { code: string } {
@@ -269,10 +269,12 @@ export async function addAccounts({
   name,
   type,
   balance,
+  requestId,
 }: {
   name: string;
   type: AccountType;
   balance: string;
+  requestId: string;
 }) {
   try {
     const session = await getUserSession();
@@ -318,16 +320,53 @@ export async function addAccounts({
       userId: session.id,
       name: normalizedName,
       type,
+      requestId: requestId,
       balance: parsedBalance.toFixed(2),
     };
 
-    await db.insert(userAccounts).values([newAccount]);
+    await db
+      .insert(userAccounts)
+      .values([newAccount])
+      .onConflictDoUpdate({
+        target: [userAccounts.userId, userAccounts.name],
+        set: {
+          balance: sql`${userAccounts.balance} + ${newAccount.balance}`,
+        },
+      });
 
     return {
       success: true,
       message: "Account added successfully",
     };
   } catch (error) {
+    if (isDbError(error) && error.code === "23505") {
+      const session = await getUserSession();
+
+        if (!session) {
+          return {
+            success: false,
+            message: "Unauthorized",
+          };
+        }
+
+      const [existing] = await db
+        .select()
+        .from(userAccounts)
+        .where(
+          and(
+            eq(userAccounts.requestId, requestId),
+            eq(userAccounts.userId, session.id),
+          ),
+        );
+
+      if (existing) {
+        return {
+          success: true,
+          message: "Transaction successful",
+        };
+      }
+    }
+
     console.error("Failed to add account:", error);
     return {
       success: false,

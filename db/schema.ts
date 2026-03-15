@@ -14,6 +14,7 @@ import {
   unique,
   foreignKey,
 } from "drizzle-orm/pg-core";
+import { nanoid } from "nanoid";
 
 export const roleEnum = pgEnum("role", ["FREE", "PREMIUM"]);
 
@@ -165,13 +166,17 @@ export const userAccounts = pgTable("user_accounts", {
   // stored as high-precision decimal — never use float for money
 
   currency: text("currency").default("NGN").notNull(),
+
+  requestId: text("request_id").notNull().unique(),
   // default to NGN for Nigerian users
 
   isArchived: boolean("is_archived").default(false).notNull(),
   // soft-delete: hide without losing history
 
   ...timeStamp,
-});
+}, (table) => ({
+  accountUnique: uniqueIndex("user_account_unique").on(table.userId, table.name)
+}));
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CATEGORIES

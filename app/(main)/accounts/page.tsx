@@ -1,86 +1,31 @@
-"use client";
-import { AddAccountModal } from "@/app/components/accounts/add-account-modal";
+import { AddAccountBtn } from "@/app/components/accounts/add-account-btn";
+import { generateAccountColor, generateAccountIcon } from "@/app/lib/helper";
+import { getUserAccountData } from "@/app/lib/services";
 import { T } from "@/app/lib/theme";
-import { useState } from "react";
 
 
-const ACCOUNTS = [
-  {
-    name: "GTBank Savings",
-    type: "BANK",
-    balance: 842500,
-    icon: "🏦",
-    color: T.G,
-  },
-  {
-    name: "Opay Wallet",
-    type: "EMONEY",
-    balance: 34200,
-    icon: "📱",
-    color: T.B,
-  },
-  {
-    name: "Cash (Wallet)",
-    type: "CASH",
-    balance: 12800,
-    icon: "💵",
-    color: T.A,
-  },
-  {
-    name: "PiggyVest",
-    type: "SAVINGS",
-    balance: 395000,
-    icon: "🐷",
-    color: T.V,
-  },
-];
-
-export default function AccountsPage() {
-  const [showModal, setShowModal] = useState(false);
-  const total = ACCOUNTS.reduce((s, a) => s + a.balance, 0);
+export default async function AccountsPage() {
+  const { accounts, totalBalanceResult } = await getUserAccountData();
 
   return (
-    <div style={{ padding: 32 }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          marginBottom: 28,
-        }}
-      >
+    <div className="p-8">
+      <div className="flex justify-between items-start mb-7">
         <div>
           <h1
+            className="mb-1 text-2xl font-extrabold tracking-tight"
             style={{
               fontFamily: T.FD,
-              fontSize: 26,
-              fontWeight: 800,
-              letterSpacing: "-0.8px",
               color: T.tx,
-              marginBottom: 4,
             }}
           >
             Accounts
           </h1>
           <p style={{ fontSize: 14, color: T.mu }}>
-            {ACCOUNTS.length} accounts tracked
+            {accounts.length} accounts tracked
           </p>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          style={{
-            padding: "11px 22px",
-            background: `linear-gradient(135deg,${T.GM},${T.GD})`,
-            border: "none",
-            borderRadius: 12,
-            color: "#fff",
-            fontSize: 14,
-            fontWeight: 600,
-            boxShadow: `0 4px 20px ${T.G}30`,
-          }}
-        >
-          + Add Account
-        </button>
+
+        <AddAccountBtn />
       </div>
 
       {/* Net worth hero */}
@@ -127,7 +72,7 @@ export default function AccountsPage() {
             marginBottom: 8,
           }}
         >
-          ₦{total.toLocaleString()}
+          ₦{totalBalanceResult.toLocaleString()}
         </p>
         <div style={{ display: "flex", gap: 8 }}>
           <span
@@ -156,7 +101,7 @@ export default function AccountsPage() {
               textTransform: "uppercase" as const,
             }}
           >
-            Across {ACCOUNTS.length} accounts
+            Across {accounts.length} accounts
           </span>
         </div>
       </div>
@@ -169,113 +114,118 @@ export default function AccountsPage() {
           gap: 16,
         }}
       >
-        {ACCOUNTS.map(({ name, type, balance, icon, color }) => (
-          <div
-            key={name}
-            className="card-hover"
-            style={{
-              background: T.card,
-              border: `1px solid ${T.bdr}`,
-              borderRadius: 18,
-              padding: 24,
-              transition: "all .2s",
-              cursor: "pointer",
-            }}
-          >
+        {accounts.map(({ name, type, balance }) => {
+          const icon = generateAccountIcon(type);
+          const color = generateAccountColor(type);
+          return (
             <div
+              key={name}
+              className="card-hover"
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-                marginBottom: 20,
+                background: T.card,
+                border: `1px solid ${T.bdr}`,
+                borderRadius: 18,
+                padding: 24,
+                transition: "all .2s",
+                cursor: "pointer",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div
-                  style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 16,
-                    background: `${color}15`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: 24,
-                  }}
-                >
-                  {icon}
-                </div>
-                <div>
-                  <h3
-                    style={{
-                      fontFamily: T.FD,
-                      fontSize: 15,
-                      fontWeight: 700,
-                      color: T.tx,
-                      marginBottom: 4,
-                    }}
-                  >
-                    {name}
-                  </h3>
-                  <span
-                    style={{
-                      fontSize: 10,
-                      fontWeight: 700,
-                      padding: "2px 8px",
-                      borderRadius: 20,
-                      background: `${color}18`,
-                      color,
-                      border: `1px solid ${color}30`,
-                      textTransform: "uppercase" as const,
-                    }}
-                  >
-                    {type}
-                  </span>
-                </div>
-              </div>
-              <button
+              <div
                 style={{
-                  background: T.inp,
-                  border: `1px solid ${T.bdr}`,
-                  borderRadius: 8,
-                  color: T.mu,
-                  padding: "5px 10px",
-                  fontSize: 12,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  marginBottom: 20,
                 }}
               >
-                ···
-              </button>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 16,
+                      background: `${color}15`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 24,
+                    }}
+                  >
+                    {icon}
+                  </div>
+                  <div>
+                    <h3
+                      style={{
+                        fontFamily: T.FD,
+                        fontSize: 15,
+                        fontWeight: 700,
+                        color: T.tx,
+                        marginBottom: 4,
+                      }}
+                    >
+                      {name}
+                    </h3>
+                    <span
+                      style={{
+                        fontSize: 10,
+                        fontWeight: 700,
+                        padding: "2px 8px",
+                        borderRadius: 20,
+                        background: `${color}18`,
+                        color,
+                        border: `1px solid ${color}30`,
+                        textTransform: "uppercase" as const,
+                      }}
+                    >
+                      {type}
+                    </span>
+                  </div>
+                </div>
+                <button
+                type="button"
+                  style={{
+                    background: T.inp,
+                    border: `1px solid ${T.bdr}`,
+                    borderRadius: 8,
+                    color: T.mu,
+                    padding: "5px 10px",
+                    fontSize: 12,
+                  }}
+                >
+                  ···
+                </button>
+              </div>
+              <p
+                style={{
+                  fontFamily: T.FD,
+                  fontSize: 28,
+                  fontWeight: 800,
+                  color: T.tx,
+                  letterSpacing: "-1px",
+                  marginBottom: 4,
+                }}
+              >
+                ₦{balance.toLocaleString()}
+              </p>
+              <p style={{ fontSize: 12, color: T.di }}>
+                Available balance · NGN
+              </p>
+              <div style={{ height: 1, background: T.bdr, margin: "16px 0" }} />
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: 12,
+                  color: T.mu,
+                }}
+              >
+                <span>Last 30 days</span>
+                <span style={{ color: T.R }}>↓ ₦45,600 spent</span>
+              </div>
             </div>
-            <p
-              style={{
-                fontFamily: T.FD,
-                fontSize: 28,
-                fontWeight: 800,
-                color: T.tx,
-                letterSpacing: "-1px",
-                marginBottom: 4,
-              }}
-            >
-              ₦{balance.toLocaleString()}
-            </p>
-            <p style={{ fontSize: 12, color: T.di }}>Available balance · NGN</p>
-            <div style={{ height: 1, background: T.bdr, margin: "16px 0" }} />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: 12,
-                color: T.mu,
-              }}
-            >
-              <span>Last 30 days</span>
-              <span style={{ color: T.R }}>↓ ₦45,600 spent</span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
-
-      {showModal && <AddAccountModal onClose={() => setShowModal(false)} />}
     </div>
   );
 }

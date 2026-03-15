@@ -5,6 +5,8 @@ import { Button, Input, Modal, Select } from "../ui";
 import { toast } from "sonner";
 import { type AccountType } from "@/app/types";
 import { addAccounts } from "@/app/lib/actions";
+import {nanoid} from "nanoid";
+
 
 export function AddAccountModal({ onClose }: { onClose: () => void }) {
   const [loading, setLoading] = useState(false);
@@ -14,26 +16,28 @@ export function AddAccountModal({ onClose }: { onClose: () => void }) {
     balance: "",
   });
   const set =
-    (k: string) =>
+  (k: string) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm((p) => ({ ...p, [k]: e.target.value }));
-
-
+  
+  
   async function handleAddAccount(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-
+    
     setLoading(true);
     try {
       const type = form.type as AccountType;
       const balance = form.balance.replace(/,/g, ""); // Remove commas for parsing
       const name = form.name.trim();
-
+      
       if (!name.trim() || !balance.trim() || !type.trim()) {
         toast.error("Please fill in all required fields.");
         return;
       }
-
-      const response = await addAccounts({ name, type, balance });
+      
+      const requestId = `tnx_${nanoid(10)}`;
+      
+      const response = await addAccounts({ name, type, balance, requestId });
 
       if (response.success) {
         toast.success("Account added successfully!");

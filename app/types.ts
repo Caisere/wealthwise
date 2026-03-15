@@ -1,3 +1,4 @@
+import { userAccounts } from "@/db/schema";
 import z from "zod";
 
 export const RegisterFormData = z.object({
@@ -42,6 +43,13 @@ export const UpdatePasswordSchema = z.object({
   newPassword: z.string().min(8, "New Password must be at least 8 characters"),
   confirmNewPassword: z.string().min(8, "Confirm Password must be at least 8 characters"),
 });
+
+
+export type UserAccountData = {
+  accounts: (typeof userAccounts.$inferSelect)[];
+  totalBalanceResult: number;
+};
+
 
 export type UpdatePasswordType = z.infer<typeof UpdatePasswordSchema>;
 

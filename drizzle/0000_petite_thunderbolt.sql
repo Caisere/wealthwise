@@ -83,9 +83,11 @@ CREATE TABLE "user_accounts" (
 	"type" "account_type" NOT NULL,
 	"balance" numeric(15, 2) DEFAULT '0' NOT NULL,
 	"currency" text DEFAULT 'NGN' NOT NULL,
+	"request_id" text NOT NULL,
 	"is_archived" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp
+	"updated_at" timestamp,
+	CONSTRAINT "user_accounts_request_id_unique" UNIQUE("request_id")
 );
 --> statement-breakpoint
 CREATE TABLE "users" (
@@ -122,4 +124,5 @@ ALTER TABLE "transactions" ADD CONSTRAINT "transactions_account_id_user_accounts
 ALTER TABLE "transactions" ADD CONSTRAINT "transactions_category_id_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_accounts" ADD CONSTRAINT "user_accounts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "budgets_user_category_month_unique" ON "budgets" USING btree ("user_id","category_id","month");--> statement-breakpoint
-CREATE UNIQUE INDEX "categories_id_user_id_unique" ON "categories" USING btree ("id","user_id");
+CREATE UNIQUE INDEX "categories_id_user_id_unique" ON "categories" USING btree ("id","user_id");--> statement-breakpoint
+CREATE UNIQUE INDEX "user_account_unique" ON "user_accounts" USING btree ("user_id","name");
