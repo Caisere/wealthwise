@@ -11,7 +11,7 @@ import {
 import { accountTypeEnum, userAccounts, usersTable } from "@/db/schema";
 import { comparePassword, hashPassword } from "./helper";
 import { getUserSession } from "./getUserSession";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 function isDbError(error: unknown): error is { code: string } {
@@ -321,7 +321,12 @@ export async function addAccounts({
       balance: parsedBalance.toFixed(2),
     };
 
-    await db.insert(userAccounts).values([newAccount]);
+    await db.insert(userAccounts).values([newAccount]).onConflictDoUpdate({
+      target: [userAccounts.userId, userAccounts.name],
+      set: {
+        balance: sql`${userAccounts.balance} + ${newAccount.balance}`,
+      }
+    });
 
     return {
       success: true,

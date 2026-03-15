@@ -171,7 +171,9 @@ export const userAccounts = pgTable("user_accounts", {
   // soft-delete: hide without losing history
 
   ...timeStamp,
-});
+}, (table) => ({
+  accountUnique: uniqueIndex("user_account_unique").on(table.userId, table.name)
+}));
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CATEGORIES
