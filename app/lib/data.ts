@@ -195,7 +195,7 @@ export const BUDGETS: Budget[] = [
 export const ACCOUNTS: Account[] = [
   {
     name: "GTBank Savings",
-    type: "Bank",
+    type: "BANK",
     balance: 842500,
     icon: "🏦",
     color: "#4ade80",
@@ -203,7 +203,7 @@ export const ACCOUNTS: Account[] = [
   },
   {
     name: "Opay Wallet",
-    type: "E-Money",
+    type: "EMONEY",
     balance: 34200,
     icon: "📱",
     color: "#38bdf8",
@@ -211,7 +211,7 @@ export const ACCOUNTS: Account[] = [
   },
   {
     name: "Cash (Wallet)",
-    type: "Cash",
+    type: "CASH",
     balance: 12800,
     icon: "💵",
     color: "#fbbf24",
@@ -219,7 +219,7 @@ export const ACCOUNTS: Account[] = [
   },
   {
     name: "PiggyVest",
-    type: "Savings",
+    type: "SAVINGS",
     balance: 395000,
     icon: "🐷",
     color: "#a78bfa",
