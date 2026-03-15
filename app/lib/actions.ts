@@ -2,12 +2,13 @@
 
 import { db } from "@/db";
 import {
+  AccountType,
   RegisterFormData,
   RegisterSchema,
   UpdatePasswordType,
   UpdateProfileSchema,
 } from "../types";
-import { usersTable } from "@/db/schema";
+import { accountTypeEnum, userAccounts, usersTable } from "@/db/schema";
 import { comparePassword, hashPassword } from "./helper";
 import { getUserSession } from "./getUserSession";
 import { eq } from "drizzle-orm";
@@ -257,6 +258,47 @@ export async function userUpdatePassword({
     };
   } catch (error) {
     console.error("Error updating password:", error);
+    return {
+      success: false,
+      message: "Server Error",
+    };
+  }
+}
+
+
+export async function addAccounts({name, type, balance}: {name: string, type: AccountType, balance: string}) {
+  try {
+    const session = await getUserSession();
+
+    if (!session) {
+      return {
+        success: false,
+        message: "Unauthorized",
+      };
+    }
+
+    if (typeof name !== "string"  || typeof balance !== "string") {
+      return {
+        success: false,
+        message: "Invalid input",
+      };
+    }
+
+    const newAccount = {
+      userId: session.id,
+      name,
+      type,
+      balance,
+    };
+
+    await db.insert(userAccounts).values([newAccount]);
+
+    return {
+      success: true,
+      message: "Account added successfully",
+    };
+  } catch (error) {
+    console.error("Failed to add account:", error);
     return {
       success: false,
       message: "Server Error",

@@ -1,5 +1,5 @@
 "use client";
-import { AddAccountModal } from "@/app/components/modals";
+import { AddAccountModal } from "@/app/components/accounts/add-account-modal";
 import { T } from "@/app/lib/theme";
 import { useState } from "react";
 

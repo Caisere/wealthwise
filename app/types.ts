@@ -51,7 +51,7 @@ export type RegisterSchema = z.infer<typeof RegisterFormData>;
 
 export type TransactionType = "income" | "expense";
 
-export type AccountType = "Bank" | "E-Money" | "Cash" | "Savings" | "Credit";
+export type AccountType = "BANK" | "EMONEY" | "CASH" | "SAVINGS" | "CREDIT";
 
 export type UserRole = "FREE" | "PREMIUM";
 
