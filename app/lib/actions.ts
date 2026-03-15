@@ -321,23 +321,19 @@ export async function addAccounts({
       balance: parsedBalance.toFixed(2),
     };
 
-    const result = await db
+    await db
       .insert(userAccounts)
       .values([newAccount])
       .onConflictDoUpdate({
         target: [userAccounts.userId, userAccounts.name],
         set: {
           balance: sql`${userAccounts.balance} + ${newAccount.balance}`,
-          type: newAccount.type,
         },
       })
-      .returning({ id: userAccounts.id });
 
     return {
       success: true,
-      message: result.length
-        ? "Account balance updated"
-        : "Account added successfully",
+      message: "Account added successfully",
     };
   } catch (error) {
     console.error("Failed to add account:", error);
