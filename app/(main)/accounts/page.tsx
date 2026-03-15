@@ -7,28 +7,28 @@ import { useState } from "react";
 const ACCOUNTS = [
   {
     name: "GTBank Savings",
-    type: "Bank",
+    type: "BANK",
     balance: 842500,
     icon: "🏦",
     color: T.G,
   },
   {
     name: "Opay Wallet",
-    type: "E-Money",
+    type: "EMONEY",
     balance: 34200,
     icon: "📱",
     color: T.B,
   },
   {
     name: "Cash (Wallet)",
-    type: "Cash",
+    type: "CASH",
     balance: 12800,
     icon: "💵",
     color: T.A,
   },
   {
     name: "PiggyVest",
-    type: "Savings",
+    type: "SAVINGS",
     balance: 395000,
     icon: "🐷",
     color: T.V,

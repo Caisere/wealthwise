@@ -18,7 +18,7 @@ export function AddAccountModal({ onClose }: { onClose: () => void }) {
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm((p) => ({ ...p, [k]: e.target.value }));
 
-    
+
   async function handleAddAccount(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -86,7 +86,7 @@ export function AddAccountModal({ onClose }: { onClose: () => void }) {
           account will adjust it automatically.
         </p>
         <div className="flex gap-2">
-          <Button variant="ghost" onClick={onClose} full>
+          <Button type="button" variant="ghost" onClick={onClose} full>
             Cancel
           </Button>
           <Button type="submit" variant="primary" full>

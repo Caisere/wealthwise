@@ -265,8 +265,15 @@ export async function userUpdatePassword({
   }
 }
 
-
-export async function addAccounts({name, type, balance}: {name: string, type: AccountType, balance: string}) {
+export async function addAccounts({
+  name,
+  type,
+  balance,
+}: {
+  name: string;
+  type: AccountType;
+  balance: string;
+}) {
   try {
     const session = await getUserSession();
 
@@ -277,7 +284,30 @@ export async function addAccounts({name, type, balance}: {name: string, type: Ac
       };
     }
 
-    if (typeof name !== "string"  || typeof balance !== "string") {
+    if (typeof name !== "string" || typeof balance !== "string") {
+      return {
+        success: false,
+        message: "Invalid input",
+      };
+    }
+
+    const normalizedName = name.trim();
+    const normalizedBalance = balance.replace(/,/g, "").trim();
+    const allowedTypes: AccountType[] = [
+      "BANK",
+      "EMONEY",
+      "CASH",
+      "SAVINGS",
+      "CREDIT",
+    ];
+    const parsedBalance = Number(normalizedBalance);
+
+    if (
+      !normalizedName ||
+      !allowedTypes.includes(type) ||
+      !Number.isFinite(parsedBalance) ||
+      parsedBalance < 0
+    ) {
       return {
         success: false,
         message: "Invalid input",
@@ -286,9 +316,9 @@ export async function addAccounts({name, type, balance}: {name: string, type: Ac
 
     const newAccount = {
       userId: session.id,
-      name,
+      name: normalizedName,
       type,
-      balance,
+      balance: parsedBalance.toFixed(2),
     };
 
     await db.insert(userAccounts).values([newAccount]);
