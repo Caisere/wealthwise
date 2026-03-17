@@ -1,8 +1,7 @@
 // app/api/webhooks/stripe/route.ts
-import Stripe from "stripe";
-import { NextRequest, NextResponse } from "next/server";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { stripe } from "@/app/lib/stripe";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -26,8 +25,10 @@ export async function POST(request: NextRequest) {
   }
 
   // Just log the event for now — no DB
-  console.log("✅ Event received:", event.type);
-  console.log("📦 Payload:", JSON.stringify(event.data.object, null, 2));
+  // Avoid logging full payload in production - contains sensitive data
+  if (process.env.NODE_ENV === "development") {
+    console.log("📦 Payload:", JSON.stringify(event.data.object, null, 2));
+  }
 
   return NextResponse.json({ received: true });
 }
