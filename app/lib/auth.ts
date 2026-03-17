@@ -20,7 +20,7 @@ export const authOptions: AuthOptions = {
         email: { label: "email", type: "text" },
         password: { label: "password", type: "password" },
       },
-      authorize: async (credentials, req) => {
+      authorize: async (credentials) => {
         try {
           //validate user input first before db call
           const userInputValidation = CredentialsSchema.safeParse(credentials);

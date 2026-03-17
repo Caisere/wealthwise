@@ -8,6 +8,13 @@
       "when": 1773611685161,
       "tag": "0000_petite_thunderbolt",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773707511494,
+      "tag": "0001_gray_stick",
+      "breakpoints": true
     }
   ]
 }
