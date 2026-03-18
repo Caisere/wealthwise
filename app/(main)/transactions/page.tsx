@@ -8,8 +8,6 @@ export default async function TransactionsPage() {
     getUserAccounts(),
   ])
 
-  console.log(userAccounts)
-
   return (
     <div style={{ padding: 32 }}>
       <div

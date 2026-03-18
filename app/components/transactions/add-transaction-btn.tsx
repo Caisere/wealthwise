@@ -11,21 +11,12 @@ export function AddTransactionBtn({
   userAccounts: { accountsName: UserAccountName[] };
 }) {
   const [showAddTx, setShowAddTx] = useState(false);
-  // const userAccounts: UserAccountName[] = [
-  //   {
-  //     name: "UBA",
-  //   },
-  //   {
-  //     name: "Opay",
-  //   },
-  //   {
-  //     name: "Payvice",
-  //   },
-  // ];
+
   return (
     <>
       <button
         onClick={() => setShowAddTx(true)}
+        type="button"
         style={{
           padding: "11px 22px",
           background: `linear-gradient(135deg,${T.GM},${T.GD})`,

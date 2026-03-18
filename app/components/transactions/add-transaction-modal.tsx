@@ -4,12 +4,15 @@ import { Button, Input, Modal, Select } from "../ui";
 import { UserAccountName } from "@/app/lib/services";
 
 type AddTransactionModalType = {
-  userAccounts: UserAccountName[];
+  userAccounts?: UserAccountName[];
   onClose: () => void;
-}
+};
 
 /* ── Add Transaction ── */
-export function AddTransactionModal({ onClose, userAccounts }: AddTransactionModalType) {
+export function AddTransactionModal({
+  onClose,
+  userAccounts,
+}: AddTransactionModalType) {
   const [type, setType] = useState<"expense" | "income">("expense");
 
   // console.log(userAccounts)
@@ -17,7 +20,7 @@ export function AddTransactionModal({ onClose, userAccounts }: AddTransactionMod
     amount: "",
     desc: "",
     category: "food",
-    account: "gtbank",
+    account: userAccounts?.[0]?.name?.toLowerCase() || "",
     date: "",
   });
   const set =
@@ -25,12 +28,11 @@ export function AddTransactionModal({ onClose, userAccounts }: AddTransactionMod
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm((p) => ({ ...p, [k]: e.target.value }));
 
+  function handleAddTransaction(e: FormEvent) {
+    e.preventDefault();
 
-    function handleAddTransaction (e: FormEvent) {
-      e.preventDefault()
-
-      console.log(form.account)
-    }
+    console.log(form.account);
+  }
 
   return (
     <Modal title="Add Transaction" onClose={onClose}>

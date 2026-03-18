@@ -77,7 +77,7 @@ export async function getUserAccounts(): Promise<{ accountsName: UserAccountName
       accountsName,
     };
   } catch (error) {
-    console.error("getUserAccountData failed", {
+    console.error("getUserAccount failed", {
       error,
     });
     return {
