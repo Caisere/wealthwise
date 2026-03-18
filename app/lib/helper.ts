@@ -1,3 +1,5 @@
+import "server-only";
+
 import bcrypt from "bcrypt";
 import { T } from "./theme";
 import { AccountType } from "../types";

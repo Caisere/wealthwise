@@ -6,7 +6,8 @@ import Link from "next/link";
 import { fmt, T } from "../../lib/theme";
 import { CashFlowChart, SpendingPieChart } from "../../components/dashboard/charts";
 import { PIE_DATA } from "../../lib/data";
-import { AddTransactionModal } from "../../components/modals";
+import { AddTransactionModal } from "@/app/components/transactions/add-transaction-modal";
+
 
 
 const RECENT_TX = [
