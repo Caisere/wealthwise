@@ -2,9 +2,11 @@ import { db } from "@/db";
 import { getUserSession } from "./getUserSession";
 import { userAccounts } from "@/db/schema";
 import { eq, sum } from "drizzle-orm";
-import { UserAccountData } from "../types";
+import { User, UserAccountData } from "../types";
 
-
+export type UserAccountName = {
+  name: string;
+};
 
 export async function getUserAccountData(): Promise<UserAccountData> {
   try {
@@ -43,6 +45,43 @@ export async function getUserAccountData(): Promise<UserAccountData> {
     return {
       accounts: [],
       totalBalanceResult: 0,
+    };
+  }
+}
+
+
+export async function getUserAccounts(): Promise<{ accountsName: UserAccountName[] }> {
+  try {
+    const session = await getUserSession();
+
+    if (!session) {
+      return {
+        accountsName: [],
+      };
+    }
+
+    const userId = session.id;
+
+    const userFilter = eq(userAccounts.userId, userId);
+
+    const [accountsName] = await Promise.all([
+      db
+        .select({
+          name: userAccounts.name,
+        })
+        .from(userAccounts)
+        .where(userFilter),
+    ]);
+
+    return {
+      accountsName,
+    };
+  } catch (error) {
+    console.error("getUserAccount failed", {
+      error,
+    });
+    return {
+      accountsName: [],
     };
   }
 }

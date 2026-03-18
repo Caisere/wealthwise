@@ -5,7 +5,7 @@ import { SessionProviderComponent } from "./components/layout/session-provider-c
 import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "WealthWise — Personal Finance OS",
@@ -29,8 +29,10 @@ export default function RootLayout({
       <body
         className={`bg-bg text-text font-body antialiased ${syne.className}`}
       >
-        <SessionProviderComponent>{children}</SessionProviderComponent>
-        <Toaster />
+        <SessionProviderComponent>
+          {children}
+          <Toaster />
+        </SessionProviderComponent>
       </body>
     </html>
   );
