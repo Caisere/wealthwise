@@ -54,8 +54,7 @@ export const createTransactionSchema = z.object({
 
   transactionId: z.string().min(1),
 
-  amount: z
-    .number(),
+  amount: z.coerce.number().positive("Amount must be greater than 0"),
   // numeric comes as string from forms
 
   description: z.string().min(1).max(256),
@@ -63,7 +62,7 @@ export const createTransactionSchema = z.object({
   date: z.coerce.date(),
 
   accountId: z.string().min(1),
-  category: z.string().min(1)
+  category: z.string().min(1),
 });
 
 

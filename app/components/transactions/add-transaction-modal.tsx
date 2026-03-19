@@ -29,17 +29,10 @@ export function AddTransactionModal({
   const set =
     (k: string) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      const value = e.target.value
+      const value = e.target.value;
 
-      if(k === 'accountId') {
-        const selectedAccount = userAccounts?.find((acc) => acc.name.toLowerCase() === value)
-        setForm((prev) => ({...prev, accountId: selectedAccount?.id || ''}))
-      }
       setForm((p) => ({ ...p, [k]: value }));
-    }
-
-
-
+    };
 
   async function handleAddTransaction(e: FormEvent) {
     e.preventDefault();
@@ -68,12 +61,14 @@ export function AddTransactionModal({
       const result = await addTransaction(data);
 
       if (result.success) {
-        toast.success(result.message)
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
       }
-
     } catch (error) {
       // toast.error(error)
       console.log(error);
+      toast.error("Failed to add transaction");
     }
 
     console.log(form);
@@ -134,9 +129,9 @@ export function AddTransactionModal({
           value={form.accountId}
           onChange={set("accountId")}
           options={
-            userAccounts?.map((account: { name: string, id:string }) => ({
+            userAccounts?.map((account: { name: string; id: string }) => ({
               // .toLowerCase().replace(/\s+/g, "-")
-              value: account.name,
+              value: account.id,
               label: account.name,
             })) || []
           }

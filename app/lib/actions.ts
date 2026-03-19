@@ -13,7 +13,7 @@ import {
 import { transactions, userAccounts, usersTable } from "@/db/schema";
 import { comparePassword, hashPassword } from "./helper";
 import { getUserSession } from "./getUserSession";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 function isDbError(error: unknown): error is { code: string } {
@@ -443,17 +443,28 @@ export async function addTransaction(data: Transaction) {
       }
 
       // calculate new balance
-      const newBalance =
-        type === "EXPENSE"
-          ? userCurrentBalance - amount
-          : userCurrentBalance + amount;
+      // const newBalance =
+      //   type === "EXPENSE"
+      //     ? userCurrentBalance - amount
+      //     : userCurrentBalance + amount;
+
+      // await tx
+      //   .update(userAccounts)
+      //   .set({ balance: newBalance.toString() })
+      //   .where(
+      //     and(...queryCondition),
+      //   );
 
       await tx
         .update(userAccounts)
-        .set({ balance: newBalance.toString() })
+        .set({ balance: sql`${userAccounts.balance} - ${amount}` })
         .where(
-          and(...queryCondition),
+          and(
+            ...queryCondition,
+            gte(userAccounts.balance, String(amount)), // only deduct if enough funds
+          ),
         );
+
 
       await tx.insert(transactions).values({
         userId,
