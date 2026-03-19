@@ -57,7 +57,7 @@ export function Transactions({ transactions }: TransactionProps) {
             }}
           />
         </div>
-        {["all", "income", "expense"].map((f) => (
+        {["ALL", "INCOME", "EXPENSE"].map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f.toUpperCase())}
@@ -125,7 +125,9 @@ export function Transactions({ transactions }: TransactionProps) {
             }, // icon
           ) => {
             const amountInNumber = +amount;
-            const icon = generateIcon(categoryName!)
+            const resolvedCategoryName = categoryName ?? "Uncategorized";
+            const resolvedAccountName = accountName ?? "Unknown account";
+            const icon = generateIcon(resolvedCategoryName);
 
             return (
               <div
@@ -163,9 +165,9 @@ export function Transactions({ transactions }: TransactionProps) {
                   </span>
                 </div>
                 <span style={{ fontSize: 12, color: T.mu }}>
-                  {categoryName}
+                  {resolvedCategoryName}
                 </span>
-                <span style={{ fontSize: 12, color: T.mu }}>{accountName}</span>
+                <span style={{ fontSize: 12, color: T.mu }}>{resolvedAccountName}</span>
                 <span style={{ fontSize: 12, color: T.di }}>
                   {date.toLocaleDateString()}
                 </span>

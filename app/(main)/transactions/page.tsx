@@ -10,8 +10,6 @@ export default async function TransactionsPage() {
     getTransactions()
   ])
 
-  console.log(transactions)
-
   return (
     <div style={{ padding: 32 }}>
       <div

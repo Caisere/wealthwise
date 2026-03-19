@@ -10,10 +10,15 @@ import {
   UpdatePasswordType,
   UpdateProfileSchema,
 } from "../types";
-import { transactions, userAccounts, usersTable } from "@/db/schema";
+import {
+  categories,
+  transactions,
+  userAccounts,
+  usersTable,
+} from "@/db/schema";
 import { comparePassword, hashPassword } from "./helper";
 import { getUserSession } from "./getUserSession";
-import { and, eq, gte, sql } from "drizzle-orm";
+import { and, eq, gte, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 function isDbError(error: unknown): error is { code: string } {
@@ -409,6 +414,25 @@ export async function addTransaction(data: Transaction) {
 
     const userId = session.id;
 
+    if (categoryId) {
+      const [category] = await db
+        .select({ id: categories.id })
+        .from(categories)
+        .where(
+          and(
+            eq(categories.id, categoryId),
+            or(eq(categories.userId, userId), eq(categories.isDefault, true)),
+          ),
+        );
+
+      if (!category) {
+        return {
+          success: false,
+          message: "Invalid category",
+        };
+      }
+    }
+
     const queryCondition = [
       eq(userAccounts.id, accountId),
       eq(userAccounts.userId, userId),
@@ -419,9 +443,7 @@ export async function addTransaction(data: Transaction) {
       const [account] = await tx
         .select()
         .from(userAccounts)
-        .where(
-          and(...queryCondition),
-        );
+        .where(and(...queryCondition));
 
       if (!account) {
         return {
@@ -465,7 +487,6 @@ export async function addTransaction(data: Transaction) {
           ),
         );
 
-
       await tx.insert(transactions).values({
         userId,
         accountId,
@@ -477,7 +498,7 @@ export async function addTransaction(data: Transaction) {
         date: new Date(date),
       });
 
-      revalidatePath('/transactions')
+      revalidatePath("/transactions");
 
       return {
         success: true,

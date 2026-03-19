@@ -9,23 +9,23 @@ import { addTransaction } from "@/app/lib/actions";
 type AddTransactionModalType = {
   userAccounts?: UserAccountName[];
   onClose: () => void;
-  categories?: UserCategories[]
+  categories?: UserCategories[];
 };
 
 /* ── Add Transaction ── */
 export function AddTransactionModal({
   onClose,
   userAccounts,
-  categories
+  categories,
 }: AddTransactionModalType) {
   const [type, setType] = useState<"EXPENSE" | "INCOME">("EXPENSE");
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   // console.log(userAccounts)
   const [form, setForm] = useState({
     amount: "",
     description: "",
-    categoryId: categories?.[0]?.id || '',
+    categoryId: categories?.[0]?.id || "",
     accountId: userAccounts?.[0]?.id || "",
     date: "",
   });
@@ -40,12 +40,18 @@ export function AddTransactionModal({
   async function handleAddTransaction(e: FormEvent) {
     e.preventDefault();
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       const { amount, description, categoryId, accountId, date } = form;
 
-      if (!accountId || !amount || !categoryId || !date) {
+      if (
+        !accountId ||
+        !amount ||
+        !description.trim() ||
+        !categoryId ||
+        !date
+      ) {
         toast.error("Invalid Inputs");
         return;
       }
@@ -67,7 +73,7 @@ export function AddTransactionModal({
 
       if (result.success) {
         toast.success(result.message);
-        onClose()
+        onClose();
       } else {
         toast.error(result.message);
       }
@@ -75,8 +81,8 @@ export function AddTransactionModal({
       // toast.error(error)
       console.log(error);
       toast.error("Failed to add transaction");
-    } finally{
-      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -120,10 +126,12 @@ export function AddTransactionModal({
           label="Category"
           value={form.categoryId}
           onChange={set("categoryId")}
-          options={categories?.map((category: {name:string, id: string}) => ({
-            value: category.id,
-            label: category.name,
-          })) || []}
+          options={
+            categories?.map((category: { name: string; id: string }) => ({
+              value: category.id,
+              label: category.name,
+            })) || []
+          }
         />
         <Select
           label="Account"

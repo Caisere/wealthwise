@@ -16,6 +16,7 @@ export function generateIcon(category: string) {
     case "Utilities":
       return "⚡";
     case "Food":
+    case "Food & Groceries":
       return "🛒";
     case "Transport":
       return "🚗";
