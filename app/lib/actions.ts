@@ -404,7 +404,7 @@ export async function addTransaction(data: Transaction) {
       description,
       date,
       accountId,
-      category,
+      categoryId,
     } = parsedTransaction.data;
 
     const userId = session.id;
@@ -473,8 +473,11 @@ export async function addTransaction(data: Transaction) {
         type,
         amount: amount.toString(),
         description,
+        categoryId,
         date: new Date(date),
       });
+
+      revalidatePath('/transactions')
 
       return {
         success: true,

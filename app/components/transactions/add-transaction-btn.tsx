@@ -3,12 +3,16 @@
 import { T } from "@/app/lib/theme";
 import { useState } from "react";
 import { AddTransactionModal } from "./add-transaction-modal";
-import { UserAccountName } from "@/app/lib/services";
+import { UserAccountName, UserCategories } from "@/app/lib/services";
 
 export function AddTransactionBtn({
   userAccounts,
+  categories
 }: {
   userAccounts: { accountsName: UserAccountName[] };
+  categories: {
+    userCategories: UserCategories[]
+  }
 }) {
   const [showAddTx, setShowAddTx] = useState(false);
 
@@ -34,6 +38,7 @@ export function AddTransactionBtn({
       {showAddTx && (
         <AddTransactionModal
           userAccounts={userAccounts.accountsName}
+          categories={categories.userCategories}
           onClose={() => setShowAddTx(false)}
         />
       )}

@@ -62,7 +62,7 @@ export const createTransactionSchema = z.object({
   date: z.coerce.date(),
 
   accountId: z.string().min(1),
-  category: z.string().min(1),
+  categoryId: z.string().min(1),
 });
 
 
@@ -87,7 +87,7 @@ export type UserRole = "FREE" | "PREMIUM";
 export interface Transaction {
   transactionId: string,
   description: string;
-  category: string;
+  categoryId: string;
   accountId: string;
   amount: number;
   date: string;

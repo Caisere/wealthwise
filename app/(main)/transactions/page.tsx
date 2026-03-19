@@ -1,12 +1,16 @@
 import { AddTransactionBtn } from "@/app/components/transactions/add-transaction-btn";
 import { Transactions } from "@/app/components/transactions/transactions";
-import { getUserAccounts } from "@/app/lib/services";
+import { getCategories, getTransactions, getUserAccounts } from "@/app/lib/services";
 import { T } from "@/app/lib/theme";
 
 export default async function TransactionsPage() {
-  const [userAccounts] = await Promise.all([
+  const [userAccounts, categories, transactions] = await Promise.all([
     getUserAccounts(),
+    getCategories(),
+    getTransactions()
   ])
+
+  console.log(transactions)
 
   return (
     <div style={{ padding: 32 }}>
@@ -35,10 +39,10 @@ export default async function TransactionsPage() {
             {/* {filtered.length} transactions found */}
           </p>
         </div>
-        <AddTransactionBtn userAccounts={userAccounts} />
+        <AddTransactionBtn userAccounts={userAccounts} categories={categories} />
       </div>
 
-      <Transactions />
+      <Transactions transactions={transactions}  />
     </div>
   );
 }

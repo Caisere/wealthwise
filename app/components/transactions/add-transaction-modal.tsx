@@ -1,7 +1,7 @@
 "use client";
 import { FormEvent, useState } from "react";
 import { Button, Input, Modal, Select } from "../ui";
-import { UserAccountName } from "@/app/lib/services";
+import { UserAccountName, UserCategories } from "@/app/lib/services";
 import { toast } from "sonner";
 import { nanoid } from "nanoid";
 import { addTransaction } from "@/app/lib/actions";
@@ -9,21 +9,24 @@ import { addTransaction } from "@/app/lib/actions";
 type AddTransactionModalType = {
   userAccounts?: UserAccountName[];
   onClose: () => void;
+  categories?: UserCategories[]
 };
 
 /* ── Add Transaction ── */
 export function AddTransactionModal({
   onClose,
   userAccounts,
+  categories
 }: AddTransactionModalType) {
   const [type, setType] = useState<"EXPENSE" | "INCOME">("EXPENSE");
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   // console.log(userAccounts)
   const [form, setForm] = useState({
     amount: "",
     description: "",
-    category: "food",
-    accountId: userAccounts?.[0]?.id?.toLowerCase() || "",
+    categoryId: categories?.[0]?.id || '',
+    accountId: userAccounts?.[0]?.id || "",
     date: "",
   });
   const set =
@@ -37,10 +40,12 @@ export function AddTransactionModal({
   async function handleAddTransaction(e: FormEvent) {
     e.preventDefault();
 
-    try {
-      const { amount, description, category, accountId, date } = form;
+    setIsLoading(true)
 
-      if (!accountId || !amount || !category || !date) {
+    try {
+      const { amount, description, categoryId, accountId, date } = form;
+
+      if (!accountId || !amount || !categoryId || !date) {
         toast.error("Invalid Inputs");
         return;
       }
@@ -51,7 +56,7 @@ export function AddTransactionModal({
       const data = {
         amount: amountToNumber,
         description,
-        category,
+        categoryId,
         accountId,
         date,
         transactionId,
@@ -62,6 +67,7 @@ export function AddTransactionModal({
 
       if (result.success) {
         toast.success(result.message);
+        onClose()
       } else {
         toast.error(result.message);
       }
@@ -69,9 +75,9 @@ export function AddTransactionModal({
       // toast.error(error)
       console.log(error);
       toast.error("Failed to add transaction");
+    } finally{
+      setIsLoading(false)
     }
-
-    console.log(form);
   }
 
   return (
@@ -112,17 +118,12 @@ export function AddTransactionModal({
         />
         <Select
           label="Category"
-          value={form.category}
-          onChange={set("category")}
-          options={[
-            { value: "food", label: "🛒 Food & Groceries" },
-            { value: "transport", label: "🚗 Transport" },
-            { value: "utilities", label: "⚡ Utilities" },
-            { value: "entertainment", label: "🎬 Entertainment" },
-            { value: "rent", label: "🏠 Rent" },
-            { value: "health", label: "💊 Health" },
-            { value: "income", label: "💰 Income" },
-          ]}
+          value={form.categoryId}
+          onChange={set("categoryId")}
+          options={categories?.map((category: {name:string, id: string}) => ({
+            value: category.id,
+            label: category.name,
+          })) || []}
         />
         <Select
           label="Account"
@@ -146,8 +147,8 @@ export function AddTransactionModal({
           <Button type="submit" variant="ghost" onClick={onClose} full>
             Cancel
           </Button>
-          <Button type="submit" variant="primary" full>
-            Save Transaction
+          <Button type="submit" variant="primary" full disabled={isLoading}>
+            {isLoading ? "Saving" : "Save Transaction"}
           </Button>
         </div>
       </form>

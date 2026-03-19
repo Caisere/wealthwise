@@ -41,7 +41,7 @@ export const LINE_DATA = [
 export const TRANSACTIONS: Transaction[] = [
   {
     description: "Grocery — Shoprite",
-    category: "Food",
+    categoryId: "Food",
     accountId: "GTBank",
     amount: -8500,
     date: "Mar 8, 2026",
@@ -50,7 +50,7 @@ export const TRANSACTIONS: Transaction[] = [
   },
   {
     description: "March Salary",
-    category: "Income",
+    categoryId: "Income",
     accountId: "GTBank",
     amount: 420000,
     date: "Mar 8, 2026",
@@ -59,7 +59,7 @@ export const TRANSACTIONS: Transaction[] = [
   },
   {
     description: "Uber to VI",
-    category: "Transport",
+    categoryId: "Transport",
     accountId: "Opay",
     amount: -2300,
     date: "Mar 7, 2026",
@@ -68,7 +68,7 @@ export const TRANSACTIONS: Transaction[] = [
   },
   {
     description: "Netflix Subscription",
-    category: "Entertainment",
+    categoryId: "Entertainment",
     accountId: "Opay",
     amount: -4600,
     date: "Mar 5, 2026",
@@ -77,7 +77,7 @@ export const TRANSACTIONS: Transaction[] = [
   },
   {
     description: "EKEDC Electricity",
-    category: "Utilities",
+    categoryId: "Utilities",
     accountId: "Cash",
     amount: -15000,
     date: "Mar 4, 2026",
@@ -86,7 +86,7 @@ export const TRANSACTIONS: Transaction[] = [
   },
   {
     description: "Freelance Payment",
-    category: "Income",
+    categoryId: "Income",
     accountId: "GTBank",
     amount: 75000,
     date: "Mar 3, 2026",
@@ -95,7 +95,7 @@ export const TRANSACTIONS: Transaction[] = [
   },
   {
     description: "Mr Biggs — Dinner",
-    category: "Food",
+    categoryId: "Food",
     accountId: "Opay",
     amount: -3800,
     date: "Mar 2, 2026",
@@ -104,7 +104,7 @@ export const TRANSACTIONS: Transaction[] = [
   },
   {
     description: "Danfo — Ikeja",
-    category: "Transport",
+    categoryId: "Transport",
     accountId: "Cash",
     amount: -200,
     date: "Mar 1, 2026",
@@ -113,7 +113,7 @@ export const TRANSACTIONS: Transaction[] = [
   },
   {
     description: "Rent — March",
-    category: "Rent",
+    categoryId: "Rent",
     accountId: "GTBank",
     amount: -80000,
     date: "Mar 1, 2026",
@@ -122,7 +122,7 @@ export const TRANSACTIONS: Transaction[] = [
   },
   {
     description: "Spotify",
-    category: "Entertainment",
+    categoryId: "Entertainment",
     accountId: "Opay",
     amount: -2900,
     date: "Feb 28, 2026",

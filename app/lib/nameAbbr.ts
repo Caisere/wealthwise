@@ -8,3 +8,22 @@ export function nameAbbr(name: string) {
 
   return abbrs;
 }
+
+export function generateIcon(category: string) {
+  switch (category) {
+    case "Rent":
+      return "🏠";
+    case "Utilities":
+      return "⚡";
+    case "Food":
+      return "🛒";
+    case "Transport":
+      return "🚗";
+    case "Entertainment":
+      return "🎬";
+    case "Health":
+      return "💊";
+    default:
+      return "🏦";
+  }
+}
