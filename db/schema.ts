@@ -194,9 +194,7 @@ export const categories = pgTable(
       .primaryKey()
       .$defaultFn(() => crypto.randomUUID()),
 
-    userId: text("user_id")
-      .notNull()
-      .references(() => usersTable.id, { onDelete: "cascade" }),
+    userId: text("user_id"),
 
     name: text("name").notNull(), // e.g. "Food & Groceries"
 

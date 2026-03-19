@@ -1,20 +1,29 @@
-'use client'
+"use client";
 
-
-import { ALL_TX } from "@/app/lib/data";
+import { generateIcon } from "@/app/lib/nameAbbr";
+import { TransactionType } from "@/app/lib/services";
 import { fmt, T } from "@/app/lib/theme";
 import { useState } from "react";
 
-export function Transactions() {
-    const [search, setSearch] = useState("");
-    const [filter, setFilter] = useState("all");
+type TransactionProps = {
+  transactions: TransactionType[];
+};
 
-    const filtered = ALL_TX.filter(
-      (t) =>
-        (filter === "all" || t.type === filter) &&
-        (t.desc.toLowerCase().includes(search.toLowerCase()) ||
-          t.cat.toLowerCase().includes(search.toLowerCase())),
+export function Transactions({ transactions }: TransactionProps) {
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("ALL");
+
+  const normalizedSearch = search.trim().toLowerCase();
+
+  const filtered = transactions.filter((t) => {
+    const resolvedCategoryName = t.categoryName ?? "Uncategorized";
+
+    return (
+      (filter === "ALL" || t.type === filter) &&
+      (t.description.toLowerCase().includes(normalizedSearch) ||
+        resolvedCategoryName.toLowerCase().includes(normalizedSearch))
     );
+  });
   return (
     <div
       style={{
@@ -53,10 +62,11 @@ export function Transactions() {
             }}
           />
         </div>
-        {["all", "income", "expense"].map((f) => (
+        {["ALL", "INCOME", "EXPENSE"].map((f) => (
           <button
             key={f}
-            onClick={() => setFilter(f)}
+            onClick={() => setFilter(f.toUpperCase())}
+            aria-pressed={filter === f}
             style={{
               padding: "10px 20px",
               borderRadius: 12,
@@ -77,12 +87,19 @@ export function Transactions() {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr",
+          gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr",
           padding: "8px 16px",
           marginBottom: 4,
         }}
       >
-        {["Description", "Category", "Account", "Date", "Amount"].map((h) => (
+        {[
+          "Description",
+          "Category",
+          "Account",
+          "Date",
+          "Amount",
+          "Transaction ID",
+        ].map((h) => (
           <span
             key={h}
             style={{
@@ -100,57 +117,86 @@ export function Transactions() {
 
       {/* Rows */}
       <div style={{ borderTop: `1px solid ${T.bdr}` }}>
-        {filtered.map(({ id, desc, cat, account, amount, date, icon }) => (
-          <div
-            key={id}
-            className="tx-row"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr",
-              padding: "13px 16px",
-              borderBottom: `1px solid rgba(255,255,255,0.04)`,
-              alignItems: "center",
-              borderRadius: 8,
-              transition: "background .15s",
-              cursor: "pointer",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        {filtered.map(
+          (
+            {
+              id,
+              description,
+              categoryName,
+              accountName,
+              amount,
+              type,
+              date,
+              transactionId,
+            }, // icon
+          ) => {
+            const amountInNumber = +amount;
+            const resolvedCategoryName = categoryName ?? "Uncategorized";
+            const resolvedAccountName = accountName ?? "Unknown account";
+            const icon = generateIcon(resolvedCategoryName);
+
+            return (
               <div
+                key={id}
+                className="tx-row"
                 style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: 10,
-                  background: T.inp,
-                  display: "flex",
+                  display: "grid",
+                  gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr 1fr",
+                  padding: "13px 16px",
+                  borderBottom: `1px solid rgba(255,255,255,0.04)`,
                   alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 16,
-                  flexShrink: 0,
+                  borderRadius: 8,
+                  transition: "background .15s",
+                  cursor: "pointer",
                 }}
               >
-                {icon}
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      background: T.inp,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 16,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {icon}
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: T.tx }}>
+                    {description}
+                  </span>
+                </div>
+                <span style={{ fontSize: 12, color: T.mu }}>
+                  {resolvedCategoryName}
+                </span>
+                <span style={{ fontSize: 12, color: T.mu }}>
+                  {resolvedAccountName}
+                </span>
+                <span style={{ fontSize: 12, color: T.di }}>
+                  {date.toLocaleDateString()}
+                </span>
+                <span
+                  style={{
+                    fontSize: 13,
+                    fontWeight: 700,
+                    color: type === "EXPENSE" ? T.R : T.tx,
+                    textAlign: "center",
+                  }}
+                >
+                  {type === "EXPENSE" ? "-" : "+"}
+                  {fmt(amountInNumber)}
+                </span>
+                <span className="text-[13px] font-bold text-center">
+                  {transactionId}
+                </span>
               </div>
-              <span style={{ fontSize: 13, fontWeight: 600, color: T.tx }}>
-                {desc}
-              </span>
-            </div>
-            <span style={{ fontSize: 12, color: T.mu }}>{cat}</span>
-            <span style={{ fontSize: 12, color: T.mu }}>{account}</span>
-            <span style={{ fontSize: 12, color: T.di }}>{date}</span>
-            <span
-              style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: amount > 0 ? T.G : T.tx,
-                textAlign: "right",
-              }}
-            >
-              {amount > 0 ? "+" : "−"}
-              {fmt(amount)}
-            </span>
-          </div>
-        ))}
+            );
+          },
+        )}
       </div>
     </div>
   );

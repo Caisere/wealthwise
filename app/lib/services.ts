@@ -1,12 +1,33 @@
 import { db } from "@/db";
 import { getUserSession } from "./getUserSession";
-import { userAccounts } from "@/db/schema";
-import { eq, sum } from "drizzle-orm";
-import { User, UserAccountData } from "../types";
+import {
+  categories,
+  transactions,
+  userAccounts,
+  usersTable,
+} from "@/db/schema";
+import { eq, or, sum } from "drizzle-orm";
+import { UserAccountData } from "../types";
 
 export type UserAccountName = {
   name: string;
   id: string;
+};
+
+export type UserCategories = {
+  name: string;
+  id: string;
+};
+
+export type TransactionType = {
+  id: string;
+  description: string;
+  amount: string;
+  transactionId: string;
+  type: "INCOME" | "EXPENSE";
+  date: Date;
+  accountName: string | null;
+  categoryName: string | null;
 };
 
 export async function getUserAccountData(): Promise<UserAccountData> {
@@ -38,7 +59,6 @@ export async function getUserAccountData(): Promise<UserAccountData> {
       accounts,
       totalBalanceResult,
     };
-
   } catch (error) {
     console.error("getUserAccountData failed", {
       error,
@@ -50,8 +70,9 @@ export async function getUserAccountData(): Promise<UserAccountData> {
   }
 }
 
-
-export async function getUserAccounts(): Promise<{ accountsName: UserAccountName[] }> {
+export async function getUserAccounts(): Promise<{
+  accountsName: UserAccountName[];
+}> {
   try {
     const session = await getUserSession();
 
@@ -69,7 +90,7 @@ export async function getUserAccounts(): Promise<{ accountsName: UserAccountName
       db
         .select({
           name: userAccounts.name,
-          id: userAccounts.id
+          id: userAccounts.id,
         })
         .from(userAccounts)
         .where(userFilter),
@@ -85,5 +106,76 @@ export async function getUserAccounts(): Promise<{ accountsName: UserAccountName
     return {
       accountsName: [],
     };
+  }
+}
+
+export async function getCategories(): Promise<{
+  userCategories: UserCategories[];
+}> {
+  try {
+    const session = await getUserSession();
+
+    if (!session) {
+      return {
+        userCategories: [],
+      };
+    }
+
+    const userId = session.id;
+
+    const userCategories = await db
+      .select({
+        name: categories.name,
+        id: categories.id,
+      })
+      .from(categories)
+      .where(or(eq(categories.isDefault, true), eq(categories.userId, userId)));
+
+    return {
+      userCategories,
+    };
+  } catch (error) {
+    console.error("getCategories failed", {
+      error,
+    });
+    return {
+      userCategories: [],
+    };
+  }
+}
+
+export async function getTransactions(): Promise<TransactionType[]> {
+  try {
+    const session = await getUserSession();
+
+    if (!session) {
+      return []
+    }
+
+    const userId = session.id;
+
+    const userTransactions: TransactionType[] = await db
+      .select({
+        id: transactions.id,
+        description: transactions.description,
+        amount: transactions.amount,
+        transactionId: transactions.transactionId,
+        type: transactions.type,
+        date: transactions.date,
+        accountName: userAccounts.name,
+        categoryName: categories.name,
+      })
+      .from(transactions)
+      .leftJoin(userAccounts, eq(transactions.accountId, userAccounts.id))
+      .leftJoin(categories, eq(transactions.categoryId, categories.id))
+      .where(eq(transactions.userId, userId));
+
+    return userTransactions
+    
+  } catch (error) {
+    console.error("getCategories failed", {
+      error,
+    });
+    return []
   }
 }
