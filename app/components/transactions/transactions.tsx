@@ -13,7 +13,7 @@ export function Transactions({ transactions }: TransactionProps) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("ALL");
 
-  const filtered = transactions?.filter(
+  const filtered = transactions.filter(
     (t) =>
       (filter === "ALL" || t.type === filter) &&
       (t.description.toLowerCase().includes(search.toLowerCase()) ||
