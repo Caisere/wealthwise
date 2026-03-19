@@ -3,15 +3,17 @@
 import { db } from "@/db";
 import {
   AccountType,
+  createTransactionSchema,
   RegisterFormData,
   RegisterSchema,
+  Transaction,
   UpdatePasswordType,
   UpdateProfileSchema,
 } from "../types";
-import { userAccounts, usersTable } from "@/db/schema";
+import { transactions, userAccounts, usersTable } from "@/db/schema";
 import { comparePassword, hashPassword } from "./helper";
 import { getUserSession } from "./getUserSession";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 function isDbError(error: unknown): error is { code: string } {
@@ -342,12 +344,12 @@ export async function addAccounts({
     if (isDbError(error) && error.code === "23505") {
       const session = await getUserSession();
 
-        if (!session) {
-          return {
-            success: false,
-            message: "Unauthorized",
-          };
-        }
+      if (!session) {
+        return {
+          success: false,
+          message: "Unauthorized",
+        };
+      }
 
       const [existing] = await db
         .select()
@@ -371,6 +373,119 @@ export async function addAccounts({
     return {
       success: false,
       message: "Server Error",
+    };
+  }
+}
+
+export async function addTransaction(data: Transaction) {
+  try {
+    const session = await getUserSession();
+
+    if (!session) {
+      return {
+        success: false,
+        message: "Unauthorized",
+      };
+    }
+
+    const parsedTransaction = createTransactionSchema.safeParse(data);
+
+    if (!parsedTransaction.success) {
+      return {
+        success: false,
+        message: "Invalid inputs",
+      };
+    }
+
+    const {
+      type,
+      transactionId,
+      amount,
+      description,
+      date,
+      accountId,
+      category,
+    } = parsedTransaction.data;
+
+    const userId = session.id;
+
+    const queryCondition = [
+      eq(userAccounts.id, accountId),
+      eq(userAccounts.userId, userId),
+    ];
+
+    return await db.transaction(async (tx) => {
+      // get user's current account balance
+      const [account] = await tx
+        .select()
+        .from(userAccounts)
+        .where(
+          and(...queryCondition),
+        );
+
+      if (!account) {
+        return {
+          success: false,
+          message: "Account not found",
+        };
+      }
+
+      // Convery balance tto Number
+      const userCurrentBalance = Number(account.balance);
+
+      // check for transaction type and and sufficient balance
+
+      if (type === "EXPENSE" && userCurrentBalance < amount) {
+        return {
+          success: false,
+          message: `Insufficient balance. Available: ₦${userCurrentBalance.toLocaleString()}`,
+        };
+      }
+
+      // calculate new balance
+      // const newBalance =
+      //   type === "EXPENSE"
+      //     ? userCurrentBalance - amount
+      //     : userCurrentBalance + amount;
+
+      // await tx
+      //   .update(userAccounts)
+      //   .set({ balance: newBalance.toString() })
+      //   .where(
+      //     and(...queryCondition),
+      //   );
+
+      await tx
+        .update(userAccounts)
+        .set({ balance: sql`${userAccounts.balance} - ${amount}` })
+        .where(
+          and(
+            ...queryCondition,
+            gte(userAccounts.balance, String(amount)), // only deduct if enough funds
+          ),
+        );
+
+
+      await tx.insert(transactions).values({
+        userId,
+        accountId,
+        transactionId,
+        type,
+        amount: amount.toString(),
+        description,
+        date: new Date(date),
+      });
+
+      return {
+        success: true,
+        message: "Transaction added successfully",
+      };
+    });
+  } catch (error) {
+    console.error("addTransaction error:", error);
+    return {
+      success: false,
+      message: "Failed to add transaction",
     };
   }
 }

@@ -45,6 +45,27 @@ export const UpdatePasswordSchema = z.object({
 });
 
 
+export const createTransactionSchema = z.object({
+  // accountId: z.string().uuid(),
+
+  // categoryId: z.string().uuid().optional().nullable(),
+
+  type: z.enum(["INCOME", "EXPENSE"]),
+
+  transactionId: z.string().min(1),
+
+  amount: z.coerce.number().positive("Amount must be greater than 0"),
+  // numeric comes as string from forms
+
+  description: z.string().min(1).max(256),
+
+  date: z.coerce.date(),
+
+  accountId: z.string().min(1),
+  category: z.string().min(1),
+});
+
+
 export type UserAccountData = {
   accounts: (typeof userAccounts.$inferSelect)[];
   totalBalanceResult: number;
@@ -57,20 +78,19 @@ export type LoginSchema = z.infer<typeof CredentialsSchema>;
 
 export type RegisterSchema = z.infer<typeof RegisterFormData>;
 
-export type TransactionType = "income" | "expense";
+export type TransactionType = "INCOME" | "EXPENSE";
 
 export type AccountType = "BANK" | "EMONEY" | "CASH" | "SAVINGS" | "CREDIT";
 
 export type UserRole = "FREE" | "PREMIUM";
 
 export interface Transaction {
-  id: number;
-  desc: string;
-  cat: string;
-  account: string;
+  transactionId: string,
+  description: string;
+  category: string;
+  accountId: string;
   amount: number;
   date: string;
-  icon: string;
   type: TransactionType;
 }
 

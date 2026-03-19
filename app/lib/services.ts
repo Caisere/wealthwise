@@ -6,6 +6,7 @@ import { User, UserAccountData } from "../types";
 
 export type UserAccountName = {
   name: string;
+  id: string;
 };
 
 export async function getUserAccountData(): Promise<UserAccountData> {
@@ -68,6 +69,7 @@ export async function getUserAccounts(): Promise<{ accountsName: UserAccountName
       db
         .select({
           name: userAccounts.name,
+          id: userAccounts.id
         })
         .from(userAccounts)
         .where(userFilter),
