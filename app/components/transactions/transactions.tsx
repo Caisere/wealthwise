@@ -13,12 +13,17 @@ export function Transactions({ transactions }: TransactionProps) {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("ALL");
 
-  const filtered = transactions.filter(
-    (t) =>
+  const normalizedSearch = search.trim().toLowerCase();
+
+  const filtered = transactions.filter((t) => {
+    const resolvedCategoryName = t.categoryName ?? "Uncategorized";
+
+    return (
       (filter === "ALL" || t.type === filter) &&
-      (t.description.toLowerCase().includes(search.toLowerCase()) ||
-        t.categoryName?.toLowerCase().includes(search.toLowerCase())),
-  );
+      (t.description.toLowerCase().includes(normalizedSearch) ||
+        resolvedCategoryName.toLowerCase().includes(normalizedSearch))
+    );
+  });
   return (
     <div
       style={{
@@ -61,6 +66,7 @@ export function Transactions({ transactions }: TransactionProps) {
           <button
             key={f}
             onClick={() => setFilter(f.toUpperCase())}
+            aria-pressed={filter === f}
             style={{
               padding: "10px 20px",
               borderRadius: 12,
@@ -167,7 +173,9 @@ export function Transactions({ transactions }: TransactionProps) {
                 <span style={{ fontSize: 12, color: T.mu }}>
                   {resolvedCategoryName}
                 </span>
-                <span style={{ fontSize: 12, color: T.mu }}>{resolvedAccountName}</span>
+                <span style={{ fontSize: 12, color: T.mu }}>
+                  {resolvedAccountName}
+                </span>
                 <span style={{ fontSize: 12, color: T.di }}>
                   {date.toLocaleDateString()}
                 </span>
