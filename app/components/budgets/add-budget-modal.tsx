@@ -12,6 +12,7 @@ type AddBudgetModalType = {
 };
 
 export function AddBudgetModal({ onClose, categories }: AddBudgetModalType) {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [form, setForm] = useState({
     categoryId: categories?.[0]?.id || "",
     limit: "",
@@ -26,14 +27,15 @@ export function AddBudgetModal({ onClose, categories }: AddBudgetModalType) {
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm((p) => ({ ...p, [k]: e.target.value }));
 
-  async function handleAddBudget(e: React.SubmitEvent<HTMLFormElement>) {
+  async function handleAddBudget(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    setIsLoading(true)
 
     try {
       const { categoryId, limit, month } = form;
 
       if (!categoryId || !limit || !month) {
-        toast.error("Invalid inputs");
         console.log({ categoryId, limit, month });
         return;
       }
@@ -43,8 +45,6 @@ export function AddBudgetModal({ onClose, categories }: AddBudgetModalType) {
         limit,
         month,
       });
-
-      
 
       if (!parsedData.success) {
         toast.error(parsedData.error.message);
@@ -66,7 +66,10 @@ export function AddBudgetModal({ onClose, categories }: AddBudgetModalType) {
         toast.error(result?.message);
       }
     } catch (error) {
+      console.log(error)
+      toast.error('Server Error')
     } finally {
+      setIsLoading(false)
     }
   }
 
