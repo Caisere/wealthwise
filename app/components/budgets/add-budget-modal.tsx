@@ -14,6 +14,10 @@ export function AddBudgetModal({ onClose, categories }: AddBudgetModalType) {
     limit: "",
     month: "2026-03",
   });
+
+  const parsedLimit = Number(form.limit)
+  const isValidNumber = Number.isFinite(parsedLimit)  && parsedLimit > 0
+
   const set =
     (k: string) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
@@ -33,6 +37,7 @@ export function AddBudgetModal({ onClose, categories }: AddBudgetModalType) {
       <Input
         label="Monthly Limit (₦)"
         type="number"
+        min={1}
         placeholder="e.g. 50000"
         value={form.limit}
         onChange={set("limit")}
@@ -44,13 +49,13 @@ export function AddBudgetModal({ onClose, categories }: AddBudgetModalType) {
         value={form.month}
         onChange={set("month")}
       />
-      {form.limit && (
+      {isValidNumber && (
         <div className="mb-4 rounded-xl border border-accent bg-brand/5 px-4 py-3 text-[13px] text-muted">
           You&apos;ll be alerted when spending reaches{" "}
           <span className="font-semibold text-warn">
-            ₦{(Number(form.limit) * 0.8).toLocaleString()}
+            ₦{(parsedLimit * 0.8).toLocaleString()}
           </span>{" "}
-          (80% of ₦{Number(form.limit).toLocaleString()})
+          (80% of ₦{parsedLimit.toLocaleString()})
         </div>
       )}
       <div className="flex gap-2">
