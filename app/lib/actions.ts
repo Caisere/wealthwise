@@ -537,30 +537,60 @@ export async function AddBudget(data: CreateBudgetDataType) {
       };
     }
 
+    const userId = session.id;
+
+    // Validate category ownership
+    const [category] = await db
+      .select({ id: categories.id })
+      .from(categories)
+      .where(
+        and(
+          eq(categories.id, parsedData.data.categoryId),
+          or(eq(categories.userId, userId), eq(categories.isDefault, true)),
+        ),
+      );
+
+    if (!category) {
+      return {
+        success: false,
+        message: "Invalid category",
+      };
+    }
+
+    const monthDate = new Date(parsedData.data.month);
+
+    if (isNaN(monthDate.getTime())) {
+      return {
+        success: false,
+        message: "Invalid month format",
+      };
+    }
+
     const newBudget = {
       categoryId: parsedData.data.categoryId,
       monthlyLimit: parsedData.data.limit,
-      month: new Date(parsedData.data.month).toISOString().split("T")[0],
+      month: monthDate.toISOString().split("T")[0],
       userId: session.id,
     };
-
-    console.log(newBudget);
 
     await db.insert(budgets).values({
       ...newBudget,
       monthlyLimit: String(newBudget.monthlyLimit),
     });
 
+    revalidatePath("/budgets");
+
     return {
       success: true,
       message: "Budget added successfully",
     };
+
   } catch (error) {
     console.log(error);
     if (isDbError(error) && error.code === "23505") {
       return {
         success: false,
-        message: "Budget with Category already created",
+        message: "Budget for this category already exists for the selected month",
       };
     }
     return {
