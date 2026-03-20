@@ -3,6 +3,8 @@
 import { db } from "@/db";
 import {
   AccountType,
+  CreateBudgetDataType,
+  CreateBudgetSchema,
   createTransactionSchema,
   RegisterFormData,
   RegisterSchema,
@@ -11,6 +13,7 @@ import {
   UpdateProfileSchema,
 } from "../types";
 import {
+  budgets,
   categories,
   transactions,
   userAccounts,
@@ -510,6 +513,89 @@ export async function addTransaction(data: Transaction) {
     return {
       success: false,
       message: "Failed to add transaction",
+    };
+  }
+}
+
+export async function AddBudget(data: CreateBudgetDataType) {
+  try {
+    const session = await getUserSession();
+
+    if (!session) {
+      return {
+        success: false,
+        message: "Unauthorized",
+      };
+    }
+
+    const parsedData = CreateBudgetSchema.safeParse(data);
+
+    if (!parsedData.success) {
+      return {
+        success: false,
+        message: "Invalid inputs",
+      };
+    }
+
+    const userId = session.id;
+
+    // Validate category ownership
+    const [category] = await db
+      .select({ id: categories.id })
+      .from(categories)
+      .where(
+        and(
+          eq(categories.id, parsedData.data.categoryId),
+          or(eq(categories.userId, userId), eq(categories.isDefault, true)),
+        ),
+      );
+
+    if (!category) {
+      return {
+        success: false,
+        message: "Invalid category",
+      };
+    }
+
+    const monthDate = new Date(parsedData.data.month);
+
+    if (isNaN(monthDate.getTime())) {
+      return {
+        success: false,
+        message: "Invalid month format",
+      };
+    }
+
+    const newBudget = {
+      categoryId: parsedData.data.categoryId,
+      monthlyLimit: parsedData.data.limit,
+      month: monthDate.toISOString().split("T")[0],
+      userId: session.id,
+    };
+
+    await db.insert(budgets).values({
+      ...newBudget,
+      monthlyLimit: String(newBudget.monthlyLimit),
+    });
+
+    revalidatePath("/budgets");
+
+    return {
+      success: true,
+      message: "Budget added successfully",
+    };
+
+  } catch (error) {
+    console.log(error);
+    if (isDbError(error) && error.code === "23505") {
+      return {
+        success: false,
+        message: "Budget for this category already exists for the selected month",
+      };
+    }
+    return {
+      success: false,
+      message: "Server Error",
     };
   }
 }
