@@ -3,6 +3,8 @@
 import { db } from "@/db";
 import {
   AccountType,
+  CreateBudgetDataType,
+  CreateBudgetSchema,
   createTransactionSchema,
   RegisterFormData,
   RegisterSchema,
@@ -11,6 +13,7 @@ import {
   UpdateProfileSchema,
 } from "../types";
 import {
+  budgets,
   categories,
   transactions,
   userAccounts,
@@ -510,6 +513,59 @@ export async function addTransaction(data: Transaction) {
     return {
       success: false,
       message: "Failed to add transaction",
+    };
+  }
+}
+
+export async function AddBudget(data: CreateBudgetDataType) {
+  try {
+    const session = await getUserSession();
+
+    if (!session) {
+      return {
+        success: false,
+        message: "Unauthorized",
+      };
+    }
+
+    const parsedData = CreateBudgetSchema.safeParse(data);
+
+    if (!parsedData.success) {
+      return {
+        success: false,
+        message: "Invalid inputs",
+      };
+    }
+
+    const newBudget = {
+      categoryId: parsedData.data.categoryId,
+      monthlyLimit: parsedData.data.limit,
+      month: new Date(parsedData.data.month).toISOString().split("T")[0],
+      userId: session.id,
+    };
+
+    console.log(newBudget);
+
+    await db.insert(budgets).values({
+      ...newBudget,
+      monthlyLimit: String(newBudget.monthlyLimit),
+    });
+
+    return {
+      success: true,
+      message: "Budget added successfully",
+    };
+  } catch (error) {
+    console.log(error);
+    if (isDbError(error) && error.code === "23505") {
+      return {
+        success: false,
+        message: "Budget with Category already created",
+      };
+    }
+    return {
+      success: false,
+      message: "Server Error",
     };
   }
 }
