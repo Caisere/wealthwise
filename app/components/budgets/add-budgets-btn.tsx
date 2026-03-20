@@ -18,6 +18,7 @@ export function AddBudgetBtn({
     <>
       <button
         onClick={() => setShowModal(true)}
+        type="button"
         style={{
           padding: "11px 22px",
           background: `linear-gradient(135deg,${T.GM},${T.GD})`,

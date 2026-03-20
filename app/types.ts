@@ -66,6 +66,14 @@ export const createTransactionSchema = z.object({
 });
 
 
+export const CreateBudgetSchema = z.object({
+  categoryId: z.string().min(1),
+  limit: z.coerce.number().positive("Amount must be greater than 0"),
+  month: z.string()
+});
+
+export type CreateBudgetDataType = z.infer<typeof CreateBudgetSchema>
+
 export type UserAccountData = {
   accounts: (typeof userAccounts.$inferSelect)[];
   totalBalanceResult: number;
