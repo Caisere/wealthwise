@@ -1,61 +1,12 @@
-"use client";
-import { AddBudgetModal } from "@/app/components/modals";
+import { AddBudgetBtn } from "@/app/components/budgets/add-budgets-btn";
+import { BUDGETS } from "@/app/lib/data";
+import { getCategories } from "@/app/lib/services";
 import { T } from "@/app/lib/theme";
-import { useState } from "react";
 
-const BUDGETS = [
-  {
-    cat: "Food",
-    icon: "🛒",
-    spent: 42000,
-    limit: 60000,
-    color: T.G,
-    txCount: 8,
-  },
-  {
-    cat: "Rent",
-    icon: "🏠",
-    spent: 80000,
-    limit: 80000,
-    color: T.B,
-    txCount: 1,
-  },
-  {
-    cat: "Transport",
-    icon: "🚗",
-    spent: 18000,
-    limit: 20000,
-    color: T.A,
-    txCount: 12,
-  },
-  {
-    cat: "Utilities",
-    icon: "⚡",
-    spent: 22000,
-    limit: 25000,
-    color: T.V,
-    txCount: 3,
-  },
-  {
-    cat: "Entertainment",
-    icon: "🎬",
-    spent: 9200,
-    limit: 15000,
-    color: T.R,
-    txCount: 4,
-  },
-  {
-    cat: "Health",
-    icon: "💊",
-    spent: 4500,
-    limit: 20000,
-    color: T.E,
-    txCount: 2,
-  },
-];
-
-export default function BudgetsPage() {
-  const [showModal, setShowModal] = useState(false);
+export default async function BudgetsPage() {
+  const [ categories] = await Promise.all([
+    getCategories(),
+  ]);
 
   return (
     <div style={{ padding: 32 }}>
@@ -99,21 +50,8 @@ export default function BudgetsPage() {
               <option key={m}>{m}</option>
             ))}
           </select>
-          <button
-            onClick={() => setShowModal(true)}
-            style={{
-              padding: "11px 22px",
-              background: `linear-gradient(135deg,${T.GM},${T.GD})`,
-              border: "none",
-              borderRadius: 12,
-              color: "#fff",
-              fontSize: 14,
-              fontWeight: 600,
-              boxShadow: `0 4px 20px ${T.G}30`,
-            }}
-          >
-            + New Budget
-          </button>
+
+          <AddBudgetBtn categories={categories} />
         </div>
       </div>
 
@@ -328,8 +266,6 @@ export default function BudgetsPage() {
           );
         })}
       </div>
-
-      {showModal && <AddBudgetModal onClose={() => setShowModal(false)} />}
     </div>
   );
 }

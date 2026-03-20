@@ -1,4 +1,5 @@
 import { Account, Budget, NavItem, Transaction } from "../types";
+import { T } from "./theme";
 
 export const fmt = (n: number) => "₦" + Math.abs(n).toLocaleString("en-NG");
 
@@ -435,3 +436,55 @@ export const ALL_TX = [
     type: "expense",
   },
 ];
+
+
+// export const BUDGETS = [
+//   {
+//     cat: "Food",
+//     icon: "🛒",
+//     spent: 42000,
+//     limit: 60000,
+//     color: T.G,
+//     txCount: 8,
+//   },
+//   {
+//     cat: "Rent",
+//     icon: "🏠",
+//     spent: 80000,
+//     limit: 80000,
+//     color: T.B,
+//     txCount: 1,
+//   },
+//   {
+//     cat: "Transport",
+//     icon: "🚗",
+//     spent: 18000,
+//     limit: 20000,
+//     color: T.A,
+//     txCount: 12,
+//   },
+//   {
+//     cat: "Utilities",
+//     icon: "⚡",
+//     spent: 22000,
+//     limit: 25000,
+//     color: T.V,
+//     txCount: 3,
+//   },
+//   {
+//     cat: "Entertainment",
+//     icon: "🎬",
+//     spent: 9200,
+//     limit: 15000,
+//     color: T.R,
+//     txCount: 4,
+//   },
+//   {
+//     cat: "Health",
+//     icon: "💊",
+//     spent: 4500,
+//     limit: 20000,
+//     color: T.E,
+//     txCount: 2,
+//   },
+// ];
