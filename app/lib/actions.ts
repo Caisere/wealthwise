@@ -481,6 +481,19 @@ export async function addTransaction(data: Transaction) {
       //   );
 
       await tx
+        .update(budgets)
+        .set({
+          spent: sql`${budgets.spent} + ${amount}`,
+        })
+        .where(
+          and(
+            eq(budgets.userId, userId),
+            eq(budgets.categoryId, categoryId),
+            gte(budgets.monthlyLimit, budgets.spent),
+          ),
+        );
+
+      await tx
         .update(userAccounts)
         .set({ balance: sql`${userAccounts.balance} - ${amount}` })
         .where(
@@ -502,6 +515,7 @@ export async function addTransaction(data: Transaction) {
       });
 
       revalidatePath("/transactions");
+      revalidatePath("/budgets")
 
       return {
         success: true,
@@ -584,13 +598,13 @@ export async function AddBudget(data: CreateBudgetDataType) {
       success: true,
       message: "Budget added successfully",
     };
-
   } catch (error) {
     console.log(error);
     if (isDbError(error) && error.code === "23505") {
       return {
         success: false,
-        message: "Budget for this category already exists for the selected month",
+        message:
+          "Budget for this category already exists for the selected month",
       };
     }
     return {
