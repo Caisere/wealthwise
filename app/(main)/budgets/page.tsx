@@ -1,12 +1,13 @@
 import { AddBudgetBtn } from "@/app/components/budgets/add-budgets-btn";
 import { BUDGETS } from "@/app/lib/data";
-import { getCategories } from "@/app/lib/services";
-import { T } from "@/app/lib/theme";
+import { getBudgetsData, getCategories } from "@/app/lib/services";
+import { fmt, T } from "@/app/lib/theme";
 
 export default async function BudgetsPage() {
-  const [ categories] = await Promise.all([
-    getCategories(),
-  ]);
+  const [
+    categories,
+    { totalBudgetsBalance, totalBudgetSpent, AmountRemaining, usersBudget },
+  ] = await Promise.all([getCategories(), getBudgetsData()]);
 
   return (
     <div style={{ padding: 32 }}>
@@ -65,12 +66,24 @@ export default async function BudgetsPage() {
         }}
       >
         {[
-          ["Total Budgeted", "₦220,000", ""],
-          ["Total Spent", "₦175,700", "79.9% used"],
-          ["Remaining", "₦44,300", "Stay on track"],
-        ].map(([l, v, s]) => (
+          {
+            label: "Total Budgeted",
+            value: totalBudgetsBalance,
+            rate: "",
+          },
+          {
+            label: "Total Spent",
+            value: totalBudgetSpent,
+            rate: "%17.2",
+          },
+          {
+            label: "Remaining",
+            value: AmountRemaining,
+            rate: "%17.2",
+          },
+        ].map((l) => (
           <div
-            key={l}
+            key={l.label}
             style={{
               background: T.card,
               border: `1px solid ${T.bdr}`,
@@ -87,7 +100,7 @@ export default async function BudgetsPage() {
                 marginBottom: 8,
               }}
             >
-              {l}
+              {l.label}
             </p>
             <p
               style={{
@@ -98,9 +111,9 @@ export default async function BudgetsPage() {
                 marginBottom: 4,
               }}
             >
-              {v}
+              {fmt(Number(l.value))}
             </p>
-            {s && <p style={{ fontSize: 12, color: T.mu }}>{s}</p>}
+            {l.rate && <p style={{ fontSize: 12, color: T.mu }}>{l.rate}</p>}
           </div>
         ))}
       </div>
@@ -113,13 +126,16 @@ export default async function BudgetsPage() {
           gap: 16,
         }}
       >
-        {BUDGETS.map(({ cat, icon, spent, limit, color, txCount }) => {
-          const pct = Math.round((spent / limit) * 100);
+        {usersBudget.map(({ categoryName, monthlyLimit, id, spent }) => {
+          const spentAmount = Number(spent);
+          const limit = Number(monthlyLimit);
+          const pct = limit > 0 ? Math.round((spentAmount / limit) * 100) : 0;
           const warn = pct >= 80;
           const over = pct >= 100;
+          // const color = generateAccountColor()
           return (
             <div
-              key={cat}
+              key={id}
               className="card-hover"
               style={{
                 background: T.card,
@@ -143,14 +159,14 @@ export default async function BudgetsPage() {
                       width: 44,
                       height: 44,
                       borderRadius: 14,
-                      background: `${color}15`,
+                      // background: `${color}15`,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       fontSize: 22,
                     }}
                   >
-                    {icon}
+                    {/* {icon} */}
                   </div>
                   <div>
                     <h3
@@ -162,10 +178,10 @@ export default async function BudgetsPage() {
                         marginBottom: 2,
                       }}
                     >
-                      {cat}
+                      {categoryName}
                     </h3>
                     <span style={{ fontSize: 11, color: T.di }}>
-                      {txCount} transactions
+                      {/* {txCount} transactions */}
                     </span>
                   </div>
                 </div>
@@ -222,7 +238,7 @@ export default async function BudgetsPage() {
                 <span
                   style={{ fontSize: 13, color: T.di, alignSelf: "flex-end" }}
                 >
-                  of ₦{limit.toLocaleString()}
+                  of ₦{monthlyLimit.toLocaleString()}
                 </span>
               </div>
               <div
@@ -240,11 +256,11 @@ export default async function BudgetsPage() {
                     height: "100%",
                     borderRadius: 10,
                     transition: "width .8s ease",
-                    background: over
-                      ? T.R
-                      : warn
-                        ? `linear-gradient(90deg,${T.A},${T.R})`
-                        : `linear-gradient(90deg,${color}90,${color})`,
+                    // background: over
+                    //   ? T.R
+                    //   : warn
+                    //     ? `linear-gradient(90deg,${T.A},${T.R})`
+                    //     : `linear-gradient(90deg,${color}90,${color})`,
                   }}
                 />
               </div>
@@ -259,7 +275,7 @@ export default async function BudgetsPage() {
                   {pct}% used
                 </span>
                 <span style={{ fontSize: 12, color: T.di }}>
-                  ₦{Math.max(0, limit - spent).toLocaleString()} remaining
+                  ₦{Math.max(0, limit - spentAmount).toLocaleString()} remaining
                 </span>
               </div>
             </div>

@@ -62,7 +62,7 @@ export const createTransactionSchema = z.object({
   date: z.coerce.date(),
 
   accountId: z.string().min(1),
-  categoryId: z.string().min(1).uuid().optional().nullable(),
+  categoryId: z.string().min(1).uuid(),
 });
 
 

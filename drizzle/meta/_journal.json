@@ -22,6 +22,20 @@
       "when": 1773934053010,
       "tag": "0002_huge_vulcan",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1774128400880,
+      "tag": "0003_lying_blazing_skull",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1774131154760,
+      "tag": "0004_overconfident_blacklash",
+      "breakpoints": true
     }
   ]
 }

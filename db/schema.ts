@@ -231,11 +231,13 @@ export const transactions = pgTable("transactions", {
     .references(() => userAccounts.id, { onDelete: "cascade" }),
   // which account was debited/credited
 
-  categoryId: text("category_id").references(() => categories.id, {
-    // nullable: if category is deleted, tx stays but loses category
-    // onDelete: "set null" keeps the transaction intact
-    onDelete: "set null",
-  }),
+  categoryId: text("category_id")
+    .notNull()
+    .references(() => categories.id, {
+      // Prevent deletion of categories that have transactions
+      onDelete: "restrict",
+      // onDelete: "set null",
+    }),
 
   type: transactionTypeEnum("type").notNull(),
   // INCOME or EXPENSE
@@ -286,6 +288,13 @@ export const budgets = pgTable(
       scale: 2,
     }).notNull(),
     // e.g. 60000.00 for Food budget
+
+    spent: numeric("spent", {
+      precision: 15,
+      scale: 2,
+    })
+      .default("0")
+      .notNull(),
 
     month: date("month").notNull(),
     // stored as "YYYY-MM" e.g. "2026-03"

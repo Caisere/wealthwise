@@ -1,12 +1,13 @@
 import { db } from "@/db";
 import { getUserSession } from "./getUserSession";
 import {
+  budgets,
   categories,
   transactions,
   userAccounts,
   usersTable,
 } from "@/db/schema";
-import { eq, or, sum } from "drizzle-orm";
+import { and, eq, or, sum } from "drizzle-orm";
 import { UserAccountData } from "../types";
 
 export type UserAccountName = {
@@ -149,7 +150,7 @@ export async function getTransactions(): Promise<TransactionType[]> {
     const session = await getUserSession();
 
     if (!session) {
-      return []
+      return [];
     }
 
     const userId = session.id;
@@ -170,12 +171,75 @@ export async function getTransactions(): Promise<TransactionType[]> {
       .leftJoin(categories, eq(transactions.categoryId, categories.id))
       .where(eq(transactions.userId, userId));
 
-    return userTransactions
-    
+    return userTransactions;
   } catch (error) {
     console.error("getCategories failed", {
       error,
     });
-    return []
+    return [];
+  }
+}
+
+export async function getBudgetsData() {
+  try {
+    const session = await getUserSession();
+
+    if (!session) {
+      return {
+        totalBudgetsBalance: 0,
+        totalBudgetSpent: 0,
+        AmountRemaining: 0,
+        usersBudget: [],
+      };
+    }
+
+    const userId = session.id;
+    const userFilter = eq(budgets.userId, userId);
+
+    const [totalBudgets, totalSpent, usersBudget] = await Promise.all([
+      db
+        .select({ total: sum(budgets.monthlyLimit) })
+        .from(budgets)
+        .where(userFilter),
+
+      db
+        .select({ total: sum(budgets.spent) })
+        .from(budgets)
+        .where(userFilter),
+
+      db
+        .select({
+          spent: budgets.spent,
+          id: budgets.id,
+          monthlyLimit: budgets.monthlyLimit,
+          month: budgets.month,
+          alertAt: budgets.alertAt,
+          categoryName: categories.name,
+        })
+        .from(budgets)
+        .leftJoin(categories, eq(budgets.categoryId, categories.id))
+        .where(and(eq(budgets.userId, userId))),
+    ]);
+
+    const totalBudgetsBalance = Number(totalBudgets?.[0].total);
+    const totalBudgetSpent = Number(totalSpent?.[0].total);
+    const AmountRemaining = totalBudgetsBalance - totalBudgetSpent;
+
+    return {
+      totalBudgetsBalance,
+      totalBudgetSpent,
+      AmountRemaining,
+      usersBudget,
+    };
+  } catch (error) {
+    console.error("getBudgetsData failed", {
+      error,
+    });
+    return {
+      totalBudgetsBalance: 0,
+      totalBudgetSpent: 0,
+      AmountRemaining: 0,
+      usersBudget: [],
+    };
   }
 }
