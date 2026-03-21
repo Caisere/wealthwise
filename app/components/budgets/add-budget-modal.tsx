@@ -12,7 +12,7 @@ type AddBudgetModalType = {
 };
 
 export function AddBudgetModal({ onClose, categories }: AddBudgetModalType) {
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [form, setForm] = useState({
     categoryId: categories?.[0]?.id || "",
     limit: "",
@@ -30,7 +30,7 @@ export function AddBudgetModal({ onClose, categories }: AddBudgetModalType) {
   async function handleAddBudget(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
       const { categoryId, limit, month } = form;
@@ -66,10 +66,10 @@ export function AddBudgetModal({ onClose, categories }: AddBudgetModalType) {
         toast.error(result?.message);
       }
     } catch (error) {
-      console.log(error)
-      toast.error('Server Error')
+      console.log(error);
+      toast.error("Server Error");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
@@ -113,8 +113,8 @@ export function AddBudgetModal({ onClose, categories }: AddBudgetModalType) {
           <Button type="button" variant="ghost" onClick={onClose} full>
             Cancel
           </Button>
-          <Button variant="primary" type="submit" full>
-            Create Budget
+          <Button variant="primary" type="submit" full disabled={isLoading}>
+            {isLoading ? "Creating Budget" : "Create Budget"}
           </Button>
         </div>
       </form>

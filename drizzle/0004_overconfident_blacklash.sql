@@ -1,0 +1,1 @@
+ALTER TABLE "budgets" ADD COLUMN "spent" numeric(15, 2) DEFAULT '0' NOT NULL;
