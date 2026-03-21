@@ -129,7 +129,7 @@ export default async function BudgetsPage() {
         {usersBudget.map(({ categoryName, monthlyLimit, id, spent }) => {
           const spentAmount = Number(spent);
           const limit = Number(monthlyLimit);
-          const pct = Math.round((spentAmount / limit) * 100);
+          const pct = limit > 0 ? Math.round((spentAmount / limit) * 100) : 0;
           const warn = pct >= 80;
           const over = pct >= 100;
           // const color = generateAccountColor()

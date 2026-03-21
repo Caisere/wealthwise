@@ -232,7 +232,7 @@ export async function getBudgetsData() {
       usersBudget,
     };
   } catch (error) {
-    console.error("getCategories failed", {
+    console.error("getBudgetsData failed", {
       error,
     });
     return {
