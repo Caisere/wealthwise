@@ -479,20 +479,28 @@ export async function addTransaction(data: Transaction) {
       //   .where(
       //     and(...queryCondition),
       //   );
+      
 
-      await tx
-        .update(budgets)
-        .set({
-          spent: sql`${budgets.spent} + ${amount}`,
-        })
-        .where(
-          and(
-            eq(budgets.userId, userId),
-            eq(budgets.categoryId, categoryId),
-            gte(budgets.monthlyLimit, budgets.spent),
-          ),
-        );
+      // Only update budget spent for EXPENSE transactions
+      if (type === "EXPENSE") {
 
+        // const txMonth = new Date(date).toISOString().slice(0, 7) + "-01";
+        await tx
+          .update(budgets)
+          .set({
+            spent: sql`${budgets.spent} + ${amount}`,
+          })
+          .where(
+            and(
+              eq(budgets.userId, userId),
+              eq(budgets.categoryId, categoryId),
+              gte(budgets.monthlyLimit, budgets.spent),
+              // eq(budgets.month, txMonth),
+            ),
+          );
+      }
+
+      
       await tx
         .update(userAccounts)
         .set({ balance: sql`${userAccounts.balance} - ${amount}` })
@@ -515,7 +523,7 @@ export async function addTransaction(data: Transaction) {
       });
 
       revalidatePath("/transactions");
-      revalidatePath("/budgets")
+      revalidatePath("/budgets");
 
       return {
         success: true,

@@ -234,9 +234,9 @@ export const transactions = pgTable("transactions", {
   categoryId: text("category_id")
     .notNull()
     .references(() => categories.id, {
-      // nullable: if category is deleted, tx stays but loses category
-      // onDelete: "set null" keeps the transaction intact
-      onDelete: "set null",
+      // Prevent deletion of categories that have transactions
+      onDelete: "restrict",
+      // onDelete: "set null",
     }),
 
   type: transactionTypeEnum("type").notNull(),
