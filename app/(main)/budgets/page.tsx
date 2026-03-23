@@ -9,8 +9,8 @@ export default async function BudgetsPage() {
     { totalBudgetsBalance, totalBudgetSpent, AmountRemaining, usersBudget },
   ] = await Promise.all([getCategories(), getBudgetsData()]);
 
-  const percentageSpent = Math.round((totalBudgetSpent / totalBudgetsBalance) * 100)
-  const percentageRemaining = Math.round((AmountRemaining / totalBudgetsBalance) * 100)
+  const percentageSpent = totalBudgetsBalance > 0 ? Math.round((totalBudgetSpent / totalBudgetsBalance) * 100) : 0
+  const percentageRemaining = totalBudgetsBalance > 0 ? Math.round((AmountRemaining / totalBudgetsBalance) * 100) : 0
 
   return (
     <div style={{ padding: 32 }}>
@@ -72,7 +72,7 @@ export default async function BudgetsPage() {
           {
             label: "Total Budgeted",
             value: totalBudgetsBalance,
-            rate: "",
+            rate: null,
           },
           {
             label: "Total Spent",
@@ -116,7 +116,7 @@ export default async function BudgetsPage() {
             >
               {fmt(Number(l.value))}
             </p>
-            {l.rate && <p style={{ fontSize: 12, color: T.mu }}>%{l.rate}</p>}
+            {l.rate !== null && <p style={{ fontSize: 12, color: T.mu }}>%{l.rate}</p>}
           </div>
         ))}
       </div>
