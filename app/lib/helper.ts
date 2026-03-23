@@ -49,3 +49,45 @@ export const generateAccountColor = (type: AccountType) => {
       return T.G;
   }
 };
+
+export const generateBudgetColor = (category: string) => {
+  switch (category) {
+    case "Food & Groceries":
+      return T.G;
+    case "Transport":
+      return T.B;
+    case "Utilities":
+      return T.A;
+    case "Entertainment":
+      return T.V;
+    case "Rent":
+      return T.R;
+    case "Income":
+      return T.R;
+    case "Health":
+      return T.R;
+    default:
+      return T.G;
+  }
+};
+
+export const generateBudgetIcon = (category: string) => {
+  switch (category) {
+    case "Food & Groceries":
+      return "🛒";
+    case "Transport":
+      return "🚗";
+    case "Utilities":
+      return "⚡";
+    case "Entertainment":
+      return "🎬";
+    case "Rent":
+      return "🏠";
+    case "Income":
+      return T.R;
+    case "Health":
+      return "💊";
+    default:
+      return T.G;
+  }
+};

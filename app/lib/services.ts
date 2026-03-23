@@ -7,7 +7,7 @@ import {
   userAccounts,
   usersTable,
 } from "@/db/schema";
-import { and, eq, or, sum } from "drizzle-orm";
+import { and, desc, eq, or, sum } from "drizzle-orm";
 import { UserAccountData } from "../types";
 
 export type UserAccountName = {
@@ -169,7 +169,7 @@ export async function getTransactions(): Promise<TransactionType[]> {
       .from(transactions)
       .leftJoin(userAccounts, eq(transactions.accountId, userAccounts.id))
       .leftJoin(categories, eq(transactions.categoryId, categories.id))
-      .where(eq(transactions.userId, userId));
+      .where(eq(transactions.userId, userId)).orderBy(desc(transactions.createdAt));
 
     return userTransactions;
   } catch (error) {
