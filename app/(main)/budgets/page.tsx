@@ -1,5 +1,5 @@
 import { AddBudgetBtn } from "@/app/components/budgets/add-budgets-btn";
-import { BUDGETS } from "@/app/lib/data";
+import { generateBudgetColor, generateBudgetIcon } from "@/app/lib/helper";
 import { getBudgetsData, getCategories } from "@/app/lib/services";
 import { fmt, T } from "@/app/lib/theme";
 
@@ -8,6 +8,9 @@ export default async function BudgetsPage() {
     categories,
     { totalBudgetsBalance, totalBudgetSpent, AmountRemaining, usersBudget },
   ] = await Promise.all([getCategories(), getBudgetsData()]);
+
+  const percentageSpent = totalBudgetsBalance > 0 ? Math.round((totalBudgetSpent / totalBudgetsBalance) * 100) : 0
+  const percentageRemaining = totalBudgetsBalance > 0 ? Math.round((AmountRemaining / totalBudgetsBalance) * 100) : 0
 
   return (
     <div style={{ padding: 32 }}>
@@ -33,7 +36,7 @@ export default async function BudgetsPage() {
             Budgets
           </h1>
           <p style={{ fontSize: 14, color: T.mu }}>
-            March 2026 · {BUDGETS.length} active budgets
+            March 2026 · {usersBudget.length} active budgets
           </p>
         </div>
         <div style={{ display: "flex", gap: 10 }}>
@@ -69,17 +72,17 @@ export default async function BudgetsPage() {
           {
             label: "Total Budgeted",
             value: totalBudgetsBalance,
-            rate: "",
+            rate: null,
           },
           {
             label: "Total Spent",
             value: totalBudgetSpent,
-            rate: "%17.2",
+            rate: percentageSpent,
           },
           {
             label: "Remaining",
             value: AmountRemaining,
-            rate: "%17.2",
+            rate: percentageRemaining
           },
         ].map((l) => (
           <div
@@ -113,7 +116,7 @@ export default async function BudgetsPage() {
             >
               {fmt(Number(l.value))}
             </p>
-            {l.rate && <p style={{ fontSize: 12, color: T.mu }}>{l.rate}</p>}
+            {l.rate !== null && <p style={{ fontSize: 12, color: T.mu }}>%{l.rate}</p>}
           </div>
         ))}
       </div>
@@ -166,7 +169,7 @@ export default async function BudgetsPage() {
                       fontSize: 22,
                     }}
                   >
-                    {/* {icon} */}
+                    {generateBudgetIcon(categoryName!)}
                   </div>
                   <div>
                     <h3
@@ -238,7 +241,7 @@ export default async function BudgetsPage() {
                 <span
                   style={{ fontSize: 13, color: T.di, alignSelf: "flex-end" }}
                 >
-                  of ₦{monthlyLimit.toLocaleString()}
+                  of {fmt(Number(monthlyLimit))}
                 </span>
               </div>
               <div
@@ -256,11 +259,11 @@ export default async function BudgetsPage() {
                     height: "100%",
                     borderRadius: 10,
                     transition: "width .8s ease",
-                    // background: over
-                    //   ? T.R
-                    //   : warn
-                    //     ? `linear-gradient(90deg,${T.A},${T.R})`
-                    //     : `linear-gradient(90deg,${color}90,${color})`,
+                    background: over
+                      ? T.R
+                      : warn
+                        ? `linear-gradient(90deg,${T.A},${T.R})`
+                        : `linear-gradient(90deg,${generateBudgetColor(categoryName!)}90,${generateBudgetColor(categoryName!)})`,
                   }}
                 />
               </div>
@@ -274,8 +277,8 @@ export default async function BudgetsPage() {
                 >
                   {pct}% used
                 </span>
-                <span style={{ fontSize: 12, color: T.di }}>
-                  ₦{Math.max(0, limit - spentAmount).toLocaleString()} remaining
+                <span style={{ fontSize: 12, color: T.B }} className="font-semibold">
+                  {fmt(Math.max(0, limit - spentAmount))} remaining
                 </span>
               </div>
             </div>
