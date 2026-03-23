@@ -84,10 +84,10 @@ export const generateBudgetIcon = (category: string) => {
     case "Rent":
       return "🏠";
     case "Income":
-      return T.R;
+      return "💰";
     case "Health":
       return "💊";
     default:
-      return T.G;
+      return "🧾";
   }
 };
