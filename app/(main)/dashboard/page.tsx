@@ -1,6 +1,6 @@
 import { CashFlow } from "@/app/components/dashboard/cash-flow";
 import { SpendingSplit } from "@/app/components/dashboard/spending-split";
-import { RecentTrasanctions } from "@/app/components/dashboard/recent-transactions";
+import { RecentTransactions } from "@/app/components/dashboard/recent-transactions";
 import { BudgetStatus } from "@/app/components/dashboard/budget-status";
 import { Stats } from "@/app/components/dashboard/stats";
 import { getUserSession } from "@/app/lib/getUserSession";
@@ -24,7 +24,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-[1fr_300px] gap-5">
-        <RecentTrasanctions />
+        <RecentTransactions />
 
         <BudgetStatus />
       </div>

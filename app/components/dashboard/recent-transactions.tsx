@@ -2,7 +2,7 @@ import { RECENT_TX } from "@/app/lib/data";
 import { fmt, T } from "@/app/lib/theme";
 import Link from "next/link";
 
-export function RecentTrasanctions() {
+export function RecentTransactions() {
   return (
     <div
       style={{
@@ -55,7 +55,6 @@ export function RecentTrasanctions() {
             padding: "11px 12px",
             borderRadius: 12,
             transition: "background .15s",
-            cursor: "pointer",
           }}
         >
           <div
