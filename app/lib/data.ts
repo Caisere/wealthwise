@@ -132,91 +132,91 @@ export const TRANSACTIONS: Transaction[] = [
   },
 ];
 
-export const BUDGETS: Budget[] = [
-  {
-    cat: "Food",
-    icon: "🛒",
-    spent: 42000,
-    limit: 60000,
-    color: "#4ade80",
-    txCount: 8,
-  },
-  {
-    cat: "Rent",
-    icon: "🏠",
-    spent: 80000,
-    limit: 80000,
-    color: "#38bdf8",
-    txCount: 1,
-  },
-  {
-    cat: "Transport",
-    icon: "🚗",
-    spent: 18000,
-    limit: 20000,
-    color: "#fbbf24",
-    txCount: 12,
-  },
-  {
-    cat: "Utilities",
-    icon: "⚡",
-    spent: 22000,
-    limit: 25000,
-    color: "#a78bfa",
-    txCount: 3,
-  },
-  {
-    cat: "Entertainment",
-    icon: "🎬",
-    spent: 9200,
-    limit: 15000,
-    color: "#f87171",
-    txCount: 4,
-  },
-  {
-    cat: "Health",
-    icon: "💊",
-    spent: 4500,
-    limit: 20000,
-    color: "#34d399",
-    txCount: 2,
-  },
-];
+// export const BUDGETS: Budget[] = [
+//   {
+//     cat: "Food",
+//     icon: "🛒",
+//     spent: 42000,
+//     limit: 60000,
+//     color: "#4ade80",
+//     txCount: 8,
+//   },
+//   {
+//     cat: "Rent",
+//     icon: "🏠",
+//     spent: 80000,
+//     limit: 80000,
+//     color: "#38bdf8",
+//     txCount: 1,
+//   },
+//   {
+//     cat: "Transport",
+//     icon: "🚗",
+//     spent: 18000,
+//     limit: 20000,
+//     color: "#fbbf24",
+//     txCount: 12,
+//   },
+//   {
+//     cat: "Utilities",
+//     icon: "⚡",
+//     spent: 22000,
+//     limit: 25000,
+//     color: "#a78bfa",
+//     txCount: 3,
+//   },
+//   {
+//     cat: "Entertainment",
+//     icon: "🎬",
+//     spent: 9200,
+//     limit: 15000,
+//     color: "#f87171",
+//     txCount: 4,
+//   },
+//   {
+//     cat: "Health",
+//     icon: "💊",
+//     spent: 4500,
+//     limit: 20000,
+//     color: "#34d399",
+//     txCount: 2,
+//   },
+// ];
 
-export const ACCOUNTS: Account[] = [
-  {
-    name: "GTBank Savings",
-    type: "BANK",
-    balance: 842500,
-    icon: "🏦",
-    color: "#4ade80",
-    currency: "NGN",
-  },
-  {
-    name: "Opay Wallet",
-    type: "EMONEY",
-    balance: 34200,
-    icon: "📱",
-    color: "#38bdf8",
-    currency: "NGN",
-  },
-  {
-    name: "Cash (Wallet)",
-    type: "CASH",
-    balance: 12800,
-    icon: "💵",
-    color: "#fbbf24",
-    currency: "NGN",
-  },
-  {
-    name: "PiggyVest",
-    type: "SAVINGS",
-    balance: 395000,
-    icon: "🐷",
-    color: "#a78bfa",
-    currency: "NGN",
-  },
-];
+// export const ACCOUNTS: Account[] = [
+//   {
+//     name: "GTBank Savings",
+//     type: "BANK",
+//     balance: 842500,
+//     icon: "🏦",
+//     color: "#4ade80",
+//     currency: "NGN",
+//   },
+//   {
+//     name: "Opay Wallet",
+//     type: "EMONEY",
+//     balance: 34200,
+//     icon: "📱",
+//     color: "#38bdf8",
+//     currency: "NGN",
+//   },
+//   {
+//     name: "Cash (Wallet)",
+//     type: "CASH",
+//     balance: 12800,
+//     icon: "💵",
+//     color: "#fbbf24",
+//     currency: "NGN",
+//   },
+//   {
+//     name: "PiggyVest",
+//     type: "SAVINGS",
+//     balance: 395000,
+//     icon: "🐷",
+//     color: "#a78bfa",
+//     currency: "NGN",
+//   },
+// ];
 
 export const CATEGORY_OPTIONS = [
   { value: "food", label: "🛒 Food & Groceries" },
@@ -488,3 +488,58 @@ export const ALL_TX = [
 //     txCount: 2,
 //   },
 // ];
+
+export const RECENT_TX = [
+  {
+    id: 1,
+    desc: "Grocery — Shoprite",
+    cat: "Food",
+    account: "GTBank",
+    amount: -8500,
+    date: "Today, 2:14 PM",
+    icon: "🛒",
+  },
+  {
+    id: 2,
+    desc: "March Salary",
+    cat: "Income",
+    account: "GTBank",
+    amount: 420000,
+    date: "Today, 8:00 AM",
+    icon: "💰",
+  },
+  {
+    id: 3,
+    desc: "Uber to VI",
+    cat: "Transport",
+    account: "Opay",
+    amount: -2300,
+    date: "Yesterday",
+    icon: "🚗",
+  },
+  {
+    id: 4,
+    desc: "Netflix Subscription",
+    cat: "Entertainment",
+    account: "Opay",
+    amount: -4600,
+    date: "Mar 5",
+    icon: "🎬",
+  },
+  {
+    id: 5,
+    desc: "EKEDC Electricity",
+    cat: "Utilities",
+    account: "Cash",
+    amount: -15000,
+    date: "Mar 4",
+    icon: "⚡",
+  },
+];
+
+export const BUDGETS = [
+  { cat: "Food", spent: 42000, limit: 60000, color: T.G },
+  { cat: "Transport", spent: 18000, limit: 20000, color: T.A },
+  { cat: "Utilities", spent: 22000, limit: 25000, color: T.V },
+  { cat: "Entertainment", spent: 9200, limit: 15000, color: T.B },
+];

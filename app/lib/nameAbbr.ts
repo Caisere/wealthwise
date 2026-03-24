@@ -28,3 +28,37 @@ export function generateIcon(category: string) {
       return "🏦";
   }
 }
+
+export function getCompleteDate() {
+  const date = new Date();
+
+  const options: Intl.DateTimeFormatOptions = {
+    weekday: "long",
+    year: "numeric",
+    month: "long", 
+    day: "numeric", 
+  };
+
+  const formatted = new Intl.DateTimeFormat("en-US", options).format(date);
+
+  return formatted
+}
+
+export function getPeriod() {
+  const date = new Date();
+  const hourOfTheDay = date.getHours();
+
+  return hourOfTheDay < 12
+    ? "Good Morning"
+    : hourOfTheDay < 18
+      ? "Good Afternoon"
+      : "Good Evening";
+
+  // if(hourOfTheDay < 12) {
+  //   return 'Good Morning'
+  // } else if (hourOfTheDay < 18 ) {
+  //   return "Good Afternoon"
+  // } else {
+  //   return 'Good Evening'
+  // }
+}
