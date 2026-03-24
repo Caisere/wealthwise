@@ -2,13 +2,7 @@ import { StatCard } from "./start-card";
 
 export function Stats() {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr",
-        gap: 16,
-        marginBottom: 24,
-      }}
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6"
     >
       <StatCard
         label="Net Worth"
