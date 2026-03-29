@@ -6,10 +6,13 @@ import { ReactNode } from "react";
 
 export function UserGreeting ({children}:{children: ReactNode}) {
 
+  const fullDate = getCompleteDate()
+  const period = getPeriod();
+
   return (
     <div>
       <p style={{ fontSize: 13, color: T.di, marginBottom: 4 }}>
-        {getCompleteDate()}
+        {fullDate}
       </p>
       <h1
         style={{
@@ -21,7 +24,7 @@ export function UserGreeting ({children}:{children: ReactNode}) {
           margin: "0 0 4px",
         }}
       >
-        {getPeriod()}, {children || "User"} 👋
+        {period}, {children || "User"} 👋
       </h1>
       <p style={{ fontSize: 14, color: T.mu }}>
         Here&apos;s your financial overview for March.

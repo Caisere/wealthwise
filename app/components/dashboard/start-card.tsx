@@ -1,4 +1,4 @@
-import { T } from "@/app/lib/theme";
+import { fmt, T } from "@/app/lib/theme";
 
 export function StatCard({
   label,
@@ -6,12 +6,14 @@ export function StatCard({
   change,
   up,
   sub,
+  lastMonth,
 }: {
   label: string;
-  value: string;
-  change: string;
-  up: boolean;
+  value: number | string;
+  change?: number | string;
+  up?: boolean;
   sub: string;
+  lastMonth?: number;
 }) {
   return (
     <div
@@ -58,23 +60,30 @@ export function StatCard({
           letterSpacing: "-0.5px",
         }}
       >
-        {value}
+        {fmt(Number(value))}
       </p>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <span
-          style={{
-            fontSize: 11,
-            fontWeight: 700,
-            padding: "2px 7px",
-            borderRadius: 6,
-            background: `${up ? T.G : T.R}15`,
-            color: up ? T.G : T.R,
-          }}
-        >
-          {up ? "↑" : "↓"} {change}
-        </span>
+        {label !== "Net Worth" && (
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              padding: "2px 7px",
+              borderRadius: 6,
+              background: `${up ? T.G : T.R}15`,
+              color: up ? T.G : T.R,
+            }}
+          >
+            {up ? "↑" : "↓"} {change}%
+          </span>
+        )}
         <span style={{ fontSize: 11, color: T.di }}>{sub}</span>
       </div>
+      {lastMonth && (
+        <span className="mt-4 text-sm flex justify-end text-">
+          {fmt(lastMonth)} → {fmt(Number(value))}
+        </span>
+      )}
     </div>
   );
 }
