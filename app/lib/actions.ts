@@ -460,56 +460,83 @@ export async function addTransaction(data: Transaction) {
 
       // check for transaction type and and sufficient balance
 
-      if (type === "EXPENSE" && userCurrentBalance < amount) {
-        return {
-          success: false,
-          message: `Insufficient balance. Available: ₦${userCurrentBalance.toLocaleString()}`,
-        };
-      }
-
-      // calculate new balance
-      // const newBalance =
-      //   type === "EXPENSE"
-      //     ? userCurrentBalance - amount
-      //     : userCurrentBalance + amount;
-
-      // await tx
-      //   .update(userAccounts)
-      //   .set({ balance: newBalance.toString() })
-      //   .where(
-      //     and(...queryCondition),
-      //   );
-      
-
-      // Only update budget spent for EXPENSE transactions
       if (type === "EXPENSE") {
+        if (userCurrentBalance < amount) {
+          return {
+            success: false,
+            message: `Insufficient balance. Available: ₦${userCurrentBalance.toLocaleString()}`,
+          };
+        } else {
+          // calculate new balance
+          // const newBalance =
+          //   type === "EXPENSE"
+          //     ? userCurrentBalance - amount
+          //     : userCurrentBalance + amount;
 
-        // const txMonth = new Date(date).toISOString().slice(0, 7) + "-01";
-        await tx
-          .update(budgets)
-          .set({
-            spent: sql`${budgets.spent} + ${amount}`,
-          })
-          .where(
-            and(
-              eq(budgets.userId, userId),
-              eq(budgets.categoryId, categoryId),
-              gte(budgets.monthlyLimit, budgets.spent),
-              // eq(budgets.month, txMonth),
-            ),
-          );
+          // await tx
+          //   .update(userAccounts)
+          //   .set({ balance: newBalance.toString() })
+          //   .where(
+          //     and(...queryCondition),
+          //   );
+
+          // await tx
+          //   .update(userAccounts)
+          //   .set({ balance: newBalance.toString() })
+          //   .where(
+          //     and(...queryCondition),
+          //   );
+
+          await tx
+            .update(userAccounts)
+            .set({ balance: sql`${userAccounts.balance} - ${amount}` })
+            .where(
+              and(
+                ...queryCondition,
+                gte(userAccounts.balance, String(amount)), // only deduct if enough funds
+              ),
+            );
+
+          await tx
+            .update(budgets)
+            .set({
+              spent: sql`${budgets.spent} + ${amount}`,
+            })
+            .where(
+              and(
+                eq(budgets.userId, userId),
+                eq(budgets.categoryId, categoryId),
+                gte(budgets.monthlyLimit, budgets.spent),
+                // const txMonth = new Date(date).toISOString().slice(0, 7) + "-01";
+                // eq(budgets.month, txMonth),
+              ),
+            );
+
+          await tx.insert(transactions).values({
+            userId,
+            accountId,
+            transactionId,
+            type,
+            amount: amount.toString(),
+            description,
+            categoryId,
+            date: new Date(date),
+          });
+
+          revalidatePath("/transactions");
+          revalidatePath("/budgets");
+
+          return {
+            success: true,
+            message: "Transaction added successfully",
+          };
+        }
       }
 
-      
       await tx
         .update(userAccounts)
-        .set({ balance: sql`${userAccounts.balance} - ${amount}` })
-        .where(
-          and(
-            ...queryCondition,
-            gte(userAccounts.balance, String(amount)), // only deduct if enough funds
-          ),
-        );
+        .set({ balance: sql`${userAccounts.balance} + ${amount}` })
+        .where(and(...queryCondition));
 
       await tx.insert(transactions).values({
         userId,
@@ -523,7 +550,6 @@ export async function addTransaction(data: Transaction) {
       });
 
       revalidatePath("/transactions");
-      revalidatePath("/budgets");
 
       return {
         success: true,

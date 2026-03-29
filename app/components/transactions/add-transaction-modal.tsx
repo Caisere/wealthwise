@@ -107,59 +107,106 @@ export function AddTransactionModal({
           </button>
         ))}
       </div>
-      <form onSubmit={handleAddTransaction}>
-        <Input
-          label="Amount (₦)"
-          type="number"
-          placeholder="0.00"
-          value={form.amount}
-          onChange={set("amount")}
-          icon="₦"
-        />
-        <Input
-          label="Description"
-          placeholder="What was this for?"
-          value={form.description}
-          onChange={set("description")}
-        />
-        <Select
-          label="Category"
-          value={form.categoryId}
-          onChange={set("categoryId")}
-          options={
-            categories?.map((category: { name: string; id: string }) => ({
-              value: category.id,
-              label: category.name,
-            })) || []
-          }
-        />
-        <Select
-          label="Account"
-          value={form.accountId}
-          onChange={set("accountId")}
-          options={
-            userAccounts?.map((account: { name: string; id: string }) => ({
-              // .toLowerCase().replace(/\s+/g, "-")
-              value: account.id,
-              label: account.name,
-            })) || []
-          }
-        />
-        <Input
-          label="Date"
-          type="date"
-          value={form.date}
-          onChange={set("date")}
-        />
-        <div className="mt-2 flex gap-2">
-          <Button type="submit" variant="ghost" onClick={onClose} full>
-            Cancel
-          </Button>
-          <Button type="submit" variant="primary" full disabled={isLoading}>
-            {isLoading ? "Saving" : "Save Transaction"}
-          </Button>
-        </div>
-      </form>
+      <div>
+        {type === "EXPENSE" ? (
+          <form onSubmit={handleAddTransaction}>
+            <Input
+              label="Amount (₦)"
+              type="number"
+              placeholder="0.00"
+              value={form.amount}
+              onChange={set("amount")}
+              icon="₦"
+            />
+            <Input
+              label="Description"
+              placeholder="What was this for?"
+              value={form.description}
+              onChange={set("description")}
+            />
+            <Select
+              label="Category"
+              value={form.categoryId}
+              onChange={set("categoryId")}
+              options={
+                categories?.map((category: { name: string; id: string }) => ({
+                  value: category.id,
+                  label: category.name,
+                })) || []
+              }
+            />
+            <Select
+              label="Account"
+              value={form.accountId}
+              onChange={set("accountId")}
+              options={
+                userAccounts?.map((account: { name: string; id: string }) => ({
+                  // .toLowerCase().replace(/\s+/g, "-")
+                  value: account.id,
+                  label: account.name,
+                })) || []
+              }
+            />
+            <Input
+              label="Date"
+              type="date"
+              value={form.date}
+              onChange={set("date")}
+            />
+            <div className="mt-2 flex gap-2">
+              <Button type="submit" variant="ghost" onClick={onClose} full>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" full disabled={isLoading}>
+                {isLoading ? "Saving" : "Save Transaction"}
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <form onSubmit={handleAddTransaction}>
+            <Input
+              label="Amount (₦)"
+              type="number"
+              placeholder="0.00"
+              value={form.amount}
+              onChange={set("amount")}
+              icon="₦"
+            />
+            <Input
+              label="Description"
+              placeholder="What was this for?"
+              value={form.description}
+              onChange={set("description")}
+            />
+            <Select
+              label="Account"
+              value={form.accountId}
+              onChange={set("accountId")}
+              options={
+                userAccounts?.map((account: { name: string; id: string }) => ({
+                  // .toLowerCase().replace(/\s+/g, "-")
+                  value: account.id,
+                  label: account.name,
+                })) || []
+              }
+            />
+            <Input
+              label="Date"
+              type="date"
+              value={form.date}
+              onChange={set("date")}
+            />
+            <div className="mt-2 flex gap-2">
+              <Button type="submit" variant="ghost" onClick={onClose} full>
+                Cancel
+              </Button>
+              <Button type="submit" variant="primary" full disabled={isLoading}>
+                {isLoading ? "Saving" : "Save Transaction"}
+              </Button>
+            </div>
+          </form>
+        )}
+      </div>
     </Modal>
   );
 }
