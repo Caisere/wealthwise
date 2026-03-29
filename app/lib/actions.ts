@@ -532,7 +532,7 @@ export async function addTransaction(data: Transaction) {
           };
         }
       }
-
+      
       await tx
         .update(userAccounts)
         .set({ balance: sql`${userAccounts.balance} + ${amount}` })
