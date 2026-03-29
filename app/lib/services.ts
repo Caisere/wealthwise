@@ -249,7 +249,7 @@ export async function getTotalIncAndExp() {
         .from(transactions)
         .where(and(...lastMonthQueryArr, eq(transactions.type, "EXPENSE"))),
 
-      // current month total Incomes
+      // current month total Expenses
       db
         .select({
           total: sum(transactions.amount),

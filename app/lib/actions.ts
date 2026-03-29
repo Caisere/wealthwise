@@ -464,7 +464,7 @@ export async function addTransaction(data: Transaction) {
         if (userCurrentBalance < amount) {
           return {
             success: false,
-            message: `Insufficient balance. Available: ₦${userCurrentBalance.toLocaleString()}`,
+            message: `Insufficient balance. Available balance is: ₦${userCurrentBalance.toLocaleString()}`,
           };
         } else {
           // calculate new balance
@@ -487,7 +487,7 @@ export async function addTransaction(data: Transaction) {
           //     and(...queryCondition),
           //   );
 
-          await tx
+          const [updateResult] = await tx
             .update(userAccounts)
             .set({ balance: sql`${userAccounts.balance} - ${amount}` })
             .where(
@@ -495,23 +495,32 @@ export async function addTransaction(data: Transaction) {
                 ...queryCondition,
                 gte(userAccounts.balance, String(amount)), // only deduct if enough funds
               ),
-            );
+            )
+            .returning({ id: userAccounts.id });
+
+          if (!updateResult) {
+            return {
+              success: false,
+              message:
+                "Insufficient balance or concurrent modification. Please retry.",
+            };
+          }
 
           if (categoryId) {
-          await tx
-            .update(budgets)
-            .set({
-              spent: sql`${budgets.spent} + ${amount}`,
-            })
-            .where(
-              and(
-                eq(budgets.userId, userId),
-                eq(budgets.categoryId, categoryId),
-                gte(budgets.monthlyLimit, budgets.spent),
-                // const txMonth = new Date(date).toISOString().slice(0, 7) + "-01";
-                // eq(budgets.month, txMonth),
-              ),
-            );
+            await tx
+              .update(budgets)
+              .set({
+                spent: sql`${budgets.spent} + ${amount}`,
+              })
+              .where(
+                and(
+                  eq(budgets.userId, userId),
+                  eq(budgets.categoryId, categoryId),
+                  gte(budgets.monthlyLimit, budgets.spent),
+                  // const txMonth = new Date(date).toISOString().slice(0, 7) + "-01";
+                  // eq(budgets.month, txMonth),
+                ),
+              );
           }
 
           await tx.insert(transactions).values({
@@ -534,7 +543,7 @@ export async function addTransaction(data: Transaction) {
           };
         }
       }
-      
+
       await tx
         .update(userAccounts)
         .set({ balance: sql`${userAccounts.balance} + ${amount}` })
