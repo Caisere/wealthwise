@@ -19,13 +19,11 @@ export default async function DashboardPage() {
 
       <div className="mb-5 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
         <CashFlow />
-
         <SpendingSplit />
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
         <RecentTransactions />
-
         <BudgetStatus />
       </div>
     </div>
