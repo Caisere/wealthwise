@@ -497,6 +497,7 @@ export async function addTransaction(data: Transaction) {
               ),
             );
 
+          if (categoryId) {
           await tx
             .update(budgets)
             .set({
@@ -511,6 +512,7 @@ export async function addTransaction(data: Transaction) {
                 // eq(budgets.month, txMonth),
               ),
             );
+          }
 
           await tx.insert(transactions).values({
             userId,

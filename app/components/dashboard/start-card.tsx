@@ -9,8 +9,8 @@ export function StatCard({
   lastMonth,
 }: {
   label: string;
-  value: number | string;
-  change?: number | string;
+  value: number;
+  change?: number;
   up?: boolean;
   sub: string;
   lastMonth?: number;
@@ -60,7 +60,7 @@ export function StatCard({
           letterSpacing: "-0.5px",
         }}
       >
-        {fmt(Number(value))}
+        {fmt(value)}
       </p>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         {label !== "Net Worth" && (
@@ -79,9 +79,9 @@ export function StatCard({
         )}
         <span style={{ fontSize: 11, color: T.di }}>{sub}</span>
       </div>
-      {lastMonth && (
-        <span className="mt-4 text-sm flex justify-end text-">
-          {fmt(lastMonth)} → {fmt(Number(value))}
+      {lastMonth !== undefined && (
+        <span className="mt-4 text-sm flex justify-end text-gray-500">
+          {fmt(lastMonth)} → {fmt(value)}
         </span>
       )}
     </div>

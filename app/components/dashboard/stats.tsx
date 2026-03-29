@@ -14,9 +14,13 @@ export async function Stats() {
     },
   ] = await Promise.all([getUserAccountData(), getTotalIncAndExp()]);
 
-  const savings = totalIncomes - totalExpenses
-  const percentageSavings = Number((((totalIncomes - totalExpenses) / totalExpenses) * 100).toFixed(2))
-  
+  const savings = totalIncomes - totalExpenses;
+  const percentageSavings =
+    totalExpenses > 0
+      ? Number(
+          (((totalIncomes - totalExpenses) / totalExpenses) * 100).toFixed(2),
+        )
+      : 0;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -30,16 +34,16 @@ export async function Stats() {
       <StatCard
         label="Income (Mar)"
         value={totalIncomes}
-        change={percentageIncome || 0}
-        up={percentageIncome! > 0}
+        change={percentageIncome ?? 0}
+        up={(percentageIncome ?? 0) > 0}
         sub="vs last month"
         lastMonth={lastMonthTotalIncomes}
       />
       <StatCard
         label="Expenses (Mar)"
         value={totalExpenses}
-        change={percentageExpense || 0}
-        up={percentageExpense! > 0}
+        change={percentageExpense ?? 0}
+        up={(percentageExpense ?? 0) > 0}
         sub="vs last month"
         lastMonth={lastMonthTotalExpenses}
       />

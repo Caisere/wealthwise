@@ -208,14 +208,14 @@ export async function getTotalIncAndExp() {
 
     const currentMonthQueryArr = [
       eq(transactions.userId, userId),
-      gte(transactions.createdAt, currentMonthFirstDay),
-      lte(transactions.createdAt, currentMonthLastDay),
+      gte(transactions.date, currentMonthFirstDay),
+      lte(transactions.date, currentMonthLastDay),
     ];
 
     const lastMonthQueryArr = [
       eq(transactions.userId, userId),
-      gte(transactions.createdAt, lastMonthFirstDay),
-      lte(transactions.createdAt, lastMonthLastDay),
+      gte(transactions.date, lastMonthFirstDay),
+      lte(transactions.date, lastMonthLastDay),
     ];
 
     const [
@@ -258,10 +258,10 @@ export async function getTotalIncAndExp() {
         .where(and(...currentMonthQueryArr, eq(transactions.type, "EXPENSE"))),
     ]);
 
-    const totalIncomes = Number(currentMonthTotalInc?.[0].total);
-    const totalExpenses = Number(currentMonthTotalExp?.[0].total);
-    const lastMonthTotalIncomes = Number(lastMonthTotalInc?.[0].total);
-    const lastMonthTotalExpenses = Number(lastMonthTotalExp?.[0].total);
+    const totalIncomes = Number(currentMonthTotalInc?.[0].total ?? 0);
+    const totalExpenses = Number(currentMonthTotalExp?.[0].total ?? 0);
+    const lastMonthTotalIncomes = Number(lastMonthTotalInc?.[0].total ?? 0);
+    const lastMonthTotalExpenses = Number(lastMonthTotalExp?.[0].total ?? 0);
 
     const percentageIncome = getPercentageChange(
       totalIncomes,
@@ -282,7 +282,7 @@ export async function getTotalIncAndExp() {
       percentageExpense,
     };
   } catch (error) {
-    console.error("getCategories failed", {
+    console.error("getTotalIncAndExp failed", {
       error,
     });
     return {

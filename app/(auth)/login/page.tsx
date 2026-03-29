@@ -11,7 +11,7 @@ export default function LoginPage() {
       <p className="mt-6 text-center text-sm text-gray-500">
         No account?{" "}
         <Link href="/register" style={{ color: T.G, fontWeight: 600 }}>
-          Create one free
+          Create one for free
         </Link>
       </p>
     </AuthPanel>
