@@ -467,25 +467,6 @@ export async function addTransaction(data: Transaction) {
             message: `Insufficient balance. Available balance is: ₦${userCurrentBalance.toLocaleString()}`,
           };
         } else {
-          // calculate new balance
-          // const newBalance =
-          //   type === "EXPENSE"
-          //     ? userCurrentBalance - amount
-          //     : userCurrentBalance + amount;
-
-          // await tx
-          //   .update(userAccounts)
-          //   .set({ balance: newBalance.toString() })
-          //   .where(
-          //     and(...queryCondition),
-          //   );
-
-          // await tx
-          //   .update(userAccounts)
-          //   .set({ balance: newBalance.toString() })
-          //   .where(
-          //     and(...queryCondition),
-          //   );
 
           const [updateResult] = await tx
             .update(userAccounts)
@@ -507,7 +488,7 @@ export async function addTransaction(data: Transaction) {
           }
 
           if (categoryId) {
-            await tx
+            const result = await tx
               .update(budgets)
               .set({
                 spent: sql`${budgets.spent} + ${amount}`,
@@ -516,11 +497,18 @@ export async function addTransaction(data: Transaction) {
                 and(
                   eq(budgets.userId, userId),
                   eq(budgets.categoryId, categoryId),
-                  gte(budgets.monthlyLimit, budgets.spent),
+                  gte(budgets.monthlyLimit, sql`${budgets.spent} + ${amount}`),
                   // const txMonth = new Date(date).toISOString().slice(0, 7) + "-01";
                   // eq(budgets.month, txMonth),
                 ),
               );
+
+            if (result.rowCount === 0) {
+              return {
+                success: false,
+                message: "Budget Exceeded!",
+              };
+            }
           }
 
           await tx.insert(transactions).values({
