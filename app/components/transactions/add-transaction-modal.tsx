@@ -179,6 +179,17 @@ export function AddTransactionModal({
               onChange={set("description")}
             />
             <Select
+              label="Category"
+              value={form.categoryId}
+              onChange={set("categoryId")}
+              options={
+                categories?.map((category: { name: string; id: string }) => ({
+                  value: category.id,
+                  label: category.name,
+                })) || []
+              }
+            />
+            <Select
               label="Account"
               value={form.accountId}
               onChange={set("accountId")}

@@ -183,7 +183,7 @@ export function Transactions({ transactions }: TransactionProps) {
                   style={{
                     fontSize: 13,
                     fontWeight: 700,
-                    color: type === "EXPENSE" ? T.R : T.tx,
+                    color: type === "EXPENSE" ? T.R : T.GD,
                     textAlign: "center",
                   }}
                 >
