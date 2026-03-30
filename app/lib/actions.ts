@@ -464,30 +464,11 @@ export async function addTransaction(data: Transaction) {
         if (userCurrentBalance < amount) {
           return {
             success: false,
-            message: `Insufficient balance. Available: ₦${userCurrentBalance.toLocaleString()}`,
+            message: `Insufficient balance. Available balance is: ₦${userCurrentBalance.toLocaleString()}`,
           };
         } else {
-          // calculate new balance
-          // const newBalance =
-          //   type === "EXPENSE"
-          //     ? userCurrentBalance - amount
-          //     : userCurrentBalance + amount;
 
-          // await tx
-          //   .update(userAccounts)
-          //   .set({ balance: newBalance.toString() })
-          //   .where(
-          //     and(...queryCondition),
-          //   );
-
-          // await tx
-          //   .update(userAccounts)
-          //   .set({ balance: newBalance.toString() })
-          //   .where(
-          //     and(...queryCondition),
-          //   );
-
-          await tx
+          const [updateResult] = await tx
             .update(userAccounts)
             .set({ balance: sql`${userAccounts.balance} - ${amount}` })
             .where(
@@ -495,22 +476,40 @@ export async function addTransaction(data: Transaction) {
                 ...queryCondition,
                 gte(userAccounts.balance, String(amount)), // only deduct if enough funds
               ),
-            );
+            )
+            .returning({ id: userAccounts.id });
 
-          await tx
-            .update(budgets)
-            .set({
-              spent: sql`${budgets.spent} + ${amount}`,
-            })
-            .where(
-              and(
-                eq(budgets.userId, userId),
-                eq(budgets.categoryId, categoryId),
-                gte(budgets.monthlyLimit, budgets.spent),
-                // const txMonth = new Date(date).toISOString().slice(0, 7) + "-01";
-                // eq(budgets.month, txMonth),
-              ),
-            );
+          if (!updateResult) {
+            return {
+              success: false,
+              message:
+                "Insufficient balance or concurrent modification. Please retry.",
+            };
+          }
+
+          if (categoryId) {
+            const result = await tx
+              .update(budgets)
+              .set({
+                spent: sql`${budgets.spent} + ${amount}`,
+              })
+              .where(
+                and(
+                  eq(budgets.userId, userId),
+                  eq(budgets.categoryId, categoryId),
+                  gte(budgets.monthlyLimit, sql`${budgets.spent} + ${amount}`),
+                  // const txMonth = new Date(date).toISOString().slice(0, 7) + "-01";
+                  // eq(budgets.month, txMonth),
+                ),
+              );
+
+            if (result.rowCount === 0) {
+              return {
+                success: false,
+                message: "Budget Exceeded!",
+              };
+            }
+          }
 
           await tx.insert(transactions).values({
             userId,
@@ -532,7 +531,7 @@ export async function addTransaction(data: Transaction) {
           };
         }
       }
-      
+
       await tx
         .update(userAccounts)
         .set({ balance: sql`${userAccounts.balance} + ${amount}` })

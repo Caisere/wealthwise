@@ -9,8 +9,14 @@ export default async function BudgetsPage() {
     { totalBudgetsBalance, totalBudgetSpent, AmountRemaining, usersBudget },
   ] = await Promise.all([getCategories(), getBudgetsData()]);
 
-  const percentageSpent = totalBudgetsBalance > 0 ? Math.round((totalBudgetSpent / totalBudgetsBalance) * 100) : 0
-  const percentageRemaining = totalBudgetsBalance > 0 ? Math.round((AmountRemaining / totalBudgetsBalance) * 100) : 0
+  const percentageSpent =
+    totalBudgetsBalance > 0
+      ? Math.round((totalBudgetSpent / totalBudgetsBalance) * 100)
+      : 0;
+  const percentageRemaining =
+    totalBudgetsBalance > 0
+      ? Math.round((AmountRemaining / totalBudgetsBalance) * 100)
+      : 0;
 
   return (
     <div style={{ padding: 32 }}>
@@ -82,7 +88,7 @@ export default async function BudgetsPage() {
           {
             label: "Remaining",
             value: AmountRemaining,
-            rate: percentageRemaining
+            rate: percentageRemaining,
           },
         ].map((l) => (
           <div
@@ -116,7 +122,9 @@ export default async function BudgetsPage() {
             >
               {fmt(Number(l.value))}
             </p>
-            {l.rate !== null && <p style={{ fontSize: 12, color: T.mu }}>%{l.rate}</p>}
+            {l.rate !== null && (
+              <p style={{ fontSize: 12, color: T.mu }}>%{l.rate}</p>
+            )}
           </div>
         ))}
       </div>
@@ -277,7 +285,10 @@ export default async function BudgetsPage() {
                 >
                   {pct}% used
                 </span>
-                <span style={{ fontSize: 12, color: T.B }} className="font-semibold">
+                <span
+                  style={{ fontSize: 12, color: T.B }}
+                  className="font-semibold"
+                >
                   {fmt(Math.max(0, limit - spentAmount))} remaining
                 </span>
               </div>

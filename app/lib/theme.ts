@@ -19,4 +19,7 @@ export const T = {
   FB: "'DM Sans', sans-serif",
 } as const;
 
-export const fmt = (n: number) => "₦" + Math.abs(n).toLocaleString("en-NG");
+export const fmt = (n: number) => {
+  const prefix = n < 0 ? "-₦" : "₦";
+  return prefix + Math.abs(n).toLocaleString("en-NG");
+};

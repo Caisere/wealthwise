@@ -7,8 +7,13 @@ import {
   userAccounts,
   usersTable,
 } from "@/db/schema";
-import { and, desc, eq, or, sum } from "drizzle-orm";
+import { and, desc, eq, gte, lte, or, sum } from "drizzle-orm";
 import { UserAccountData } from "../types";
+import {
+  getCurrentMonthDate,
+  getLastMonthDate,
+  getPercentageChange,
+} from "./helper";
 
 export type UserAccountName = {
   name: string;
@@ -169,7 +174,8 @@ export async function getTransactions(): Promise<TransactionType[]> {
       .from(transactions)
       .leftJoin(userAccounts, eq(transactions.accountId, userAccounts.id))
       .leftJoin(categories, eq(transactions.categoryId, categories.id))
-      .where(eq(transactions.userId, userId)).orderBy(desc(transactions.createdAt));
+      .where(eq(transactions.userId, userId))
+      .orderBy(desc(transactions.createdAt));
 
     return userTransactions;
   } catch (error) {
@@ -177,6 +183,116 @@ export async function getTransactions(): Promise<TransactionType[]> {
       error,
     });
     return [];
+  }
+}
+
+export async function getTotalIncAndExp() {
+  try {
+    const session = await getUserSession();
+
+    if (!session) {
+      return {
+        totalIncomes: 0,
+        totalExpenses: 0,
+        lastMonthTotalExpenses: 0,
+        lastMonthTotalIncomes: 0,
+        percentageIncome: 0,
+        percentageExpense: 0,
+      };
+    }
+
+    const userId = session.id;
+
+    const { currentMonthFirstDay, currentMonthLastDay } = getCurrentMonthDate();
+    const { lastMonthFirstDay, lastMonthLastDay } = getLastMonthDate();
+
+    const currentMonthQueryArr = [
+      eq(transactions.userId, userId),
+      gte(transactions.date, currentMonthFirstDay),
+      lte(transactions.date, currentMonthLastDay),
+    ];
+
+    const lastMonthQueryArr = [
+      eq(transactions.userId, userId),
+      gte(transactions.date, lastMonthFirstDay),
+      lte(transactions.date, lastMonthLastDay),
+    ];
+
+    const [
+      lastMonthTotalInc,
+      currentMonthTotalInc,
+      lastMonthTotalExp,
+      currentMonthTotalExp,
+    ] = await Promise.all([
+      // last month total Incomes
+      db
+        .select({
+          total: sum(transactions.amount),
+        })
+        .from(transactions)
+        .where(and(...lastMonthQueryArr, eq(transactions.type, "INCOME"))),
+
+      // Current month total Incomes
+      db
+        .select({
+          total: sum(transactions.amount),
+        })
+        .from(transactions)
+        .where(and(...currentMonthQueryArr, eq(transactions.type, "INCOME"))),
+
+      // last month total Expenses
+
+      db
+        .select({
+          total: sum(transactions.amount),
+        })
+        .from(transactions)
+        .where(and(...lastMonthQueryArr, eq(transactions.type, "EXPENSE"))),
+
+      // current month total Expenses
+      db
+        .select({
+          total: sum(transactions.amount),
+        })
+        .from(transactions)
+        .where(and(...currentMonthQueryArr, eq(transactions.type, "EXPENSE"))),
+    ]);
+
+    const totalIncomes = Number(currentMonthTotalInc?.[0].total ?? 0);
+    const totalExpenses = Number(currentMonthTotalExp?.[0].total ?? 0);
+    const lastMonthTotalIncomes = Number(lastMonthTotalInc?.[0].total ?? 0);
+    const lastMonthTotalExpenses = Number(lastMonthTotalExp?.[0].total ?? 0);
+
+    const percentageIncome = getPercentageChange(
+      totalIncomes,
+      lastMonthTotalIncomes,
+    );
+
+    const percentageExpense = getPercentageChange(
+      totalExpenses,
+      lastMonthTotalExpenses,
+    );
+
+    return {
+      totalIncomes,
+      totalExpenses,
+      lastMonthTotalExpenses,
+      lastMonthTotalIncomes,
+      percentageIncome,
+      percentageExpense,
+    };
+  } catch (error) {
+    console.error("getTotalIncAndExp failed", {
+      error,
+    });
+    return {
+      totalIncomes: 0,
+      totalExpenses: 0,
+      lastMonthTotalExpenses: 0,
+      lastMonthTotalIncomes: 0,
+      percentageIncome: 0,
+      percentageExpense: 0,
+    };
   }
 }
 
