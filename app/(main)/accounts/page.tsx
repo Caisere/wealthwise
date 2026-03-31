@@ -1,5 +1,5 @@
 import { AddAccountBtn } from "@/app/components/accounts/add-account-btn";
-import { generateAccountColor, generateAccountIcon } from "@/app/lib/helper";
+import { generateAccountColor, generateAccountIcon } from "@/app/lib/theme";
 import { getUserAccountData } from "@/app/lib/services";
 import { T } from "@/app/lib/theme";
 

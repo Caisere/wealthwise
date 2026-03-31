@@ -141,7 +141,7 @@ export async function getCategories(): Promise<{
       userCategories,
     };
   } catch (error) {
-    console.error("getCategories failed", {
+    console.error("getCatWithTransSum failed", {
       error,
     });
     return {
