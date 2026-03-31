@@ -1,6 +1,6 @@
 "use client";
 
-import { UserCatsWithTransSum } from "@/app/lib/services";
+import { GetIncAndExpTrans, UserCatsWithTransSum } from "@/app/lib/services";
 import { generateBudgetColor, T } from "@/app/lib/theme";
 import {
   AreaChart,
@@ -18,23 +18,6 @@ import {
   LineChart,
   Line,
 } from "recharts";
-
-const CASH_DATA = [
-  { month: "Oct", income: 320000, expense: 198000 },
-  { month: "Nov", income: 290000, expense: 241000 },
-  { month: "Dec", income: 410000, expense: 189000 },
-  { month: "Jan", income: 380000, expense: 302000 },
-  { month: "Feb", income: 350000, expense: 215000 },
-  { month: "Mar", income: 420000, expense: 178000 },
-];
-
-export const PIE_DATA = [
-  { name: "Food", value: 42000, color: T.G },
-  { name: "Rent", value: 80000, color: T.B },
-  { name: "Transport", value: 18000, color: T.A },
-  { name: "Utilities", value: 22000, color: T.V },
-  { name: "Entertainment", value: 16000, color: T.R },
-];
 
 const BAR_DATA = [
   { month: "Oct", income: 320000, expense: 198000, savings: 122000 },
@@ -91,10 +74,21 @@ function CashTip({
   );
 }
 
-export function CashFlowChart() {
+export function CashFlowChart({
+  monthlyIncAndExp,
+}: {
+  monthlyIncAndExp: GetIncAndExpTrans[];
+}) {
+
+  const chartData = monthlyIncAndExp.map(data => ({
+    month: data.month, 
+    income: Number(data.income),
+    expense: Number(data.expense)
+}))
+
   return (
-    <ResponsiveContainer width="100%" height={200}>
-      <AreaChart data={CASH_DATA}>
+    <ResponsiveContainer width="100%" height={250}>
+      <AreaChart data={chartData}>
         <defs>
           <linearGradient id="gi" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={T.G} stopOpacity={0.25} />

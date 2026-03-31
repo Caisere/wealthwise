@@ -1,18 +1,13 @@
 import { db } from "@/db";
 import { getUserSession } from "./getUserSession";
-import {
-  budgets,
-  categories,
-  transactions,
-  userAccounts,
-  usersTable,
-} from "@/db/schema";
-import { and, desc, eq, gte, lte, ne, or, sum } from "drizzle-orm";
+import { budgets, categories, transactions, userAccounts } from "@/db/schema";
+import { and, desc, eq, gte, lte, ne, or, sql, sum } from "drizzle-orm";
 import { UserAccountData } from "../types";
 import {
   getCurrentMonthDate,
   getLastMonthDate,
   getPercentageChange,
+  getSpecificMonthDate,
 } from "./helper";
 
 export type UserAccountName = {
@@ -34,6 +29,11 @@ export type TransactionType = {
   date: Date;
   accountName: string | null;
   categoryName: string | null;
+};
+
+export type UserCatsWithTransSum = {
+  name: string;
+  total: string | null;
 };
 
 export async function getUserAccountData(): Promise<UserAccountData> {
@@ -360,11 +360,6 @@ export async function getBudgetsData() {
   }
 }
 
-export type UserCatsWithTransSum = {
-  name: string;
-  total: string | null;
-};
-
 export async function getCatWithTransSum(): Promise<{
   userCatsWithTransSum: UserCatsWithTransSum[];
 }> {
@@ -415,5 +410,48 @@ export async function getCatWithTransSum(): Promise<{
     return {
       userCatsWithTransSum: [],
     };
+  }
+}
+
+export type GetIncAndExpTrans = {
+  month: string;
+  income: string;
+  expense: string;
+};
+
+export async function getIncAndExpTrans(): Promise<GetIncAndExpTrans[]> {
+  try {
+    const session = await getUserSession();
+
+    if (!session) {
+      return [];
+    }
+
+    const userId = session.id;
+
+    const { monthFirstDay } = getSpecificMonthDate(5)
+
+    const userIncAndExpTrans: GetIncAndExpTrans[] = await db
+      .select({
+        month: sql<string>`TO_CHAR(${transactions.date}, 'Mon')`,
+        income: sql<string>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'INCOME' THEN ${transactions.amount} END), 0)`,
+        expense: sql<string>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'EXPENSE' THEN ${transactions.amount} END), 0)`,
+      })
+      .from(transactions)
+      .where(
+        and(
+          eq(transactions.userId, userId),
+          gte(transactions.date, monthFirstDay),
+        ),
+      )
+      .groupBy(sql`TO_CHAR(${transactions.date}, 'Mon YYYY')`)
+      .orderBy(sql`MIN(${transactions.date})`);
+
+    return userIncAndExpTrans;
+  } catch (error) {
+    console.error("userIncAndExpTrans failed", {
+      error,
+    });
+    return [];
   }
 }

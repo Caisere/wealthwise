@@ -1,7 +1,9 @@
 import { T } from "@/app/lib/theme";
 import { CashFlowChart } from "./charts";
+import { getIncAndExpTrans } from "@/app/lib/services";
 
-export function CashFlow() {
+export async function CashFlow() {
+  const monthlyIncAndExp = await getIncAndExpTrans()
   return (
     <div
       style={{
@@ -11,14 +13,7 @@ export function CashFlow() {
         padding: 24,
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 20,
-        }}
-      >
+      <div className="flex justify-between items-center mb-5">
         <div>
           <p
             style={{
@@ -42,7 +37,7 @@ export function CashFlow() {
             Cash Flow
           </h3>
         </div>
-        <div style={{ display: "flex", gap: 16, fontSize: 12 }}>
+        <div className="flex gap-4 text-sm" >
           {[
             [T.G, "Income"],
             [T.R, "Expense"],
@@ -70,7 +65,7 @@ export function CashFlow() {
           ))}
         </div>
       </div>
-      <CashFlowChart />
+      <CashFlowChart monthlyIncAndExp={monthlyIncAndExp} />
     </div>
   );
 }
