@@ -7,7 +7,7 @@ import {
   userAccounts,
   usersTable,
 } from "@/db/schema";
-import { and, desc, eq, gte, lte, or, sum } from "drizzle-orm";
+import { and, desc, eq, gte, lte, ne, or, sum } from "drizzle-orm";
 import { UserAccountData } from "../types";
 import {
   getCurrentMonthDate,
@@ -141,7 +141,7 @@ export async function getCategories(): Promise<{
       userCategories,
     };
   } catch (error) {
-    console.error("getCategories failed", {
+    console.error("getCatWithTransSum failed", {
       error,
     });
     return {
@@ -356,6 +356,64 @@ export async function getBudgetsData() {
       totalBudgetSpent: 0,
       AmountRemaining: 0,
       usersBudget: [],
+    };
+  }
+}
+
+export type UserCatsWithTransSum = {
+  name: string;
+  total: string | null;
+};
+
+export async function getCatWithTransSum(): Promise<{
+  userCatsWithTransSum: UserCatsWithTransSum[];
+}> {
+  try {
+    const session = await getUserSession();
+
+    if (!session) {
+      return {
+        userCatsWithTransSum: [],
+      };
+    }
+
+    const userId = session.id;
+
+    const { currentMonthFirstDay, currentMonthLastDay } = getCurrentMonthDate();
+
+    const userCatsWithTransSum = await db
+      .select({
+        name: categories.name,
+        total: sum(transactions.amount),
+      })
+      .from(categories)
+      .groupBy(categories.id, categories.name)
+      .leftJoin(
+        transactions,
+        and(
+          eq(transactions.categoryId, categories.id),
+          eq(transactions.userId, userId),
+          eq(transactions.type, "EXPENSE"),
+        ),
+      )
+      .where(
+        and(
+          ne(categories.name, "Income"),
+          gte(transactions.date, currentMonthFirstDay),
+          lte(transactions.date, currentMonthLastDay),
+          or(eq(categories.isDefault, true), eq(categories.userId, userId)),
+        ),
+      );
+
+    return {
+      userCatsWithTransSum,
+    };
+  } catch (error) {
+    console.error("getCategories failed", {
+      error,
+    });
+    return {
+      userCatsWithTransSum: [],
     };
   }
 }

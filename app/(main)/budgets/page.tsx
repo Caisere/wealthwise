@@ -1,5 +1,5 @@
 import { AddBudgetBtn } from "@/app/components/budgets/add-budgets-btn";
-import { generateBudgetColor, generateBudgetIcon } from "@/app/lib/helper";
+import { generateBudgetColor, generateBudgetIcon } from "@/app/lib/theme";
 import { getBudgetsData, getCategories } from "@/app/lib/services";
 import { fmt, T } from "@/app/lib/theme";
 

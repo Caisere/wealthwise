@@ -1,5 +1,7 @@
 "use client";
-import { T } from "@/app/lib/theme";
+
+import { UserCatsWithTransSum } from "@/app/lib/services";
+import { generateBudgetColor, T } from "@/app/lib/theme";
 import {
   AreaChart,
   Area,
@@ -16,7 +18,6 @@ import {
   LineChart,
   Line,
 } from "recharts";
-
 
 const CASH_DATA = [
   { month: "Oct", income: 320000, expense: 198000 },
@@ -132,22 +133,32 @@ export function CashFlowChart() {
   );
 }
 
-export function SpendingPieChart() {
+type SpendingPieChartType = {
+  data: UserCatsWithTransSum[];
+};
+
+export function SpendingPieChart({ data }: SpendingPieChartType) {
+  const formattedData = data.map((item) => ({
+    ...item,
+    total: Number(item.total),
+  }));
+
   return (
     <ResponsiveContainer width="100%" height={140}>
       <PieChart>
         <Pie
-          data={PIE_DATA}
+          data={formattedData}
           cx="50%"
           cy="50%"
           innerRadius={38}
           outerRadius={62}
           paddingAngle={3}
-          dataKey="value"
+          dataKey="total"
         >
-          {PIE_DATA.map((e, i) => (
-            <Cell key={i} fill={e.color} />
-          ))}
+          {formattedData.map((el, i) => {
+            const color = generateBudgetColor(el.name)
+            return <Cell key={i} fill={color} />;
+          })}
         </Pie>
       </PieChart>
     </ResponsiveContainer>

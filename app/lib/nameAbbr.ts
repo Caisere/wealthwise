@@ -44,6 +44,18 @@ export function getCompleteDate() {
   return formatted
 }
 
+export function getMonth() {
+  const date = new Date();
+
+  const options: Intl.DateTimeFormatOptions = {
+    month: "long"
+  };
+
+  const formatted = new Intl.DateTimeFormat("en-US", options).format(date);
+
+  return formatted;
+}
+
 export function getPeriod() {
   const date = new Date();
   const hourOfTheDay = date.getHours();
