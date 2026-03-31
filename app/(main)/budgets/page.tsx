@@ -3,6 +3,8 @@ import { generateBudgetColor, generateBudgetIcon } from "@/app/lib/theme";
 import { getBudgetsData, getCategories } from "@/app/lib/services";
 import { fmt, T } from "@/app/lib/theme";
 
+export const dynamic = "force-dynamic";
+
 export default async function BudgetsPage() {
   const [
     categories,
