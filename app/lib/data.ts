@@ -1,4 +1,4 @@
-import { Account, Budget, NavItem, Transaction } from "../types";
+import { NavItem, Transaction } from "../types";
 import { T } from "./theme";
 
 export const fmt = (n: number) => "₦" + Math.abs(n).toLocaleString("en-NG");
