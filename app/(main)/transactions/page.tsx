@@ -3,6 +3,8 @@ import { Transactions } from "@/app/components/transactions/transactions";
 import { getCategories, getTransactions, getUserAccounts } from "@/app/lib/services";
 import { T } from "@/app/lib/theme";
 
+export const dynamic = "force-dynamic";
+
 export default async function TransactionsPage() {
   const [userAccounts, categories, transactions] = await Promise.all([
     getUserAccounts(),
