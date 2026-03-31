@@ -433,7 +433,7 @@ export async function getIncAndExpTrans(): Promise<GetIncAndExpTrans[]> {
 
     const userIncAndExpTrans: GetIncAndExpTrans[] = await db
       .select({
-        month: sql<string>`TO_CHAR(${transactions.date}, 'Mon')`,
+        month: sql<string>`TO_CHAR(${transactions.date}, 'Mon YYYY')`,
         income: sql<string>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'INCOME' THEN ${transactions.amount} END), 0)`,
         expense: sql<string>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'EXPENSE' THEN ${transactions.amount} END), 0)`,
       })
