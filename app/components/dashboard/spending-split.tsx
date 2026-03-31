@@ -1,8 +1,11 @@
-import { T } from "@/app/lib/theme";
+import { fmt, generateBudgetColor, T } from "@/app/lib/theme";
 import { SpendingPieChart } from "./charts";
-import { PIE_DATA } from "@/app/lib/data";
+import { getCatWithTransSum } from "@/app/lib/services";
+import { getMonth } from "@/app/lib/nameAbbr";
 
-export function SpendingSplit () {
+
+export async function SpendingSplit () {
+  const data = await getCatWithTransSum()
   return (
     <div
       style={{
@@ -21,7 +24,7 @@ export function SpendingSplit () {
           marginBottom: 4,
         }}
       >
-        March
+        {getMonth()}
       </p>
       <h3
         style={{
@@ -34,7 +37,7 @@ export function SpendingSplit () {
       >
         Spending Split
       </h3>
-      <SpendingPieChart />
+      <SpendingPieChart data={data.userCatsWithTransSum} />
       <div
         style={{
           display: "flex",
@@ -43,31 +46,34 @@ export function SpendingSplit () {
           marginTop: 8,
         }}
       >
-        {PIE_DATA.map(({ name, value, color }) => (
-          <div
-            key={name}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-              <div
-                style={{
-                  width: 7,
-                  height: 7,
-                  borderRadius: "50%",
-                  background: color,
-                }}
-              />
-              <span style={{ fontSize: 12, color: T.mu }}>{name}</span>
+        {data.userCatsWithTransSum.map(({ name, total}) => {
+          const color = generateBudgetColor(name)
+          return (
+            <div
+              key={name}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                <div
+                  style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: "50%",
+                    background: color,
+                  }}
+                />
+                <span style={{ fontSize: 12, color: T.mu }}>{name}</span>
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 600, color: T.tx }}>
+                {fmt(Number(total))}
+              </span>
             </div>
-            <span style={{ fontSize: 12, fontWeight: 600, color: T.tx }}>
-              ₦{value.toLocaleString()}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
