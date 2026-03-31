@@ -79,9 +79,16 @@ export function CashFlowChart({
 }: {
   monthlyIncAndExp: GetIncAndExpTrans[];
 }) {
+
+  const chartData = monthlyIncAndExp.map(data => ({
+    month: data.month, 
+    income: Number(data.income),
+    expense: Number(data.expense)
+}))
+
   return (
     <ResponsiveContainer width="100%" height={250}>
-      <AreaChart data={monthlyIncAndExp}>
+      <AreaChart data={chartData}>
         <defs>
           <linearGradient id="gi" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={T.G} stopOpacity={0.25} />

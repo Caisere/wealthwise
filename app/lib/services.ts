@@ -7,6 +7,7 @@ import {
   getCurrentMonthDate,
   getLastMonthDate,
   getPercentageChange,
+  getSpecificMonthDate,
 } from "./helper";
 
 export type UserAccountName = {
@@ -428,6 +429,8 @@ export async function getIncAndExpTrans(): Promise<GetIncAndExpTrans[]> {
 
     const userId = session.id;
 
+    const { monthFirstDay } = getSpecificMonthDate(5)
+
     const userIncAndExpTrans: GetIncAndExpTrans[] = await db
       .select({
         month: sql<string>`TO_CHAR(${transactions.date}, 'Mon')`,
@@ -435,8 +438,13 @@ export async function getIncAndExpTrans(): Promise<GetIncAndExpTrans[]> {
         expense: sql<string>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'EXPENSE' THEN ${transactions.amount} END), 0)`,
       })
       .from(transactions)
-      .where(eq(transactions.userId, userId))
-      .groupBy(sql`TO_CHAR(${transactions.date}, 'Mon')`)
+      .where(
+        and(
+          eq(transactions.userId, userId),
+          gte(transactions.date, monthFirstDay),
+        ),
+      )
+      .groupBy(sql`TO_CHAR(${transactions.date}, 'Mon YYYY')`)
       .orderBy(sql`MIN(${transactions.date})`);
 
     return userIncAndExpTrans;

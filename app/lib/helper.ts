@@ -32,6 +32,24 @@ export function getLastMonthDate() {
   };
 }
 
+export function getSpecificMonthDate(month:number) {
+  const now = new Date();
+  const monthFirstDay = new Date(now.getFullYear(), now.getMonth() - month, 1);
+  const monthLastDay = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    0,
+    23,
+    59,
+    59,
+  );
+
+  return {
+    monthFirstDay,
+    monthLastDay,
+  };
+}
+
 export function getCurrentMonthDate() {
   const now = new Date();
   const currentMonthFirstDay = new Date(now.getFullYear(), now.getMonth(), 1);
