@@ -3,6 +3,7 @@ import { SpendingPieChart } from "./charts";
 import { getCatWithTransSum } from "@/app/lib/services";
 import { getMonth } from "@/app/lib/nameAbbr";
 import { EmptyComponent } from "../layout/empty-component";
+import { SignalIcon } from "lucide-react";
 
 export async function SpendingSplit() {
   const data = await getCatWithTransSum();
@@ -84,6 +85,7 @@ export async function SpendingSplit() {
       ) : (
         <section className="flex justify-center items-center h-full">
           <EmptyComponent
+            icon={<SignalIcon />}
             title="No spending recorded"
             description="Transactions you make this month will appear here."
           />

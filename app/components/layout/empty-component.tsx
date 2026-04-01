@@ -1,13 +1,17 @@
 import Link from "next/link";
 
+type EmptyAction = {
+  link: string;
+  label: string;
+};
 
 type EmptyComponentType = {
-  icon?: React.ReactElement,
-  title: string,
-  description: string,
-  action?: Record<string, string>
-  variant?: "dashed" | 'card'
-}
+  icon?: React.ReactElement;
+  title?: string;
+  description?: string;
+  action?: EmptyAction
+  variant?: "dashed" | "card";
+};
 
 export function EmptyComponent({
   icon,
@@ -15,7 +19,7 @@ export function EmptyComponent({
   description,
   action,
   variant = "dashed",
-}:EmptyComponentType) {
+}: EmptyComponentType) {
   const variants = {
     dashed: "bg-transparent",
     card: "border border-gray-200 bg-white",
@@ -26,7 +30,7 @@ export function EmptyComponent({
       className={`flex flex-col items-center text-center px-6 py-10 rounded-xl ${variants[variant]}`}
     >
       {icon && (
-        <div className="w-11 h-11 flex items-center justify-content rounded-[10px] border border-gray-200 bg-white mb-3.5">
+        <div className="w-11 h-11 flex items-center justify-center rounded-[10px]">
           {icon}
         </div>
       )}
@@ -39,7 +43,8 @@ export function EmptyComponent({
         </p>
       )}
       {action && (
-        <Link href={action.link}
+        <Link
+          href={action.link}
           className="text-[13px] px-3.5 py-1.5 rounded-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 transition-colors"
         >
           {action.label}

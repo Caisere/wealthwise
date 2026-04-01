@@ -2,6 +2,7 @@ import { getMonth } from "@/app/lib/nameAbbr";
 import { getBudgetStatusData } from "@/app/lib/services";
 import { generateBudgetColor, T } from "@/app/lib/theme";
 import { EmptyComponent } from "../layout/empty-component";
+import { WalletIcon } from "lucide-react";
 
 export async function BudgetStatus() {
   const budgetData = await getBudgetStatusData()
@@ -38,7 +39,8 @@ export async function BudgetStatus() {
 
       {budgetData.length > 0 ? (
         budgetData?.map(({ cat, spent, limit }) => {
-          const pct = Math.round((spent / limit) * 100);
+          const pct = limit > 0 ? Math.round((spent / limit) * 100) : 0;
+          const barPct = Math.min(100, Math.max(0, pct))
           const warn = pct >= 80;
           const color = generateBudgetColor(cat);
           return (
@@ -94,7 +96,7 @@ export async function BudgetStatus() {
               >
                 <div
                   style={{
-                    width: `${pct}%`,
+                    width: `${barPct}%`,
                     height: "100%",
                     borderRadius: 10,
                     background: warn
@@ -113,6 +115,7 @@ export async function BudgetStatus() {
       ) : (
         <section className="flex justify-center items-center h-full">
           <EmptyComponent
+            icon={<WalletIcon />}
             title="No Budget Spending for this month yet"
             description="Set a budget to track where your money goes."
           />
