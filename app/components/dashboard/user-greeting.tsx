@@ -1,6 +1,6 @@
 'use client'
 
-import { getCompleteDate, getPeriod } from "@/app/lib/nameAbbr";
+import { getCompleteDate, getMonth, getPeriod } from "@/app/lib/nameAbbr";
 import { T } from "@/app/lib/theme";
 import { ReactNode } from "react";
 
@@ -8,6 +8,7 @@ export function UserGreeting ({children}:{children: ReactNode}) {
 
   const fullDate = getCompleteDate()
   const period = getPeriod();
+  const month = getMonth()
 
   return (
     <div>
@@ -27,7 +28,7 @@ export function UserGreeting ({children}:{children: ReactNode}) {
         {period}, {children || "User"} 👋
       </h1>
       <p style={{ fontSize: 14, color: T.mu }}>
-        Here&apos;s your financial overview for March.
+        Here&apos;s your financial overview for {month}.
       </p>
     </div>
   );

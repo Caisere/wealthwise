@@ -86,7 +86,7 @@ export async function SpendingSplit() {
         <section className="flex justify-center items-center h-full">
           <EmptyComponent
             icon={<SignalIcon />}
-            title="No spending recorded"
+            title="No spending recorded for this month yet"
             description="Transactions you make this month will appear here."
           />
         </section>

@@ -81,7 +81,7 @@ export function StatCard({
       </div>
       {lastMonth !== undefined && (
         <span className="mt-4 text-sm flex justify-end text-gray-500">
-          {fmt(lastMonth)} → {fmt(value)}
+          {fmt(value)} → {fmt(lastMonth)}
         </span>
       )}
     </div>

@@ -29,6 +29,7 @@ export type TransactionType = {
   date: Date;
   accountName: string | null;
   categoryName: string | null;
+  createdAt: Date
 };
 
 export type UserCatsWithTransSum = {
@@ -150,7 +151,7 @@ export async function getCategories(): Promise<{
   }
 }
 
-export async function getTransactions(): Promise<TransactionType[]> {
+export async function getTransactions(limit?: number): Promise<TransactionType[]> {
   try {
     const session = await getUserSession();
 
@@ -160,7 +161,7 @@ export async function getTransactions(): Promise<TransactionType[]> {
 
     const userId = session.id;
 
-    const userTransactions: TransactionType[] = await db
+    const query = db
       .select({
         id: transactions.id,
         description: transactions.description,
@@ -170,12 +171,18 @@ export async function getTransactions(): Promise<TransactionType[]> {
         date: transactions.date,
         accountName: userAccounts.name,
         categoryName: categories.name,
+        createdAt: transactions.createdAt
       })
       .from(transactions)
       .leftJoin(userAccounts, eq(transactions.accountId, userAccounts.id))
       .leftJoin(categories, eq(transactions.categoryId, categories.id))
       .where(eq(transactions.userId, userId))
-      .orderBy(desc(transactions.createdAt));
+      .orderBy(desc(transactions.date));
+
+    if (limit) return query.limit(limit)
+
+
+    const userTransactions = await query
 
     return userTransactions;
   } catch (error) {
