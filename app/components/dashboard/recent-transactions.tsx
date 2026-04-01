@@ -12,11 +12,11 @@ export async function RecentTransactions() {
   const recentTransactionData = recent.map((trans) => ({
     id: trans.id,
     desc: trans.description,
-    cat: trans.categoryName,
-    account: trans.accountName,
+    cat: trans.categoryName ?? "Uncategorized",
+    account: trans.accountName ?? "No account",
     amount: Number(trans.amount),
     date: getTime(trans.createdAt),
-    icon: generateBudgetIcon(trans.categoryName as string),
+    icon: generateBudgetIcon(trans.categoryName ?? ""),
     type: trans.type,
   }));
 

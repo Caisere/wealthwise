@@ -179,12 +179,16 @@ export async function getTransactions(limit?: number): Promise<TransactionType[]
       .where(eq(transactions.userId, userId))
       .orderBy(desc(transactions.date));
 
-    if (limit) return query.limit(limit)
 
+    if (limit !== undefined) {
+      const userTransactions = await query.limit(limit);
+      return userTransactions
+    }
 
     const userTransactions = await query
 
     return userTransactions;
+    
   } catch (error) {
     console.error("getCategories failed", {
       error,
