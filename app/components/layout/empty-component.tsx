@@ -1,3 +1,4 @@
+import { type Route } from "next";
 import Link from "next/link";
 
 type EmptyAction = {
@@ -9,7 +10,7 @@ type EmptyComponentType = {
   icon?: React.ReactElement;
   title?: string;
   description?: string;
-  action?: EmptyAction
+  action?: EmptyAction;
   variant?: "dashed" | "card";
 };
 
@@ -44,7 +45,7 @@ export function EmptyComponent({
       )}
       {action && (
         <Link
-          href={action.link}
+          href={action.link as Route}
           className="text-[13px] px-3.5 py-1.5 rounded-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 transition-colors"
         >
           {action.label}

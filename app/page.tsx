@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { features, pricing, steps } from "./lib/data";
 import { Navbar } from "./components/layout/navbar";
+import { Route } from "next";
 
 
 export default function LandingPage() {
@@ -238,7 +239,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <Link
-                  href={href}
+                  href={href as Route}
                   className={`block w-full text-center py-3 rounded-xl text-[14px] font-semibold no-underline transition-all
                   ${primary ? "gradient-brand text-white shadow-brand hover:opacity-90" : "bg-transparent text-muted border border-base hover:bg-input"}`}
                 >

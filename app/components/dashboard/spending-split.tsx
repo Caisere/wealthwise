@@ -1,9 +1,15 @@
 import { fmt, generateBudgetColor, T } from "@/app/lib/theme";
-import { SpendingPieChart } from "./charts";
+// import { SpendingPieChart } from "./charts";
 import { getCatWithTransSum } from "@/app/lib/services";
 import { getMonth } from "@/app/lib/nameAbbr";
 import { EmptyComponent } from "../layout/empty-component";
 import { SignalIcon } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const SpendingPieChart = dynamic(() => import('@/app/components/dashboard/spending-pie-chart'), {
+  ssr: true,
+  loading: () => <p>Loading...</p>
+})
 
 export async function SpendingSplit() {
   const data = await getCatWithTransSum();

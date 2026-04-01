@@ -1,8 +1,17 @@
 import { T } from "@/app/lib/theme";
-import { CashFlowChart } from "./charts";
+
 import { getIncAndExpTrans } from "@/app/lib/services";
 import { EmptyComponent } from "../layout/empty-component";
 import { ChartArea } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const CashFlowChart = dynamic(
+  () => import("@/app/components/dashboard/cash-flow-chart"),
+  {
+    ssr: true,
+    loading: () => <p>Loading...</p>,
+  },
+);
 
 export async function CashFlow() {
   const monthlyIncAndExp = await getIncAndExpTrans();
