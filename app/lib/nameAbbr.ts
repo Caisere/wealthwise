@@ -77,6 +77,12 @@ export function getPeriod() {
 
 export function getTime(date: Date) {
   const now = new Date(date);
-  const time = now.toLocaleTimeString();
+  const time  = new Intl.DateTimeFormat("en-NG", {
+    timeZone: "Africa/Lagos",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  }).format(now);
+  
   return time;
 }
