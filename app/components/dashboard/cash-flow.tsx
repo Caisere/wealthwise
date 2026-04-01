@@ -1,17 +1,8 @@
 import { T } from "@/app/lib/theme";
-
 import { getIncAndExpTrans } from "@/app/lib/services";
 import { EmptyComponent } from "../layout/empty-component";
 import { ChartArea } from "lucide-react";
-import dynamic from "next/dynamic";
-
-const CashFlowChart = dynamic(
-  () => import("@/app/components/dashboard/cash-flow-chart"),
-  {
-    ssr: true,
-    loading: () => <p>Loading...</p>,
-  },
-);
+import CashFlowChartLazy from "./cash-flow-chart-lazy";
 
 export async function CashFlow() {
   const monthlyIncAndExp = await getIncAndExpTrans();
@@ -77,13 +68,13 @@ export async function CashFlow() {
         </div>
       </div>
       {monthlyIncAndExp.length > 0 ? (
-        <CashFlowChart monthlyIncAndExp={monthlyIncAndExp} />
+        <CashFlowChartLazy monthlyIncAndExp={monthlyIncAndExp} />
       ) : (
-        <EmptyComponent 
+        <EmptyComponent
           icon={<ChartArea />}
           title="No Incomes and Expenses transactions yet"
           description="Start adding transactions today, to see this analytics"
-          action={{label: 'Add Transaction', link: '/transactions'}}
+          action={{ label: "Add Transaction", link: "/transactions" }}
         />
       )}
     </div>

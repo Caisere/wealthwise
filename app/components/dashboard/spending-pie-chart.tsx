@@ -4,7 +4,7 @@ import { UserCatsWithTransSum } from "@/app/lib/services";
 import { generateBudgetColor } from "@/app/lib/theme";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
-type SpendingPieChartType = {
+export type SpendingPieChartType = {
   data: UserCatsWithTransSum[];
 };
 
