@@ -35,20 +35,20 @@ export function getCompleteDate() {
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
     year: "numeric",
-    month: "long", 
-    day: "numeric", 
+    month: "long",
+    day: "numeric",
   };
 
   const formatted = new Intl.DateTimeFormat("en-US", options).format(date);
 
-  return formatted
+  return formatted;
 }
 
 export function getMonth() {
   const date = new Date();
 
   const options: Intl.DateTimeFormatOptions = {
-    month: "long"
+    month: "long",
   };
 
   const formatted = new Intl.DateTimeFormat("en-US", options).format(date);
@@ -73,4 +73,16 @@ export function getPeriod() {
   // } else {
   //   return 'Good Evening'
   // }
+}
+
+export function getTime(date: Date) {
+  const now = new Date(date);
+  const time  = new Intl.DateTimeFormat("en-NG", {
+    timeZone: "Africa/Lagos",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true
+  }).format(now);
+  
+  return time;
 }

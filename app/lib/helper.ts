@@ -74,6 +74,8 @@ export function getPercentageChange(current: number, previous: number){
   // new data, 100% growth
   if (previous === 0) return 100;
 
+  if (current === 0) return -100;
+
   return ((current - previous) / previous) * 100;
 };
 
