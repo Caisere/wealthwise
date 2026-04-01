@@ -1,5 +1,6 @@
 import { getTotalIncAndExp, getUserAccountData } from "@/app/lib/services";
 import { StatCard } from "./start-card";
+import { getMonth } from "@/app/lib/nameAbbr";
 
 export async function Stats() {
   const [
@@ -22,6 +23,8 @@ export async function Stats() {
         )
       : 0;
 
+  const currentMonth = getMonth();
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       <StatCard
@@ -32,7 +35,7 @@ export async function Stats() {
         sub="All accounts"
       />
       <StatCard
-        label="Income (Mar)"
+        label={`Income (${currentMonth})`}
         value={totalIncomes}
         change={percentageIncome ?? 0}
         up={(percentageIncome ?? 0) > 0}
@@ -40,7 +43,7 @@ export async function Stats() {
         lastMonth={lastMonthTotalIncomes}
       />
       <StatCard
-        label="Expenses (Mar)"
+        label={`Expenses (${currentMonth})`}
         value={totalExpenses}
         change={percentageExpense ?? 0}
         up={(percentageExpense ?? 0) > 0}
@@ -48,7 +51,7 @@ export async function Stats() {
         lastMonth={lastMonthTotalExpenses}
       />
       <StatCard
-        label="Savings (Mar)"
+        label={`Savings (${currentMonth})`}
         value={savings}
         change={percentageSavings}
         up={percentageSavings > 0}
