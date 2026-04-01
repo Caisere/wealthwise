@@ -1,7 +1,14 @@
 import Link from "next/link";
 import { T } from "@/app/lib/theme";
 import AuthPanel from "@/app/components/layout/auth-panel";
-import {RegisterForm} from "@/app/components/form/register-form";
+import { RegisterForm } from "@/app/components/form/register-form";
+import { type Route } from "next";
+
+const ROUTES = {
+  terms: "/terms",
+  privacy: "/privacy",
+  login: "/login",
+};
 
 export default function RegisterPage() {
   return (
@@ -9,7 +16,7 @@ export default function RegisterPage() {
       title="Create your account"
       sub="Free forever. No credit card required."
     >
-      <RegisterForm/>
+      <RegisterForm />
       <p
         style={{
           textAlign: "center",
@@ -19,13 +26,17 @@ export default function RegisterPage() {
         }}
       >
         By signing up, you agree to our{" "}
-        <Link href="/terms" className="hover:underline cursor-pointer" style={{ color: T.G }}
+        <Link
+          href={ROUTES.terms as Route}
+          className="hover:underline cursor-pointer"
+          style={{ color: T.G }}
         >
           Terms
         </Link>{" "}
         and{" "}
-        <Link href="/privacy"
-          className="hover:underline cursor-pointer" 
+        <Link
+          href={ROUTES.privacy as Route}
+          className="hover:underline cursor-pointer"
           style={{ color: T.G }}
         >
           Privacy Policy
@@ -35,7 +46,7 @@ export default function RegisterPage() {
         Already have an account?{" "}
         <Link
           className="hover:underline"
-          href="/login"
+          href={ROUTES.login as Route}
           style={{ color: T.G, fontWeight: 600 }}
         >
           Sign in

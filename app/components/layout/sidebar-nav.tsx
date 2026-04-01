@@ -1,4 +1,5 @@
 import { NAV } from "@/app/lib/data";
+import { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -16,7 +17,7 @@ export function SidebarNav({collapsed}:{collapsed: boolean}) {
           return (
             <Link
               key={label}
-              href={href}
+              href={href as Route}
               className={`nav-hover relative flex items-center gap-3 overflow-hidden whitespace-nowrap rounded-xl px-3 py-2.5 text-[13px] no-underline transition-all duration-150 ${
                 active
                   ? "bg-brand/8 text-brand font-semibold"
