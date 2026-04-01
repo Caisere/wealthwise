@@ -1,9 +1,11 @@
 import { T } from "@/app/lib/theme";
 import { CashFlowChart } from "./charts";
 import { getIncAndExpTrans } from "@/app/lib/services";
+import { EmptyComponent } from "../layout/empty-component";
+import { ChartArea } from "lucide-react";
 
 export async function CashFlow() {
-  const monthlyIncAndExp = await getIncAndExpTrans()
+  const monthlyIncAndExp = await getIncAndExpTrans();
   return (
     <div
       style={{
@@ -37,7 +39,7 @@ export async function CashFlow() {
             Cash Flow
           </h3>
         </div>
-        <div className="flex gap-4 text-sm" >
+        <div className="flex gap-4 text-sm">
           {[
             [T.G, "Income"],
             [T.R, "Expense"],
@@ -65,7 +67,16 @@ export async function CashFlow() {
           ))}
         </div>
       </div>
-      <CashFlowChart monthlyIncAndExp={monthlyIncAndExp} />
+      {monthlyIncAndExp.length > 0 ? (
+        <CashFlowChart monthlyIncAndExp={monthlyIncAndExp} />
+      ) : (
+        <EmptyComponent 
+          icon={<ChartArea />}
+          title="No Incomes and Expenses transactions yet"
+          description="Start adding transactions today, to see this analytics"
+          action={{label: 'Add Transaction', link: '/transactions'}}
+        />
+      )}
     </div>
   );
 }

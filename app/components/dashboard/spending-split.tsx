@@ -2,10 +2,11 @@ import { fmt, generateBudgetColor, T } from "@/app/lib/theme";
 import { SpendingPieChart } from "./charts";
 import { getCatWithTransSum } from "@/app/lib/services";
 import { getMonth } from "@/app/lib/nameAbbr";
+import { EmptyComponent } from "../layout/empty-component";
+import { SignalIcon } from "lucide-react";
 
-
-export async function SpendingSplit () {
-  const data = await getCatWithTransSum()
+export async function SpendingSplit() {
+  const data = await getCatWithTransSum();
   return (
     <div
       style={{
@@ -37,44 +38,59 @@ export async function SpendingSplit () {
       >
         Spending Split
       </h3>
-      <SpendingPieChart data={data.userCatsWithTransSum} />
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 7,
-          marginTop: 8,
-        }}
-      >
-        {data.userCatsWithTransSum.map(({ name, total}) => {
-          const color = generateBudgetColor(name)
-          return (
-            <div
-              key={name}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+
+      {data.userCatsWithTransSum.length > 0 ? (
+        <>
+          <SpendingPieChart data={data.userCatsWithTransSum} />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 7,
+              marginTop: 8,
+            }}
+          >
+            {data.userCatsWithTransSum.map(({ name, total }) => {
+              const color = generateBudgetColor(name);
+              return (
                 <div
+                  key={name}
                   style={{
-                    width: 7,
-                    height: 7,
-                    borderRadius: "50%",
-                    background: color,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                   }}
-                />
-                <span style={{ fontSize: 12, color: T.mu }}>{name}</span>
-              </div>
-              <span style={{ fontSize: 12, fontWeight: 600, color: T.tx }}>
-                {fmt(Number(total))}
-              </span>
-            </div>
-          );
-        })}
-      </div>
+                >
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 7 }}
+                  >
+                    <div
+                      style={{
+                        width: 7,
+                        height: 7,
+                        borderRadius: "50%",
+                        background: color,
+                      }}
+                    />
+                    <span style={{ fontSize: 12, color: T.mu }}>{name}</span>
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: T.tx }}>
+                    {fmt(Number(total))}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      ) : (
+        <section className="flex justify-center items-center h-full">
+          <EmptyComponent
+            icon={<SignalIcon />}
+            title="No spending recorded"
+            description="Transactions you make this month will appear here."
+          />
+        </section>
+      )}
     </div>
   );
 }

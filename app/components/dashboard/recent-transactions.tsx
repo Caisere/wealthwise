@@ -31,7 +31,7 @@ export function RecentTransactions() {
           Recent Transactions
         </h3>
         <Link
-          href="/dashboard/transactions"
+          href="/transactions"
           style={{
             fontSize: 12,
             color: T.G,

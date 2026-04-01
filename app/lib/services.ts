@@ -429,7 +429,7 @@ export async function getIncAndExpTrans(): Promise<GetIncAndExpTrans[]> {
 
     const userId = session.id;
 
-    const { monthFirstDay } = getSpecificMonthDate(5)
+    const { monthFirstDay } = getSpecificMonthDate(5);
 
     const userIncAndExpTrans: GetIncAndExpTrans[] = await db
       .select({
@@ -450,6 +450,53 @@ export async function getIncAndExpTrans(): Promise<GetIncAndExpTrans[]> {
     return userIncAndExpTrans;
   } catch (error) {
     console.error("userIncAndExpTrans failed", {
+      error,
+    });
+    return [];
+  }
+}
+
+export async function getBudgetStatusData() {
+  try {
+    const session = await getUserSession();
+
+    if (!session) {
+      return [];
+    }
+
+    const userId = session.id;
+
+    const { currentMonthFirstDay, currentMonthLastDay } = getCurrentMonthDate();
+    const firstDay = currentMonthFirstDay.toISOString().split('T')[0]
+    const lastDay = currentMonthLastDay.toISOString().split("T")[0];
+
+
+    const userFilter = [
+      eq(budgets.userId, userId),
+      gte(budgets.month, firstDay),
+      lte(budgets.month, lastDay),
+    ];
+
+    const totalBudgets = await db
+        .select({
+          spent: budgets.spent,
+          monthlyLimit: budgets.monthlyLimit,
+          categoryName: categories.name,
+        })
+        .from(budgets)
+        .leftJoin(categories, eq(budgets.categoryId, categories.id))
+        .groupBy(categories.name, budgets.spent, budgets.monthlyLimit)
+        .where(and(...userFilter))
+
+    const formattedData = totalBudgets.map((data) => ({
+      cat: data.categoryName as string,
+      spent: Number(data.spent),
+      limit: Number(data.monthlyLimit),
+    }));
+
+    return formattedData;
+  } catch (error) {
+    console.error("getBudgetsStatusData failed", {
       error,
     });
     return [];
