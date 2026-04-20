@@ -316,7 +316,7 @@ export const pricing = [
       "Unlimited accounts",
       "Real-time budget alerts",
       "CSV & PDF export",
-      "AI spending insights",
+      "AI money coach & spending insights (rolling out)",
     ],
     cta: "Start 7-day free trial",
     href: "/register",
