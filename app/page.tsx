@@ -130,7 +130,7 @@ export default function LandingPage() {
               </div>
             </div>
             <p className="animate-fade-up-4 mt-6 text-[12px] text-dim">
-              Join 12,000+ Nigerians who track their money with WealthWise
+              Join a growing community who track their money with WealthWise
             </p>
           </div>
 
@@ -317,8 +317,8 @@ export default function LandingPage() {
                 <li className="flex gap-3">
                   <span className="mt-0.5 shrink-0 text-brand">✓</span>
                   <span>
-                    Category-level flags before a budget line breaks—think
-                    early warning, not guilt trips.
+                    Category-level flags before a budget line breaks—think early
+                    warning, not guilt trips.
                   </span>
                 </li>
                 <li className="flex gap-3">
@@ -351,8 +351,8 @@ export default function LandingPage() {
                     weekly cap could steady the line.
                   </div>
                   <div className="rounded-xl border border-base bg-input/60 p-3.5 text-[13px] leading-snug text-muted">
-                    <span className="font-semibold text-sky">Suggestion</span>{" "}
-                    — Shifting ₦5,000/week into savings would reach your target
+                    <span className="font-semibold text-sky">Suggestion</span> —
+                    Shifting ₦5,000/week into savings would reach your target
                     about two weeks sooner.
                   </div>
                   <div className="rounded-xl border border-dashed border-base/80 bg-bg/40 p-3 text-center text-[12px] text-dim">

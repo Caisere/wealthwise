@@ -71,6 +71,7 @@ export default function HowItWorkPage() {
         <div className="space-y-4">
           {steps.map(({ n, title, desc }, idx) => {
             const detail = setupDetails[idx];
+            if (!detail) return null;
             return (
               <article
                 key={n}
