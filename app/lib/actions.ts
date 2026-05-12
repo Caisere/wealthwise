@@ -3,6 +3,7 @@
 import { db } from "@/db";
 import {
   AccountType,
+  AddAccountSchema,
   CreateBudgetDataType,
   CreateBudgetSchema,
   createTransactionSchema,
@@ -11,6 +12,7 @@ import {
   Transaction,
   UpdatePasswordType,
   UpdateProfileSchema,
+  UpdateUsersPasswordSchema,
 } from "../types";
 import {
   budgets,
@@ -33,7 +35,14 @@ function isDbError(error: unknown): error is { code: string } {
   );
 }
 
-export async function createUser(userInput: RegisterSchema) {
+export type ResponseType = {
+  success: boolean;
+  message: string;
+};
+
+export async function createUser(
+  userInput: RegisterSchema,
+): Promise<ResponseType> {
   try {
     const parsedData = RegisterFormData.safeParse(userInput);
 
@@ -69,7 +78,10 @@ export async function createUser(userInput: RegisterSchema) {
   }
 }
 
-export async function updateUser(name: string, email: string) {
+export async function updateUser(
+  name: string,
+  email: string,
+): Promise<ResponseType> {
   try {
     const session = await getUserSession();
 
@@ -112,6 +124,7 @@ export async function updateUser(name: string, email: string) {
         message: "Email already in use",
       };
     }
+
     return {
       success: false,
       message: "Server Error",
@@ -119,20 +132,10 @@ export async function updateUser(name: string, email: string) {
   }
 }
 
-export type DeleteUserReturnType = {
-  success: boolean;
-  message: string;
-};
-
-export type UpdatePasswordReturnType = {
-  success: boolean;
-  message: string;
-};
-
 export async function deleteUser(
-  prevState: DeleteUserReturnType | null,
+  prevState: ResponseType | null,
   formData: FormData,
-): Promise<DeleteUserReturnType> {
+): Promise<ResponseType> {
   try {
     const session = await getUserSession();
 
@@ -143,7 +146,7 @@ export async function deleteUser(
       };
     }
 
-    const userPassword = formData.get("password") as string;
+    const userPassword = formData.get("password");
 
     if (typeof userPassword !== "string" || !userPassword) {
       return {
@@ -201,7 +204,7 @@ type userUpdatePasswordParams = Omit<UpdatePasswordType, "confirmNewPassword">;
 export async function userUpdatePassword({
   currentPassword,
   newPassword,
-}: userUpdatePasswordParams): Promise<UpdatePasswordReturnType> {
+}: userUpdatePasswordParams): Promise<ResponseType> {
   try {
     const session = await getUserSession();
 
@@ -212,17 +215,19 @@ export async function userUpdatePassword({
       };
     }
 
-    if (
-      typeof currentPassword !== "string" ||
-      typeof newPassword !== "string" ||
-      currentPassword.length < 8 ||
-      newPassword.length < 8
-    ) {
+    const parsedPasswords = UpdateUsersPasswordSchema.safeParse({
+      currentPassword,
+      newPassword,
+    });
+
+    if (!parsedPasswords.success) {
       return {
         success: false,
         message: "Invalid password input",
       };
     }
+
+    const {currentPassword: userCurrentPassword, newPassword: userNewPassword} = parsedPasswords.data
 
     const [user] = await db
       .select()
@@ -244,7 +249,7 @@ export async function userUpdatePassword({
     }
 
     const confirmPassword = await comparePassword(
-      currentPassword,
+      userCurrentPassword,
       user.password,
     );
 
@@ -255,7 +260,7 @@ export async function userUpdatePassword({
       };
     }
 
-    const hashedNewPassword = await hashPassword(newPassword);
+    const hashedNewPassword = await hashPassword(userNewPassword);
 
     await db
       .update(usersTable)
@@ -266,6 +271,7 @@ export async function userUpdatePassword({
       success: true,
       message: "Password updated successfully",
     };
+    
   } catch (error) {
     console.error("Error updating password:", error);
     return {
@@ -285,7 +291,7 @@ export async function addAccounts({
   type: AccountType;
   balance: string;
   requestId: string;
-}) {
+}): Promise<ResponseType> {
   try {
     const session = await getUserSession();
 
@@ -296,40 +302,30 @@ export async function addAccounts({
       };
     }
 
-    if (typeof name !== "string" || typeof balance !== "string") {
+    const parsedData = AddAccountSchema.safeParse({
+      name,
+      type,
+      requestId,
+      balance,
+    });
+
+    if (!parsedData.success) {
       return {
         success: false,
         message: "Invalid input",
       };
     }
 
-    const normalizedName = name.trim();
-    const normalizedBalance = balance.replace(/,/g, "").trim();
-    const allowedTypes: AccountType[] = [
-      "BANK",
-      "EMONEY",
-      "CASH",
-      "SAVINGS",
-      "CREDIT",
-    ];
-    const parsedBalance = Number(normalizedBalance);
-
-    if (
-      !normalizedName ||
-      !allowedTypes.includes(type) ||
-      !Number.isFinite(parsedBalance) ||
-      parsedBalance < 0
-    ) {
-      return {
-        success: false,
-        message: "Invalid input",
-      };
-    }
+    const {
+      name: normalizedName,
+      type: accountType,
+      balance: parsedBalance,
+    } = parsedData.data;
 
     const newAccount = {
       userId: session.id,
       name: normalizedName,
-      type,
+      type: accountType,
       requestId: requestId,
       balance: parsedBalance.toFixed(2),
     };
@@ -385,7 +381,7 @@ export async function addAccounts({
   }
 }
 
-export async function addTransaction(data: Transaction) {
+export async function addTransaction(data: Transaction): Promise<ResponseType> {
   try {
     const session = await getUserSession();
 
@@ -467,7 +463,6 @@ export async function addTransaction(data: Transaction) {
             message: `Insufficient balance. Available balance is: ₦${userCurrentBalance.toLocaleString()}`,
           };
         } else {
-
           const [updateResult] = await tx
             .update(userAccounts)
             .set({ balance: sql`${userAccounts.balance} - ${amount}` })
@@ -564,7 +559,9 @@ export async function addTransaction(data: Transaction) {
   }
 }
 
-export async function AddBudget(data: CreateBudgetDataType) {
+export async function AddBudget(
+  data: CreateBudgetDataType,
+): Promise<ResponseType> {
   try {
     const session = await getUserSession();
 
@@ -646,3 +643,35 @@ export async function AddBudget(data: CreateBudgetDataType) {
     };
   }
 }
+
+
+// removed from addAccount
+     // if (typeof name !== "string" || typeof balance !== "string") {
+    //   return {
+    //     success: false,
+    //     message: "Invalid input",
+    //   };
+    // }
+
+    // const normalizedName = name.trim();
+    // const normalizedBalance = balance.replace(/,/g, "").trim();
+    // const allowedTypes: AccountType[] = [
+    //   "BANK",
+    //   "EMONEY",
+    //   "CASH",
+    //   "SAVINGS",
+    //   "CREDIT",
+    // ];
+    // const parsedBalance = Number(normalizedBalance);
+
+    // if (
+    //   !normalizedName ||
+    //   !allowedTypes.includes(type) ||
+    //   !Number.isFinite(parsedBalance) ||
+    //   parsedBalance < 0
+    // ) {
+    //   return {
+    //     success: false,
+    //     message: "Invalid input",
+    //   };
+    // }

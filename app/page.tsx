@@ -237,7 +237,7 @@ export default function LandingPage() {
               ({ href, title, blurb, image, alt, tag, tagStyle }) => (
                 <Link
                   key={title}
-                  href={href}
+                  href={href as Route}
                   className="landing-card group block overflow-hidden rounded-2xl border border-base bg-transparent no-underline"
                 >
                   <div className="relative h-44 w-full overflow-hidden">

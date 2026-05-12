@@ -72,6 +72,27 @@ export const CreateBudgetSchema = z.object({
   month: z.string()
 });
 
+export const UpdateUsersPasswordSchema = z.object({
+  currentPassword: z.string().min(8),
+  newPassword: z.string().min(8)
+})
+
+export const AddAccountSchema = z.object({
+  name: z.string().min(1, "Account name cannot be empty"),
+  type: z.enum(['BANK', "EMONEY", "CASH", "SAVINGS", "CREDIT"]),
+  balance: z.string().transform((val) => {
+    const cleaned = val.replace(/,/g, "").trim();
+    const num = Number(cleaned)
+
+    if(!Number.isFinite(num)){
+      throw new Error("Invalid Balance")
+    }
+
+    return num
+  }),
+  requestId: z.string()
+})
+
 export type CreateBudgetDataType = z.infer<typeof CreateBudgetSchema>
 
 export type UserAccountData = {
