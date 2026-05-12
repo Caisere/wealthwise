@@ -41,9 +41,10 @@ export const CredentialsSchema = z.object({
 export const UpdatePasswordSchema = z.object({
   currentPassword: z.string().min(8, "Password must be at least 8 characters"),
   newPassword: z.string().min(8, "New Password must be at least 8 characters"),
-  confirmNewPassword: z.string().min(8, "Confirm Password must be at least 8 characters"),
+  confirmNewPassword: z
+    .string()
+    .min(8, "Confirm Password must be at least 8 characters"),
 });
-
 
 export const createTransactionSchema = z.object({
   // accountId: z.string().uuid(),
@@ -65,20 +66,43 @@ export const createTransactionSchema = z.object({
   categoryId: z.string().min(1).uuid(),
 });
 
-
 export const CreateBudgetSchema = z.object({
   categoryId: z.string().min(1),
   limit: z.coerce.number().positive("Amount must be greater than 0"),
-  month: z.string()
+  month: z.string(),
 });
 
-export type CreateBudgetDataType = z.infer<typeof CreateBudgetSchema>
+export const UpdateUsersPasswordSchema = z.object({
+  currentPassword: z.string().min(8),
+  newPassword: z.string().min(8),
+});
+
+export const AddAccountSchema = z.object({
+  name: z.string().min(1, "Account name cannot be empty"),
+  type: z.enum(["BANK", "EMONEY", "CASH", "SAVINGS", "CREDIT"]),
+  balance: z.string().transform((val, ctx) => {
+    const cleaned = val.replace(/,/g, "").trim();
+    const num = Number(cleaned);
+
+    if (!Number.isFinite(num) || num < 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Invalid balance",
+      });
+      return z.NEVER;
+    }
+
+    return num;
+  }),
+  requestId: z.string(),
+});
+
+export type CreateBudgetDataType = z.infer<typeof CreateBudgetSchema>;
 
 export type UserAccountData = {
   accounts: (typeof userAccounts.$inferSelect)[];
   totalBalanceResult: number;
 };
-
 
 export type UpdatePasswordType = z.infer<typeof UpdatePasswordSchema>;
 
@@ -93,7 +117,7 @@ export type AccountType = "BANK" | "EMONEY" | "CASH" | "SAVINGS" | "CREDIT";
 export type UserRole = "FREE" | "PREMIUM";
 
 export interface Transaction {
-  transactionId: string,
+  transactionId: string;
   description: string;
   categoryId: string;
   accountId: string;
