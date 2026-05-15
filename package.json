@@ -7,15 +7,21 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "type-check": "bunx tsc --noEmit"
+    "type-check": "bunx tsc --noEmit",
+    "db:generate": "bunx drizzle-kit generate",
+    "db:migrate": "bunx drizzle-kit migrate",
+    "db:push": "bunx drizzle-kit push",
+    "email": "email dev --dir emails"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.11.1",
     "@hookform/resolvers": "^5.2.2",
     "@neondatabase/serverless": "^1.0.2",
+    "@react-email/components": "^1.0.12",
     "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
     "lucide-react": "^0.577.0",
@@ -26,8 +32,10 @@
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-email": "^6.1.4",
     "react-hook-form": "^7.71.2",
     "recharts": "^3.8.0",
+    "resend": "^6.12.3",
     "shadcn": "^4.0.5",
     "sonner": "^2.0.7",
     "stripe": "^20.4.1",
@@ -36,6 +44,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@react-email/ui": "6.1.4",
     "@tailwindcss/postcss": "^4",
     "@types/bcrypt": "^6.0.0",
     "@types/node": "^20",
