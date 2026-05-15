@@ -1,6 +1,7 @@
 import "server-only";
 
 import bcrypt from "bcrypt";
+import crypto from 'crypto'
 
 export async function hashPassword(password: string) {
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -79,4 +80,15 @@ export function getPercentageChange(current: number, previous: number){
   return ((current - previous) / previous) * 100;
 };
 
+export function generateResetToken () {
+  const token = crypto.randomBytes(32).toString('hex')
 
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+
+  return {token, hashedToken}
+}
+
+
+export function generateTokenExpiry() {
+  return new Date(Date.now() + 1000 * 60 * 15); // 15mins
+}

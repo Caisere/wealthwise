@@ -26,6 +26,19 @@ export const UpdateProfileSchema = z.object({
     .transform((email) => email.toLowerCase()),
 });
 
+//  UpdateProfileSchema.pick({
+//   email: true
+// })
+
+export const ResetPasswordSchema = z
+  .string()
+  .trim()
+  .regex(
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+    "Invalid email address",
+  )
+  .transform((val) => val.toLowerCase());
+
 export const CredentialsSchema = z.object({
   email: z
     .string()
@@ -37,6 +50,7 @@ export const CredentialsSchema = z.object({
     .transform((email) => email.toLowerCase()),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
+
 
 export const UpdatePasswordSchema = z.object({
   currentPassword: z.string().min(8, "Password must be at least 8 characters"),
@@ -107,6 +121,8 @@ export type UserAccountData = {
 export type UpdatePasswordType = z.infer<typeof UpdatePasswordSchema>;
 
 export type LoginSchema = z.infer<typeof CredentialsSchema>;
+
+export type ResetPasswordEmail = Pick<LoginSchema, 'email'>
 
 export type RegisterSchema = z.infer<typeof RegisterFormData>;
 
@@ -190,3 +206,8 @@ export interface Category {
   color: string;
   icon: string;
 }
+
+export type ResponseType = {
+  status: boolean;
+  message: string;
+};
