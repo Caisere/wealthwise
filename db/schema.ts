@@ -136,8 +136,8 @@ export const usersTable = pgTable("users", {
   role: roleEnum("role").notNull().default("FREE"),
   stripeCustomerId: text("stripe_customer_id").unique(),
   emailVerified: timestamp("email_verified", { mode: "date" }),
-  resetHashedToken: text("reset_token"),
-  resetTokenExpiry: timestamp("reset_token_expiry"),
+  resetHashedToken: text("reset_hashed_token"),
+  resetTokenExpiry: timestamp("reset_token_expiry", { mode: "date" }),
   ...timeStamp,
 });
 

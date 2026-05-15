@@ -40,7 +40,11 @@ export async function proxy(req: NextRequest) {
 
   // unauthenticated API call
   if (
-    !token && pathname.startsWith("/api/") && !pathname.startsWith("/api/auth") && !pathname.startsWith("/api/account")
+    !token &&
+    pathname.startsWith("/api/") &&
+    !["/api/auth", "/api/account/reset-password"].some(
+      (route) => pathname === route || pathname.startsWith(`${route}/`),
+    )
   ) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

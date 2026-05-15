@@ -1,0 +1,1 @@
+ALTER TABLE "users" RENAME COLUMN "reset_token" TO "reset_hashed_token";

@@ -40,7 +40,7 @@ export async function POST(
 
     if (!user) {
       return NextResponse.json({
-        status: false,
+        status: true,
         message:
           "If email exists, link has been sent. check your email for reset link",
       });
@@ -90,13 +90,12 @@ export async function POST(
       status: true,
       message: "password reset successfully",
     });
-  } catch (error) {
-    const err =
-      error instanceof Error ? error.message : "Failed to reset password";
+  } catch {
+    // const err = error instanceof Error ? error.message : "Failed to reset password";
     return NextResponse.json(
       {
         status: false,
-        message: err,
+        message: "Failed to process reset request",
       },
       { status: 500 },
     );

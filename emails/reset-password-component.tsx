@@ -9,14 +9,14 @@ import {
   Text,
   Button,
   Hr,
-  Img,
+  // Img,
   Preview,
   Tailwind,
 } from "@react-email/components";
 
 interface ResetPasswordComponentProps {
   username: string;
-  resetLink?: string;
+  resetLink: string;
   expiresIn?: Date | null;
 }
 
@@ -144,8 +144,7 @@ export default function ResetPasswordComponent({
             {/* Footer */}
             <Section className="bg-[#f5f5f0] rounded-b-xl px-10 py-6 text-center">
               <Text className="text-[#aaa] text-xs m-0">
-                © {new Date().getFullYear()} YourApp · 123 Startup Lane, San
-                Francisco, CA
+                © {new Date().getFullYear()} WealthWise
               </Text>
               <Text className="text-[#aaa] text-xs mt-1">
                 <a href="#" style={{ color: "#aaa" }}>

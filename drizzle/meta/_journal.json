@@ -43,6 +43,13 @@
       "when": 1778793029565,
       "tag": "0005_youthful_mandrill",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1778806422394,
+      "tag": "0006_blue_venus",
+      "breakpoints": true
     }
   ]
 }
