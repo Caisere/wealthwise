@@ -1,7 +1,7 @@
 import "server-only";
 
 import bcrypt from "bcrypt";
-import crypto from 'crypto'
+import crypto from "crypto";
 
 export async function hashPassword(password: string) {
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -33,7 +33,7 @@ export function getLastMonthDate() {
   };
 }
 
-export function getSpecificMonthDate(month:number) {
+export function getSpecificMonthDate(month: number) {
   const now = new Date();
   const monthFirstDay = new Date(now.getFullYear(), now.getMonth() - month, 1);
   const monthLastDay = new Date(
@@ -64,11 +64,12 @@ export function getCurrentMonthDate() {
   );
 
   return {
-    currentMonthFirstDay, currentMonthLastDay
-  }
+    currentMonthFirstDay,
+    currentMonthLastDay,
+  };
 }
 
-export function getPercentageChange(current: number, previous: number){
+export function getPercentageChange(current: number, previous: number) {
   // both zero, no change
   if (previous === 0 && current === 0) return 0;
 
@@ -78,16 +79,20 @@ export function getPercentageChange(current: number, previous: number){
   if (current === 0) return -100;
 
   return ((current - previous) / previous) * 100;
-};
-
-export function generateResetToken () {
-  const token = crypto.randomBytes(32).toString('hex')
-
-  const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
-
-  return {token, hashedToken}
 }
 
+export function generateResetToken() {
+  const token = crypto.randomBytes(32).toString("hex");
+
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  return { token, hashedToken };
+}
+
+export function generateHashedToken(token: string) {
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  return hashedToken;
+}
 
 export function generateTokenExpiry() {
   return new Date(Date.now() + 1000 * 60 * 15); // 15mins

@@ -1,8 +1,8 @@
-import { generateHashedToken, hashPassword } from "@/app/lib/helper";
-import { ResetPasswordServerSchema } from "@/app/types";
+import { generateResetToken, generateTokenExpiry } from "@/app/lib/helper";
+import { ResetPasswordSchema} from "@/app/types";
 import { db } from "@/db";
 import { usersTable } from "@/db/schema";
-import PasswordResetSuccess from "@/emails/password-reset-success";
+import ResetPasswordComponent from "@/emails/reset-password-component";
 import { render } from "@react-email/components";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
@@ -16,34 +16,29 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const parsedData = ResetPasswordServerSchema.safeParse(body);
+    const parsedEmail = ResetPasswordSchema.safeParse(body.validEmail);
 
-    if (!parsedData.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: parsedData.error.flatten().fieldErrors,
-        },
-        { status: 400 },
-      );
+    if (!parsedEmail.success) {
+      return NextResponse.json({
+        success: false,
+        message: "Error validating user input",
+      });
     }
 
-    const { email, token, newPassword } = parsedData.data;
+    const email = parsedEmail.data;
 
-    // email database look up for user to confirm user still active
+    // email database look up
     const [user] = await db
       .select()
       .from(usersTable)
       .where(eq(usersTable.email, email));
 
     if (!user) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid Request",
-        },
-        { status: 400 },
-      );
+      return NextResponse.json({
+        success: true,
+        message:
+          "If email exists, link has been sent. check your email for reset link",
+      });
     }
 
     // gate check for Oauth manages their password, not stored in db
@@ -58,49 +53,33 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // re-hash the supplied token
-    const hashedToken = generateHashedToken(token);
+    const { token, hashedToken } = generateResetToken();
 
-    // confirm the validity of hashed token and token expiration
-    if (
-      !user.resetHashedToken ||
-      user.resetHashedToken !== hashedToken ||
-      !user.resetTokenExpiry ||
-      user.resetTokenExpiry < new Date()
-    ) {
-      return NextResponse.json({
-        success: false,
-        message: "Token invalid or expiry",
-      });
-    }
+    const expiry = generateTokenExpiry();
 
-    // hash new password
-    const newPasswordHashed = await hashPassword(newPassword);
-
-    // updating the password field and turning the resetHashedToken and resetTokenExpiry to null
-    await db
+    // add hashed token to db and expiryTime
+    const [userDetails] = await db
       .update(usersTable)
-      .set({
-        password: newPasswordHashed,
-        resetHashedToken: null,
-        resetTokenExpiry: null,
-      })
+      .set({ resetHashedToken: hashedToken, resetTokenExpiry: expiry })
       .where(eq(usersTable.id, user.id))
       .returning();
 
-    const loginLink = `${baseUrl}/login`;
+    const resetLink = `${baseUrl}/reset-password?token=${token}&email=${email}`;
+
+    const expiresIn = userDetails.resetTokenExpiry;
 
     const html = await render(
-      PasswordResetSuccess({
-        loginLink,
-        username: user.name!,
+      ResetPasswordComponent({
+        resetLink,
+        username: userDetails.name!,
+        expiresIn,
       }),
     );
 
     const { error } = await resend.emails.send({
       from: "Acme <onboarding@resend.dev>",
       to: "omoshola.elegbede@preferreddigitalbusiness.com",
-      subject: "Password Reset Successfully",
+      subject: "Reset your password",
       html,
     });
 
@@ -123,7 +102,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        message: "Failed to reset password",
+        message: "Failed to process reset request",
       },
       { status: 500 },
     );

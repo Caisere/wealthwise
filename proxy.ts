@@ -42,9 +42,11 @@ export async function proxy(req: NextRequest) {
   if (
     !token &&
     pathname.startsWith("/api/") &&
-    !["/api/auth", "/api/account/reset-password"].some(
-      (route) => pathname === route || pathname.startsWith(`${route}/`),
-    )
+    ![
+      "/api/auth",
+      "/api/account/reset-password",
+      "/api/account/forgot-password",
+    ].some((route) => pathname === route || pathname.startsWith(`${route}/`))
   ) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

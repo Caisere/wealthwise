@@ -51,14 +51,50 @@ export const CredentialsSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
+export const UpdatePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters"),
+    newPassword: z
+      .string()
+      .min(8, "New Password must be at least 8 characters"),
+    confirmNewPassword: z
+      .string()
+      .min(8, "Confirm Password must be at least 8 characters"),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "Passwords do not match",
+    path: ["confirmNewPassword"],
+  });
 
-export const UpdatePasswordSchema = z.object({
-  currentPassword: z.string().min(8, "Password must be at least 8 characters"),
+export const ResetPasswordFormSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(8, "New Password must be at least 8 characters"),
+    confirmNewPassword: z
+      .string()
+      .min(8, "Confirm Password must be at least 8 characters"),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "Passwords do not match",
+    path: ["confirmNewPassword"],
+  });
+
+export const ResetPasswordServerSchema = z.object({
   newPassword: z.string().min(8, "New Password must be at least 8 characters"),
-  confirmNewPassword: z
+  token: z.string().min(64, "Invalid token"),
+  email: z
     .string()
-    .min(8, "Confirm Password must be at least 8 characters"),
+    .trim()
+    .regex(
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      "Invalid email address",
+    )
+    .transform((email) => email.toLowerCase()),
 });
+
 
 export const createTransactionSchema = z.object({
   // accountId: z.string().uuid(),
@@ -122,7 +158,9 @@ export type UpdatePasswordType = z.infer<typeof UpdatePasswordSchema>;
 
 export type LoginSchema = z.infer<typeof CredentialsSchema>;
 
-export type ResetPasswordEmail = Pick<LoginSchema, 'email'>
+export type ResetPasswordType = z.infer<typeof ResetPasswordFormSchema>;
+
+export type ResetPasswordEmail = Pick<LoginSchema, "email">;
 
 export type RegisterSchema = z.infer<typeof RegisterFormData>;
 
@@ -208,6 +246,6 @@ export interface Category {
 }
 
 export type ResponseType = {
-  status: boolean;
+  success: boolean;
   message: string;
 };
