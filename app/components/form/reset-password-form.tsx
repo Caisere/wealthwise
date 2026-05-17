@@ -57,7 +57,7 @@ export function ResetPasswordForm({ token, email }: ResetPasswordFormProps) {
       }
       const { newPassword: password } = parsedPassword.data;
 
-      const request = await fetch("api/account/reset-password", {
+      const request = await fetch("/api/account/reset-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -80,9 +80,10 @@ export function ResetPasswordForm({ token, email }: ResetPasswordFormProps) {
 
       router.push("/login");
     } catch {
+      toast.error("Failed to reset password. Please try again.");
       setError("root", {
         type: "server",
-        message: "Failed to sign in. Please try again.",
+        message: "Failed to reset password. Please try again.",
       });
     }
   };
@@ -121,6 +122,10 @@ export function ResetPasswordForm({ token, email }: ResetPasswordFormProps) {
         <p className="text-red-500 text-sm">
           {errors.confirmNewPassword.message}
         </p>
+      )}
+
+      {errors.root?.message && (
+        <p className="text-red-500 text-sm mt-2">{errors.root.message}</p>
       )}
       <div className="mt-4">
         <button

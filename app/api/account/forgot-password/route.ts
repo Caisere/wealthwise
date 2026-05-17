@@ -1,5 +1,5 @@
 import { generateResetToken, generateTokenExpiry } from "@/app/lib/helper";
-import { ResetPasswordSchema} from "@/app/types";
+import { ResetPasswordSchema } from "@/app/types";
 import { db } from "@/db";
 import { usersTable } from "@/db/schema";
 import ResetPasswordComponent from "@/emails/reset-password-component";
@@ -64,7 +64,14 @@ export async function POST(req: NextRequest) {
       .where(eq(usersTable.id, user.id))
       .returning();
 
-    const resetLink = `${baseUrl}/reset-password?token=${token}&email=${email}`;
+    // const resetLink = `${baseUrl}/reset-password?token=${token}&email=${email}`;
+
+    // solves raw token/email interpolation invalid links generation for legitimate value because of special characters in supplied email
+    const url = new URL("/reset-password", process.env.NEXT_PUBLIC_APP_URL);
+    url.searchParams.set("token", token);
+    url.searchParams.set("email", email);
+
+    const resetLink = url.toString();
 
     const expiresIn = userDetails.resetTokenExpiry;
 

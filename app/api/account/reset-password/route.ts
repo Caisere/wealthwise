@@ -68,10 +68,13 @@ export async function POST(req: NextRequest) {
       !user.resetTokenExpiry ||
       user.resetTokenExpiry < new Date()
     ) {
-      return NextResponse.json({
-        success: false,
-        message: "Token invalid or expiry",
-      });
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Token invalid or expired",
+        },
+        { status: 400 },
+      );
     }
 
     // hash new password
@@ -105,19 +108,19 @@ export async function POST(req: NextRequest) {
     });
 
     if (error) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: error.message || "error from resend",
-        },
-        { status: 400 },
-      );
+      // log error to observability sink
+      return NextResponse.json({
+        success: true,
+        message:
+          "Password reset successfully, but confirmation email could not be sent.",
+      });
     }
 
     return NextResponse.json({
       success: true,
       message: "password reset successfully",
     });
+    
   } catch {
     // const err = error instanceof Error ? error.message : "Failed to reset password";
     return NextResponse.json(

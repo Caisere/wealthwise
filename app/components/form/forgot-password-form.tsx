@@ -29,7 +29,7 @@ export function ForgotPasswordForm() {
       }
       const validEmail = parsedEmail.data;
 
-      const request = await fetch("api/account/forgot-password", {
+      const request = await fetch("/api/account/forgot-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -51,7 +51,8 @@ export function ForgotPasswordForm() {
       setEmail("");
       return;
     } catch (error) {
-      const err = error instanceof Error;
+      const err =
+        error instanceof Error ? error.message : "Failed to send reset link";
       toast.error(err);
     } finally {
       setIsPending(false);
