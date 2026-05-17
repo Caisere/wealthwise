@@ -8,10 +8,13 @@ import { Field } from "@/app/components/form/field";
 import { ResetPasswordSchema, ResponseType } from "@/app/types";
 import { toast } from "sonner";
 import { Spinner } from "@/components/ui/spinner";
+import { useRouter } from "next/navigation";
 
 export function ForgotPasswordForm() {
+  const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [sent, setSent] = useState<boolean>(false);
+  const [sentEmail, setSentEmail] = useState<string>("");
   const [isPending, setIsPending] = useState<boolean>(false);
 
   async function handleResetPassword(e: React.SubmitEvent) {
@@ -27,7 +30,7 @@ export function ForgotPasswordForm() {
       }
       const validEmail = parsedEmail.data;
 
-      const request = await fetch("api/account/reset-password", {
+      const request = await fetch("/api/account/forgot-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,19 +40,22 @@ export function ForgotPasswordForm() {
 
       const response: ResponseType = await request.json();
 
-      if (!response.status) {
+      if (!response.success) {
         toast.error(response.message);
+        return;
       }
-      console.log("successful");
+
       toast.success(
         "If email exists, link has been sent. check your email for reset link",
       );
-
+      setSentEmail(email);
+      setSent(true);
       setEmail("");
-
       return;
     } catch (error) {
-      console.log(error);
+      const err =
+        error instanceof Error ? error.message : "Failed to send reset link";
+      toast.error(err);
     } finally {
       setIsPending(false);
     }
@@ -57,84 +63,85 @@ export function ForgotPasswordForm() {
 
   return (
     <AuthPanel
+      resetPassword={true}
       title={sent ? "Check your inbox" : "Reset password"}
       sub={
         sent
-          ? `We sent a reset link to ${email || "your email"}`
+          ? `We sent a reset link to ${sentEmail || "your email"}`
           : "Enter your email and we'll send you a reset link."
       }
     >
-      <form onSubmit={handleResetPassword}>
-        <Field
-          label="Email address"
-          type="email"
-          placeholder="you@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          icon="✉"
-        />
-        <button
-          type="submit"
-          disabled={isPending}
-          className={`w-full p-3 rounded-lg text-sm border-0 mb-5 font-bold ${email ? "pointer" : "not-allowed"}`}
-          style={{
-            background: email
-              ? `linear-gradient(135deg,${T.GM},${T.GD})`
-              : T.inp,
-          }}
-        >
-          {isPending ? (
-            <div className="flex items-center justify-center gap-3">
-              <Spinner />
-              <p>Sending Reset Link</p>
-            </div>
-          ) : (
-            "Send reset link"
-          )}
-        </button>
+      {sent ? (
+        <div className="text-center">
+          <div className="text-6xl mb-5">📬</div>
+          <p
+            className="mb-5 text-sm leading-1.5"
+            style={{
+              color: T.mu,
+            }}
+          >
+            Didn&apos;t get it? Check your spam or{" "}
+            <span
+              style={{ color: T.G, cursor: "pointer" }}
+              onClick={() => router.push("/forgot-password")}
+            >
+              try again
+            </span>
+            .
+          </p>
+          <button
+            onClick={() => router.push("/forgot-password")}
+            className="bg-transparent w-full p-3 rounded-lg text-sm border mb-5 cursor-pointer"
+            style={{
+              border: `1px solid ${T.bdr}`,
+              color: T.mu,
+            }}
+          >
+            ← Try again
+          </button>
+          <p style={{ textAlign: "center", fontSize: 14, color: T.mu }}>
+            <Link href="/login" style={{ color: T.G }}>
+              ← Back to sign in
+            </Link>
+          </p>
+        </div>
+      ) : (
+        <form onSubmit={handleResetPassword}>
+          <Field
+            label="Email address"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            icon="✉"
+          />
+          <button
+            type="submit"
+            disabled={isPending}
+            className={`w-full p-3 rounded-lg text-sm border-0 mb-5 font-bold ${email ? "cursor-pointer" : "cursor-not-allowed"}`}
+            style={{
+              background: email
+                ? `linear-gradient(135deg,${T.GM},${T.GD})`
+                : T.inp,
+            }}
+          >
+            {isPending ? (
+              <div className="flex items-center justify-center gap-3">
+                <Spinner />
+                <p>Sending Reset Link</p>
+              </div>
+            ) : (
+              "Send reset link"
+            )}
+          </button>
 
-        <p style={{ textAlign: "center", fontSize: 14, color: T.mu }}>
-          <Link href="/login" style={{ color: T.G }}>
-            ← Back to sign in
-          </Link>
-        </p>
-      </form>
+          <p style={{ textAlign: "center", fontSize: 14, color: T.mu }}>
+            <Link href="/login" style={{ color: T.G }}>
+              ← Back to sign in
+            </Link>
+          </p>
+        </form>
+      )}
     </AuthPanel>
   );
 }
-
-// ) : (
-//   <div className="text-center">
-//     <div className="text-6xl mb-5">📬</div>
-//     <p
-//       className="mb-5 text-sm leading-1.5"
-//       style={{
-//         color: T.mu,
-//       }}
-//     >
-//       Didn&apos;t get it? Check your spam or{" "}
-//       <span
-//         style={{ color: T.G, cursor: "pointer" }}
-//         onClick={() => setSent(false)}
-//       >
-//         try again
-//       </span>
-//       .
-//     </p>
-//     <button
-//       onClick={() => setSent(false)}
-//       className="bg-transparent w-full p-3 rounded-lg text-sm border mb-5 cursor-pointer"
-//       style={{
-//         border: `1px solid ${T.bdr}`,
-//         color: T.mu,
-//       }}
-//     >
-//       ← Try again
-//     </button>
-//     <p style={{ textAlign: "center", fontSize: 14, color: T.mu }}>
-//       <Link href="/login" style={{ color: T.G }}>
-//         ← Back to sign in
-//       </Link>
-//     </p>
-//   </div>
-// )}

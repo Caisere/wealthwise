@@ -13,6 +13,7 @@ const ROUTES = {
 export default function RegisterPage() {
   return (
     <AuthPanel
+      resetPassword={false}
       title="Create your account"
       sub="Free forever. No credit card required."
     >

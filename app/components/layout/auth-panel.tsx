@@ -6,10 +6,12 @@ export default function AuthPanel({
   children,
   title,
   sub,
+  resetPassword
 }: {
   children: ReactNode;
   title: string;
   sub: string;
+  resetPassword: boolean;
 }) {
   return (
     <div className="min-h-screen flex flex-col justify-center sm:flex-row bg-bg">
@@ -73,12 +75,16 @@ export default function AuthPanel({
           <p className="text-center sm:text-start text-sm text-muted mb-8">
             {sub}
           </p>
-          <SignInWithGoogleBtn />
-          <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-border" />
-            <span className="text-xs text-dim">or with email</span>
-            <div className="flex-1 h-px bg-border" />
-          </div>
+          {!resetPassword && (
+            <>
+              <SignInWithGoogleBtn />
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex-1 h-px bg-border" />
+                <span className="text-xs text-dim">or with email</span>
+                <div className="flex-1 h-px bg-border" />
+              </div>
+            </>
+          )}
           {children}
         </div>
       </div>

@@ -1,11 +1,8 @@
-import { generateResetToken, generateTokenExpiry } from "@/app/lib/helper";
-import {
-  ResetPasswordSchema,
-  ResponseType,
-} from "@/app/types";
+import { generateHashedToken, hashPassword } from "@/app/lib/helper";
+import { ResetPasswordServerSchema } from "@/app/types";
 import { db } from "@/db";
 import { usersTable } from "@/db/schema";
-import ResetPasswordComponent from "@/emails/reset-password-component";
+import PasswordResetSuccess from "@/emails/password-reset-success";
 import { render } from "@react-email/components";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
@@ -15,87 +12,121 @@ const baseUrl = process.env.NEXT_PUBLIC_APP_URL!;
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function POST(
-  req: NextRequest,
-): Promise<NextResponse<ResponseType>> {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const parsedEmail = ResetPasswordSchema.safeParse(body.validEmail);
+    const parsedData = ResetPasswordServerSchema.safeParse(body);
 
-    if (!parsedEmail.success) {
-      return NextResponse.json({
-        status: false,
-        message: "Error validating user input",
-      });
+    if (!parsedData.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: parsedData.error.flatten().fieldErrors,
+        },
+        { status: 400 },
+      );
     }
 
-    const email = parsedEmail.data;
+    const { email, token, newPassword } = parsedData.data;
 
-    // email database look up
+    // email database look up for user to confirm user still active
     const [user] = await db
       .select()
       .from(usersTable)
       .where(eq(usersTable.email, email));
 
     if (!user) {
-      return NextResponse.json({
-        status: true,
-        message:
-          "If email exists, link has been sent. check your email for reset link",
-      });
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Invalid Request",
+        },
+        { status: 400 },
+      );
     }
 
-    const { token, hashedToken } = generateResetToken();
+    // gate check for Oauth manages their password, not stored in db
+    if (!user.password) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "This account uses a third-party login provider. Please sign in using your OAuth provider instead.",
+        },
+        { status: 400 },
+      );
+    }
 
-    const expiry = generateTokenExpiry();
+    // re-hash the supplied token
+    const hashedToken = generateHashedToken(token);
 
-    // add hashed token to db and expiryTime
-    const [userDetails] = await db
+    // confirm the validity of hashed token and token expiration
+    if (
+      !user.resetHashedToken ||
+      user.resetHashedToken !== hashedToken ||
+      !user.resetTokenExpiry ||
+      user.resetTokenExpiry < new Date()
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Token invalid or expired",
+        },
+        { status: 400 },
+      );
+    }
+
+    // hash new password
+    const newPasswordHashed = await hashPassword(newPassword);
+
+    // updating the password field and turning the resetHashedToken and resetTokenExpiry to null
+    await db
       .update(usersTable)
-      .set({ resetHashedToken: hashedToken, resetTokenExpiry: expiry })
+      .set({
+        password: newPasswordHashed,
+        resetHashedToken: null,
+        resetTokenExpiry: null,
+      })
       .where(eq(usersTable.id, user.id))
       .returning();
 
-    const resetLink = `${baseUrl}/reset-password?token=${token}&email=${email}`;
-
-    const expiresIn = userDetails.resetTokenExpiry
+    const loginLink = `${baseUrl}/login`;
 
     const html = await render(
-      ResetPasswordComponent({
-        resetLink,
-        username: userDetails.name!,
-        expiresIn,
+      PasswordResetSuccess({
+        loginLink,
+        username: user.name!,
       }),
     );
 
     const { error } = await resend.emails.send({
       from: "Acme <onboarding@resend.dev>",
       to: "omoshola.elegbede@preferreddigitalbusiness.com",
-      subject: "Reset your password",
+      subject: "Password Reset Successfully",
       html,
     });
 
     if (error) {
-      return NextResponse.json(
-        {
-          status: false,
-          message: error.message || "error from resend",
-        },
-        { status: 400 },
-      );
+      // log error to observability sink
+      return NextResponse.json({
+        success: true,
+        message:
+          "Password reset successfully, but confirmation email could not be sent.",
+      });
     }
 
     return NextResponse.json({
-      status: true,
+      success: true,
       message: "password reset successfully",
     });
+    
   } catch {
     // const err = error instanceof Error ? error.message : "Failed to reset password";
     return NextResponse.json(
       {
-        status: false,
-        message: "Failed to process reset request",
+        success: false,
+        message: "Failed to reset password",
       },
       { status: 500 },
     );
