@@ -1,18 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { Field } from "@/app/components/form/field";
 import { T } from "@/app/lib/theme";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  CredentialsSchema,
   ResetPasswordFormSchema,
-  ResetPasswordSchema,
   ResetPasswordType,
   ResponseType,
-  type LoginSchema,
 } from "@/app/types";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";

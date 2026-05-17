@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
     // const resetLink = `${baseUrl}/reset-password?token=${token}&email=${email}`;
 
     // solves raw token/email interpolation invalid links generation for legitimate value because of special characters in supplied email
-    const url = new URL("/reset-password", process.env.NEXT_PUBLIC_APP_URL);
+    const url = new URL("/reset-password", baseUrl);
     url.searchParams.set("token", token);
     url.searchParams.set("email", email);
 
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
     const html = await render(
       ResetPasswordComponent({
         resetLink,
-        username: userDetails.name!,
+        username: userDetails.name || "User",
         expiresIn,
       }),
     );

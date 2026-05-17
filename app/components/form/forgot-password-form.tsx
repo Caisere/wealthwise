@@ -14,6 +14,7 @@ export function ForgotPasswordForm() {
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [sent, setSent] = useState<boolean>(false);
+  const [sentEmail, setSentEmail] = useState<string>("");
   const [isPending, setIsPending] = useState<boolean>(false);
 
   async function handleResetPassword(e: React.SubmitEvent) {
@@ -47,6 +48,7 @@ export function ForgotPasswordForm() {
       toast.success(
         "If email exists, link has been sent. check your email for reset link",
       );
+      setSentEmail(email);
       setSent(true);
       setEmail("");
       return;
@@ -65,7 +67,7 @@ export function ForgotPasswordForm() {
       title={sent ? "Check your inbox" : "Reset password"}
       sub={
         sent
-          ? `We sent a reset link to ${email || "your email"}`
+          ? `We sent a reset link to ${sentEmail || "your email"}`
           : "Enter your email and we'll send you a reset link."
       }
     >
@@ -116,7 +118,7 @@ export function ForgotPasswordForm() {
           <button
             type="submit"
             disabled={isPending}
-            className={`w-full p-3 rounded-lg text-sm border-0 mb-5 font-bold ${email ? "pointer" : "not-allowed"}`}
+            className={`w-full p-3 rounded-lg text-sm border-0 mb-5 font-bold ${email ? "cursor-pointer" : "cursor-not-allowed"}`}
             style={{
               background: email
                 ? `linear-gradient(135deg,${T.GM},${T.GD})`
