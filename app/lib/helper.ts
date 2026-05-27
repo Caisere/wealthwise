@@ -2,6 +2,11 @@ import "server-only";
 
 import bcrypt from "bcrypt";
 import crypto from "crypto";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+const TO = process.env.TEST_EMAIL!
+const FROM = process.env.ORGANIZATION_EMAIL!
 
 export async function hashPassword(password: string) {
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -81,19 +86,63 @@ export function getPercentageChange(current: number, previous: number) {
   return ((current - previous) / previous) * 100;
 }
 
-export function generateResetToken() {
-  const token = crypto.randomBytes(32).toString("hex");
+// export function generateResetToken() {
+//   const token = crypto.randomBytes(32).toString("hex");
 
-  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+//   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-  return { token, hashedToken };
-}
+//   return { token, hashedToken };
+// }
 
-export function generateHashedToken(token: string) {
-  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-  return hashedToken;
+// export function generateHashedToken(token: string) {
+//   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+//   return hashedToken;
+// }
+
+export function handleResetToken(token?: string) {
+  // if token is supply
+  if (token) {
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    return { hashedToken };
+  }
+
+  // if no token is not supply
+  // generate new token and hash it
+  const newToken = crypto.randomBytes(32).toString("hex");
+
+  // hash new token
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(newToken)
+    .digest("hex");
+
+  // return newToken and hashedToken
+  return { token: newToken, hashedToken };
 }
 
 export function generateTokenExpiry() {
   return new Date(Date.now() + 1000 * 60 * 15); // 15mins
+}
+
+type SendEmailProps = {
+  html: string;
+  from?: string;
+  to?: string;
+  subject: string;
+};
+
+export async function sendEmailNotification({
+  html,
+  from,
+  to,
+  subject,
+}: SendEmailProps) {
+  const { error } = await resend.emails.send({
+    from: FROM,
+    to: TO,
+    subject: subject,
+    html,
+  });
+
+  return { error };
 }

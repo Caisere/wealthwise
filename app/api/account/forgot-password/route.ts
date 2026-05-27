@@ -1,4 +1,8 @@
-import { generateResetToken, generateTokenExpiry } from "@/app/lib/helper";
+import {
+  generateTokenExpiry,
+  handleResetToken,
+  sendEmailNotification,
+} from "@/app/lib/helper";
 import { ResetPasswordSchema } from "@/app/types";
 import { db } from "@/db";
 import { usersTable } from "@/db/schema";
@@ -6,11 +10,8 @@ import ResetPasswordComponent from "@/emails/reset-password-component";
 import { render } from "@react-email/components";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL!;
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { token, hashedToken } = generateResetToken();
+    const { token, hashedToken } = handleResetToken();
 
     const expiry = generateTokenExpiry();
 
@@ -68,7 +69,7 @@ export async function POST(req: NextRequest) {
 
     // solves raw token/email interpolation invalid links generation for legitimate value because of special characters in supplied email
     const url = new URL("/reset-password", baseUrl);
-    url.searchParams.set("token", token);
+    url.searchParams.set("token", token as string);
     url.searchParams.set("email", email);
 
     const resetLink = url.toString();
@@ -83,12 +84,9 @@ export async function POST(req: NextRequest) {
       }),
     );
 
-    const { error } = await resend.emails.send({
-      from: "Acme <onboarding@resend.dev>",
-      to: "omoshola.elegbede@preferreddigitalbusiness.com",
-      subject: "Reset your password",
-      html,
-    });
+    const subject = "Password Reset Successfully";
+
+    const { error } = await sendEmailNotification({ html, subject });
 
     if (error) {
       return NextResponse.json(

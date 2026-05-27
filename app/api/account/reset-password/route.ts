@@ -1,4 +1,8 @@
-import { generateHashedToken, hashPassword } from "@/app/lib/helper";
+import {
+  handleResetToken,
+  hashPassword,
+  sendEmailNotification,
+} from "@/app/lib/helper";
 import { ResetPasswordServerSchema } from "@/app/types";
 import { db } from "@/db";
 import { usersTable } from "@/db/schema";
@@ -6,11 +10,8 @@ import PasswordResetSuccess from "@/emails/password-reset-success";
 import { render } from "@react-email/components";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
-import { Resend } from "resend";
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL!;
-
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: NextRequest) {
   try {
@@ -59,7 +60,7 @@ export async function POST(req: NextRequest) {
     }
 
     // re-hash the supplied token
-    const hashedToken = generateHashedToken(token);
+    const { hashedToken } = handleResetToken(token);
 
     // confirm the validity of hashed token and token expiration
     if (
@@ -100,12 +101,10 @@ export async function POST(req: NextRequest) {
       }),
     );
 
-    const { error } = await resend.emails.send({
-      from: "Acme <onboarding@resend.dev>",
-      to: "omoshola.elegbede@preferreddigitalbusiness.com",
-      subject: "Password Reset Successfully",
-      html,
-    });
+    const subject =
+      "Password reset successfully, but confirmation email could not be sent.";
+
+    const { error } = await sendEmailNotification({html, subject});
 
     if (error) {
       // log error to observability sink
@@ -120,7 +119,6 @@ export async function POST(req: NextRequest) {
       success: true,
       message: "password reset successfully",
     });
-    
   } catch {
     // const err = error instanceof Error ? error.message : "Failed to reset password";
     return NextResponse.json(
