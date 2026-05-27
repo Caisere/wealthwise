@@ -133,14 +133,14 @@ type SendEmailProps = {
 
 export async function sendEmailNotification({
   html,
-  from,
-  to,
+  from = FROM,
+  to = TO,
   subject,
 }: SendEmailProps) {
   const { error } = await resend.emails.send({
-    from: FROM,
-    to: TO,
-    subject: subject,
+    from,
+    to,
+    subject,
     html,
   });
 

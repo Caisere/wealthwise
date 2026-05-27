@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
       }),
     );
 
-    const subject = "Password Reset Successfully";
+    const subject = "Reset your password";
 
     const { error } = await sendEmailNotification({ html, subject });
 
