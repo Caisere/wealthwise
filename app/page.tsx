@@ -61,7 +61,7 @@ const exploreLinks = [
 export default function LandingPage() {
   return (
     <MarketingShell>
-      <section className="relative z-[1] mx-auto max-w-6xl px-4 pt-36 pb-12 sm:px-6 sm:pt-28 sm:pb-16 lg:px-8 lg:pt-32">
+      <section className="relative z-1 mx-auto max-w-6xl px-4 pt-36 pb-12 sm:px-6 sm:pt-28 sm:pb-16 lg:px-8 lg:pt-32">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-14">
           <div className="text-center lg:text-left">
             <div className="animate-fade-up mb-5 flex justify-center lg:justify-start">

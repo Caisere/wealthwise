@@ -6,7 +6,11 @@ import { LoginForm } from "@/app/components/form/login-form";
 
 export default function LoginPage() {
   return (
-    <AuthPanel title="Welcome back" sub="Sign in to your WealthWise account">
+    <AuthPanel
+      title="Welcome back"
+      sub="Sign in to your WealthWise account"
+      resetPassword={false}
+    >
       <LoginForm />
       <p className="mt-6 text-center text-sm text-gray-500">
         No account?{" "}
