@@ -101,10 +101,9 @@ export async function POST(req: NextRequest) {
       }),
     );
 
-    const subject =
-      "Password reset successfully, but confirmation email could not be sent.";
+    const subject = "Your password was reset successfully";
 
-    const { error } = await sendEmailNotification({html, subject});
+    const { error } = await sendEmailNotification({ html, subject });
 
     if (error) {
       // log error to observability sink
